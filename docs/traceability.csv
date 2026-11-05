@@ -1,0 +1,31 @@
+﻿requirement,level,minimum_scope,acceptance,api_endpoints,tables,implementation,tests,status,limitations
+R01 身份,M,管理员与四类现场角色真实认证；服务端确认身份,A01、A02,"POST /auth/login；GET /auth/me；POST /auth/logout","admin_users；sessions","backend/src/auth/；routes/auth.ts；LoginPage.tsx","auth.test.ts（13 项）",已验收,受控设备未做
+R02 基础数据,M,客户/供应商/配件/部门员工可增查；修改停用不破坏历史,A03,"GET/POST/PATCH /customers、/suppliers、/parts、/departments、/employees","customers；suppliers；parts；departments；employees","routes/base-data.ts；BaseDataPage.tsx","basedata.test.ts（7 项）",已验收,Excel 导入未提供
+R03 业务订单,M,单产品、数量单价规格交期；唯一系统号；列表详情检索,A04、A05,"GET /orders；GET /orders/:id；POST /orders","orders；order_items；sequence_counters","routes/orders.ts；NewOrderPage.tsx；OrderDetailPage.tsx","flow.test.ts",已验收,多产品未做
+R04 采购,M,一订单单采购单、单配件、手选供应商；无电镀,A06,POST /orders/:id/purchase,"purchase_orders；purchase_items","routes/flow.ts；FlowPanel.tsx",flow.test.ts,已验收,多采购单/多配件未做
+R05 到货,M,物流登记到货；管理员可查,A07、A08,POST /purchases/:id/arrivals,arrival_records,"routes/flow.ts；FlowPanel.tsx",flow.test.ts,已验收,部分到货投产未做
+R06 电镀,M,不支持并在页面标明未启用或不适用,A09,无（采购表单标注）,purchase_items.platingRequired 恒为 false,"FlowPanel.tsx 采购表单说明；DashboardPage 成本说明",人工核对,已实现（人工核对）,镀层全链路未做
+R07 生产,M,单部门任务、管理员下发、一次反馈、数量受限,A10、A11,"POST /orders/:id/productions；POST /productions/:id/feedback","production_orders；production_feedbacks","routes/flow.ts；FlowPanel.tsx","flow.test.ts；domain.test.ts",已验收,多任务/分批反馈未做
+R08 单价开关,M,管理员控制该生产任务单价可见；其他成本不泄露,A02,生产下发字段 unitPriceVisible,"production_orders.unitPriceVisible","domain/orders.ts unitPriceForWorker；FlowPanel.tsx",人工核对,已实现（人工核对）,缺自动化断言（已知风险）
+R09 质检,M,一次质检全合格；录入与 PASS 决策分离,A12、A13,"POST /productions/:id/qc-records；POST /qc-records/:id/decision","qc_records；qc_decisions","routes/flow.ts；FlowPanel.tsx",flow.test.ts,已验收,部分合格/返工/报废未做
+R10 包装,M,下发后登记；不得超过可包装量,A14,"POST /orders/:id/packing-dispatch；POST /orders/:id/packing-records",packing_records,"routes/flow.ts；FlowPanel.tsx","flow.test.ts；domain.test.ts",已验收,按产品拆分未做
+R11 发货,M,触发后登记；足量完成,A15、A16,"POST /orders/:id/shipping-trigger；POST /orders/:id/shipment-records",shipment_records,"routes/flow.ts；FlowPanel.tsx","flow.test.ts；domain.test.ts",已验收,单产品足量口径
+R12 撤销修正,M,未支持的撤销明确拒绝；不随意删记录,A17,无删除接口,全部业务表,"状态守卫与路由表（无 DELETE）",flow.test.ts 状态冲突断言,已实现（人工核对）,10 分钟撤销未做
+R13 配件库存,M,手工增减、搜索、非负、原因、流水、并发安全,A18、A19、A20,"GET /inventory/parts；POST /inventory/parts/:id/adjust；GET /inventory/logs","part_inventories；inventory_logs","routes/inventory.ts；lib/inventory.ts；InventoryPage.tsx","inventory.test.ts（含并发 20 请求）",已验收,来源关联未做
+R14 成品库存,M,手工增减、搜索、非负、流水；同规格唯一；首次创建与后续调整并发安全,A18、A19、A20,"GET /inventory/products；POST /inventory/products；POST /inventory/products/:id/adjust","product_inventories；inventory_logs","routes/inventory.ts；lib/inventory.ts；InventoryPage.tsx","inventory.test.ts（并发建档 8 请求、原子扣减）",已验收,超产转库未做
+R15 利润,M,人民币不含税 Decimal；销售减采购与完成生产成本,A22,订单详情 flow.profit,"orders；order_items；purchase_items；production_orders；production_feedbacks","domain/flow.ts computeProfit","domain.test.ts（3 项）；flow.test.ts",已验收,镀层成本未做
+R16 时间线与状态,M,后端事件、操作者、时间；允许动作后端判定,A23,订单详情 flow 与 timeline,timeline_events,"domain/flow.ts computeAllowedActions；lib/timeline.ts",domain.test.ts,已验收,撤销/异常标记未做
+R17 附件,M,订单上传下载一类允许文件；失败可重试；鉴权,A24,"POST/GET /orders/:id/attachments；GET /attachments/:id/download",attachments,"routes/attachments.ts；OrderDetailPage.tsx",人工冒烟,已实现（人工冒烟）,仅订单层级
+R18 导入,M,可不提供；用受控页面维护基础数据,A25,无,——,"BaseDataPage.tsx",不适用,已实现（不提供）,M 允许
+R19 导出,M,订单列表真实数据导出 xlsx；服务端鉴权,A26,GET /orders/export.xlsx,"orders；order_items","routes/export.ts；OrdersPage.tsx",人工冒烟,已实现（人工冒烟）,仅订单
+R20 通知提醒,M,关键事件通知管理员；可读与未读,A27,"GET /notifications；GET /notifications/summary；POST /notifications/:id/read","notifications；timeline_events","routes/collab.ts；NotificationsPage.tsx；AppShell.tsx",jobs.test.ts,已验收,分类维度未做
+R20F 通知提醒,F,全部已读、到期前七天每日一次、补执行不重复,A27,"POST /notifications/read-all；POST /jobs/due-reminders","notifications.dedupeKey","routes/collab.ts；jobs/due-reminders.ts；jobs/scheduler.ts",jobs.test.ts（3 项）,已实现（部分）,只有未读筛选；无业务分类
+R21 看板,M,真实订单状态数量、简单生产进度、利润汇总,A28,GET /dashboard,"orders；production_orders；production_feedbacks","routes/collab.ts；DashboardPage.tsx",人工冒烟,已实现（人工冒烟）,筛选指标未做
+R22 异常上报,M,现场可报告问题并关联订单；管理员可查,A29,"POST /exceptions；GET /exceptions",tablet_exceptions,"routes/collab.ts；ReportException.tsx",人工冒烟,已实现（人工冒烟）,处置流程未做
+R23 审计,M,关键写操作操作者/资源/时间/请求关联；普通角色不能改删,A30,"GET /audit-logs；GET /audit-logs/facets",audit_logs,"lib/audit.ts；routes/audit.ts；AuditLogPage.tsx","auth.test.ts；basedata.test.ts；flow.test.ts",已验收,无改删接口
+R23F 审计,F,管理员审计检索、前后变化脱敏,A30,"GET /audit-logs（action/resourceType/resourceId/actorId/keyword/from/to）",audit_logs,"routes/audit.ts；AuditLogPage.tsx",人工核对,已实现（人工核对）,历史版本对比未做
+R24 重试与弱网,M,未确认写入不报成功；保留可恢复草稿；安全重试,A31,"POST /orders 与流转接口的 Idempotency-Key","idempotency_requests","lib/idempotency.ts；api/client.ts；NewOrderPage.tsx",flow.test.ts（幂等重放）,已验收,持久同步队列未做
+R25 可靠性,M,写事务、服务端校验、幂等绑定请求、库存原子与身份唯一、首次创建竞争,A19、A20、A32,全部写接口,全部业务表,"Prisma 事务；Zod；唯一约束；原子 SQL","inventory.test.ts（并发）；flow.test.ts",已验收,扩展补偿场景未做
+R26 环境交付,M,干净环境启动、真实 DB、迁移、合成演示；库与附件恢复到新隔离环境核对,A33、A34,GET /health；备份/恢复脚本,全部表 + 附件文件,"scripts/db.mjs；prisma/migrations；prisma/seed-demo.ts；scripts/backup.ts；scripts/restore.ts",tests/reports/2026-11-04-backup-restore.md,已验收,无物理备份
+R27 AI 与文档,M,PRD、README、AGENTS、约束、接口、测试、真实 AI 修改证据,A35,——,——,docs/、README.md、PRD-xuzao.md、AGENTS.md、CONSTRAINTS.md、docs/ai-collaboration.md、tests/,tests/reports/,已验收,文档与执行结果同步；未完成项如实标注
+R01F 身份,F,停用、角色变更、会话过期撤销；管理员管理,A01、A02,"PATCH /users/:id；POST /users/:id/password；POST /users/:id/revoke-sessions","admin_users.sessionVersion；sessions.revokedAt","routes/users.ts；UsersPage.tsx",auth.test.ts（5 项）,已验收,受控设备未做

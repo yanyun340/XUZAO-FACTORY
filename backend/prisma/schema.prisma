@@ -1,0 +1,532 @@
+// 序造 XuZao 数据模型 v1
+// 金额统一 Decimal(12,2) 人民币不含税；时间戳存 UTC，业务日按 Asia/Shanghai 计算。
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  LOGISTICS
+  PRODUCTION
+  QC
+  PACKING
+}
+
+enum DepartmentCategory {
+  PRODUCTION
+  LOGISTICS
+  QC
+  PACKING
+}
+
+enum OrderStatus {
+  PENDING_PURCHASE
+  PURCHASING
+  IN_PRODUCTION
+  PENDING_QC
+  QC_DONE
+  PACKING
+  SHIPPING
+  COMPLETED
+}
+
+enum InventoryKind {
+  PART
+  PRODUCT
+}
+
+enum AuditResult {
+  SUCCESS
+  FAILURE
+}
+
+enum QCDecisionType {
+  PASS
+  REWORK
+  SCRAP
+}
+
+// ---------- 身份与组织 ----------
+
+model AdminUser {
+  id             String      @id @default(uuid()) @db.Uuid
+  username       String      @unique
+  passwordHash   String
+  displayName    String
+  role           Role
+  departmentId   String?     @db.Uuid
+  department     Department? @relation(fields: [departmentId], references: [id])
+  active         Boolean     @default(true)
+  sessionVersion Int         @default(0)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  sessions           Session[]
+  ordersCreated      Order[]              @relation("OrderCreatedBy")
+  purchasesCreated   PurchaseOrder[]      @relation("PurchaseCreatedBy")
+  arrivals           ArrivalRecord[]      @relation("ArrivalOperator")
+  productionsCreated ProductionOrder[]    @relation("ProductionCreatedBy")
+  feedbacks          ProductionFeedback[] @relation("FeedbackOperator")
+  qcRecords          QCRecord[]           @relation("QCOperator")
+  qcDecisions        QCDecision[]         @relation("QCDecidedBy")
+  packingRecords     PackingRecord[]      @relation("PackingOperator")
+  shipments          ShipmentRecord[]     @relation("ShipmentOperator")
+  inventoryLogs      InventoryLog[]       @relation("InventoryOperator")
+  attachments        Attachment[]
+  notifications      Notification[]
+  auditLogs          AuditLog[]
+  exceptions         TabletException[]    @relation("ExceptionReporter")
+  timelineEvents     TimelineEvent[]
+
+  @@map("admin_users")
+}
+
+model Session {
+  id        String    @id @default(uuid()) @db.Uuid
+  tokenHash String    @unique
+  userId    String    @db.Uuid
+  user      AdminUser @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Department {
+  id        String             @id @default(uuid()) @db.Uuid
+  code      String             @unique
+  name      String
+  category  DepartmentCategory
+  active    Boolean            @default(true)
+  createdAt DateTime           @default(now())
+
+  users       AdminUser[]
+  employees   Employee[]
+  productions ProductionOrder[]
+
+  @@map("departments")
+}
+
+model Employee {
+  id           String     @id @default(uuid()) @db.Uuid
+  code         String     @unique
+  name         String
+  departmentId String     @db.Uuid
+  department   Department @relation(fields: [departmentId], references: [id])
+  active       Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+
+  productions ProductionOrder[]
+
+  @@index([departmentId])
+  @@map("employees")
+}
+
+// ---------- 基础数据 ----------
+
+model Customer {
+  id        String   @id @default(uuid()) @db.Uuid
+  code      String   @unique
+  name      String
+  contact   String?
+  phone     String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  orders Order[]
+
+  @@map("customers")
+}
+
+model Supplier {
+  id        String   @id @default(uuid()) @db.Uuid
+  code      String   @unique
+  name      String
+  contact   String?
+  phone     String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  purchaseOrders PurchaseOrder[]
+
+  @@map("suppliers")
+}
+
+model Part {
+  id        String   @id @default(uuid()) @db.Uuid
+  code      String   @unique
+  name      String
+  spec      String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  purchaseItems PurchaseItem[]
+  inventory     PartInventory?
+  logs          InventoryLog[]
+
+  @@map("parts")
+}
+
+// ---------- 订单主链 ----------
+
+model Order {
+  id              String      @id @default(uuid()) @db.Uuid
+  orderNo         String      @unique
+  customerId      String      @db.Uuid
+  customer        Customer    @relation(fields: [customerId], references: [id])
+  customerName    String
+  customerContact String?
+  dueDate         DateTime    @db.Date
+  remark          String?
+  status          OrderStatus @default(PENDING_PURCHASE)
+  createdById     String      @db.Uuid
+  createdBy       AdminUser   @relation("OrderCreatedBy", fields: [createdById], references: [id])
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  completedAt     DateTime?
+
+  items          OrderItem[]
+  purchaseOrders PurchaseOrder[]
+  productions    ProductionOrder[]
+  packingRecords PackingRecord[]
+  shipments      ShipmentRecord[]
+  timelineEvents TimelineEvent[]
+  notifications  Notification[]
+  exceptions     TabletException[]
+
+  @@index([status, createdAt])
+  @@index([createdAt, id])
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String   @id @default(uuid()) @db.Uuid
+  orderId     String   @db.Uuid
+  order       Order    @relation(fields: [orderId], references: [id])
+  productName String
+  spec        String
+  quantity    Int
+  unitPrice   Decimal  @db.Decimal(12, 2)
+  createdAt   DateTime @default(now())
+
+  productions    ProductionOrder[]
+  packingRecords PackingRecord[]
+  shipments      ShipmentRecord[]
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+model PurchaseOrder {
+  id           String     @id @default(uuid()) @db.Uuid
+  orderId      String     @db.Uuid
+  order        Order      @relation(fields: [orderId], references: [id])
+  supplierId   String     @db.Uuid
+  supplier     Supplier   @relation(fields: [supplierId], references: [id])
+  supplierName String
+  createdById  String     @db.Uuid
+  createdBy    AdminUser  @relation("PurchaseCreatedBy", fields: [createdById], references: [id])
+  createdAt    DateTime   @default(now())
+
+  items PurchaseItem[]
+
+  @@index([orderId])
+  @@map("purchase_orders")
+}
+
+model PurchaseItem {
+  id              String        @id @default(uuid()) @db.Uuid
+  purchaseOrderId String        @db.Uuid
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  partId          String        @db.Uuid
+  part            Part          @relation(fields: [partId], references: [id])
+  partName        String
+  partSpec        String
+  quantity        Int
+  unitPrice       Decimal       @db.Decimal(12, 2)
+  platingRequired Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+
+  arrivals ArrivalRecord[]
+
+  @@index([purchaseOrderId])
+  @@map("purchase_items")
+}
+
+model ArrivalRecord {
+  id             String       @id @default(uuid()) @db.Uuid
+  purchaseItemId String       @db.Uuid
+  purchaseItem   PurchaseItem @relation(fields: [purchaseItemId], references: [id])
+  quantity       Int
+  operatorId     String       @db.Uuid
+  operator       AdminUser    @relation("ArrivalOperator", fields: [operatorId], references: [id])
+  createdAt      DateTime     @default(now())
+
+  @@index([purchaseItemId])
+  @@map("arrival_records")
+}
+
+model ProductionOrder {
+  id              String    @id @default(uuid()) @db.Uuid
+  orderId         String    @db.Uuid
+  order           Order     @relation(fields: [orderId], references: [id])
+  orderItemId     String    @db.Uuid
+  orderItem       OrderItem @relation(fields: [orderItemId], references: [id])
+  departmentId    String    @db.Uuid
+  department      Department @relation(fields: [departmentId], references: [id])
+  employeeId      String?   @db.Uuid
+  employee        Employee? @relation(fields: [employeeId], references: [id])
+  processName     String
+  quantity        Int
+  unitPrice       Decimal   @db.Decimal(12, 2)
+  dueDate         DateTime? @db.Date
+  unitPriceVisible Boolean  @default(false)
+  createdById     String    @db.Uuid
+  createdBy       AdminUser @relation("ProductionCreatedBy", fields: [createdById], references: [id])
+  createdAt       DateTime  @default(now())
+
+  feedbacks  ProductionFeedback[]
+  qcRecords  QCRecord[]
+  exceptions TabletException[]
+
+  @@index([orderId])
+  @@index([departmentId])
+  @@map("production_orders")
+}
+
+model ProductionFeedback {
+  id                String          @id @default(uuid()) @db.Uuid
+  productionOrderId String          @db.Uuid
+  productionOrder   ProductionOrder @relation(fields: [productionOrderId], references: [id])
+  quantity          Int
+  operatorId        String          @db.Uuid
+  operator          AdminUser       @relation("FeedbackOperator", fields: [operatorId], references: [id])
+  createdAt         DateTime        @default(now())
+
+  @@index([productionOrderId])
+  @@map("production_feedbacks")
+}
+
+model QCRecord {
+  id                String          @id @default(uuid()) @db.Uuid
+  productionOrderId String          @db.Uuid
+  productionOrder   ProductionOrder @relation(fields: [productionOrderId], references: [id])
+  inspectedQty      Int
+  qualifiedQty      Int
+  unqualifiedQty    Int
+  operatorId        String          @db.Uuid
+  operator          AdminUser       @relation("QCOperator", fields: [operatorId], references: [id])
+  createdAt         DateTime        @default(now())
+
+  decision QCDecision?
+
+  @@index([productionOrderId])
+  @@map("qc_records")
+}
+
+model QCDecision {
+  id          String         @id @default(uuid()) @db.Uuid
+  qcRecordId  String         @unique @db.Uuid
+  qcRecord    QCRecord       @relation(fields: [qcRecordId], references: [id])
+  decision    QCDecisionType
+  releasedQty Int
+  decidedById String         @db.Uuid
+  decidedBy   AdminUser      @relation("QCDecidedBy", fields: [decidedById], references: [id])
+  createdAt   DateTime       @default(now())
+
+  @@map("qc_decisions")
+}
+
+model PackingRecord {
+  id          String    @id @default(uuid()) @db.Uuid
+  orderId     String    @db.Uuid
+  order       Order     @relation(fields: [orderId], references: [id])
+  orderItemId String    @db.Uuid
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id])
+  quantity    Int
+  operatorId  String    @db.Uuid
+  operator    AdminUser @relation("PackingOperator", fields: [operatorId], references: [id])
+  createdAt   DateTime  @default(now())
+
+  @@index([orderItemId])
+  @@map("packing_records")
+}
+
+model ShipmentRecord {
+  id          String    @id @default(uuid()) @db.Uuid
+  orderId     String    @db.Uuid
+  order       Order     @relation(fields: [orderId], references: [id])
+  orderItemId String    @db.Uuid
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id])
+  quantity    Int
+  operatorId  String    @db.Uuid
+  operator    AdminUser @relation("ShipmentOperator", fields: [operatorId], references: [id])
+  createdAt   DateTime  @default(now())
+
+  @@index([orderItemId])
+  @@map("shipment_records")
+}
+
+// ---------- 库存 ----------
+
+model PartInventory {
+  id        String   @id @default(uuid()) @db.Uuid
+  partId    String   @unique @db.Uuid
+  part      Part     @relation(fields: [partId], references: [id])
+  quantity  Int      @default(0)
+  version   Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@map("part_inventories")
+}
+
+model ProductInventory {
+  id          String   @id @default(uuid()) @db.Uuid
+  productKey  String   @unique
+  productName String
+  spec        String
+  quantity    Int      @default(0)
+  version     Int      @default(0)
+  updatedAt   DateTime @updatedAt
+
+  logs InventoryLog[]
+
+  @@map("product_inventories")
+}
+
+model InventoryLog {
+  id                 String            @id @default(uuid()) @db.Uuid
+  kind               InventoryKind
+  partId             String?           @db.Uuid
+  part               Part?             @relation(fields: [partId], references: [id])
+  productInventoryId String?           @db.Uuid
+  productInventory   ProductInventory? @relation(fields: [productInventoryId], references: [id])
+  before             Int
+  delta              Int
+  after              Int
+  reason             String
+  operatorId         String            @db.Uuid
+  operator           AdminUser         @relation("InventoryOperator", fields: [operatorId], references: [id])
+  createdAt          DateTime          @default(now())
+
+  @@index([kind, createdAt])
+  @@map("inventory_logs")
+}
+
+// ---------- 配套能力 ----------
+
+model Attachment {
+  id           String    @id @default(uuid()) @db.Uuid
+  ownerType    String
+  ownerId      String    @db.Uuid
+  fileName     String
+  storageKey   String    @unique
+  mimeType     String
+  size         Int
+  uploadedById String    @db.Uuid
+  uploadedBy   AdminUser @relation(fields: [uploadedById], references: [id])
+  createdAt    DateTime  @default(now())
+  deletedAt    DateTime?
+
+  @@index([ownerType, ownerId])
+  @@map("attachments")
+}
+
+model Notification {
+  id           String     @id @default(uuid()) @db.Uuid
+  eventType    String
+  title        String
+  body         String
+  recipientId  String     @db.Uuid
+  recipient    AdminUser  @relation(fields: [recipientId], references: [id])
+  orderId      String?    @db.Uuid
+  order        Order?     @relation(fields: [orderId], references: [id])
+  businessDate DateTime?  @db.Date
+  readAt       DateTime?
+  dedupeKey    String     @unique
+  createdAt    DateTime   @default(now())
+
+  @@index([recipientId, readAt])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id           String      @id @default(uuid()) @db.Uuid
+  requestId    String
+  actorId      String?     @db.Uuid
+  actor        AdminUser?  @relation(fields: [actorId], references: [id])
+  action       String
+  resourceType String
+  resourceId   String?
+  result       AuditResult
+  beforeJson   Json?
+  afterJson    Json?
+  createdAt    DateTime    @default(now())
+
+  @@index([resourceType, resourceId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model TabletException {
+  id                String           @id @default(uuid()) @db.Uuid
+  orderId           String?          @db.Uuid
+  order             Order?           @relation(fields: [orderId], references: [id])
+  productionOrderId String?          @db.Uuid
+  productionOrder   ProductionOrder? @relation(fields: [productionOrderId], references: [id])
+  reporterId        String           @db.Uuid
+  reporter          AdminUser        @relation("ExceptionReporter", fields: [reporterId], references: [id])
+  description       String
+  status            String           @default("OPEN")
+  createdAt         DateTime         @default(now())
+
+  @@map("tablet_exceptions")
+}
+
+model TimelineEvent {
+  id        String    @id @default(uuid()) @db.Uuid
+  orderId   String    @db.Uuid
+  order     Order     @relation(fields: [orderId], references: [id])
+  type      String
+  actorId   String    @db.Uuid
+  actor     AdminUser @relation(fields: [actorId], references: [id])
+  payload   Json?
+  createdAt DateTime  @default(now())
+
+  @@index([orderId, createdAt])
+  @@map("timeline_events")
+}
+
+// ---------- 幂等与编号 ----------
+
+model IdempotencyRequest {
+  id           String   @id @default(uuid()) @db.Uuid
+  actorId      String   @db.Uuid
+  operation    String
+  key          String
+  requestHash  String
+  status       String   @default("IN_PROGRESS")
+  responseJson Json?
+  resourceId   String?
+  createdAt    DateTime @default(now())
+  expiresAt    DateTime
+
+  @@unique([actorId, operation, key])
+  @@index([expiresAt])
+  @@map("idempotency_requests")
+}
+
+model SequenceCounter {
+  name  String @id
+  value Int
+
+  @@map("sequence_counters")
+}

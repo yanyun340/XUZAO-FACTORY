@@ -1,0 +1,39 @@
+# 依赖
+node_modules/
+.pnpm-store/
+
+# 构建产物
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# 本地配置与秘密（绝不提交）
+.env
+.env.*
+!.env.example
+
+# 运行数据
+uploads/
+uploads*/
+backend/storage/
+backups/
+pgdata/
+*.db
+*.sqlite
+*.sqlite3
+logs/
+*.log
+
+# 测试与导出临时文件
+tests/evidence/tmp/
+exports/
+
+# 视觉检查过程截图（不入交付包）
+.shots/
+
+# 编辑器与系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

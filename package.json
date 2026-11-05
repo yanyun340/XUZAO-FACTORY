@@ -1,0 +1,37 @@
+{
+  "name": "xuzao-factory",
+  "version": "0.1.0",
+  "private": true,
+  "description": "序造 XuZao — 一单到底的工厂协同管理系统",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "db": "node scripts/db.mjs",
+    "db:reset": "node scripts/db-reset.mjs",
+    "dev": "concurrently -k -n db,api,web -c blue,green,magenta \"npm:db\" \"wait-on tcp:127.0.0.1:55432 && npm run dev -w backend\" \"wait-on tcp:127.0.0.1:3001 && npm run dev -w frontend\"",
+    "build": "npm run build -w backend && npm run build -w frontend",
+    "typecheck": "npm run typecheck -w backend && npm run typecheck -w frontend",
+    "test": "npm run test -w backend",
+    "migrate": "npm run migrate -w backend",
+    "seed": "npm run seed -w backend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "embedded-postgres": "18.6.0-beta.19",
+    "pg": "^8.23.1",
+    "wait-on": "^8.0.5"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "allowScripts": {
+    "@embedded-postgres/windows-x64@18.6.0-beta.19": true,
+    "@prisma/client@6.19.3": true,
+    "esbuild@0.28.2": true,
+    "esbuild@0.25.12": true,
+    "prisma@7.10.1": true,
+    "@prisma/engines@7.10.1": true
+  }
+}
