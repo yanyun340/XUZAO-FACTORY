@@ -96,7 +96,17 @@ function useCollection<T>(path: string): Collection<T> {
   return { items, meta, loading, error, reload: () => setToken((value) => value + 1) };
 }
 
+function PrimaryCell({ name, code }: { name: string; code: string }) {
+  return (
+    <span className="data-table__primary">
+      <strong>{name}</strong>
+      <small>{code}</small>
+    </span>
+  );
+}
+
 function DataTable<T extends { id: string }>({
+  variant,
   columns,
   items,
   loading,
@@ -104,6 +114,7 @@ function DataTable<T extends { id: string }>({
   emptyTitle,
   onRetry,
 }: {
+  variant: string;
   columns: Array<{ key: string; label: string; render: (item: T) => ReactNode }>;
   items: T[];
   loading: boolean;
@@ -129,20 +140,25 @@ function DataTable<T extends { id: string }>({
   }
 
   return (
-    <div className="data-table">
-      <div className="data-table__head" aria-hidden>
-        {columns.map((column) => (
-          <span key={column.key}>{column.label}</span>
-        ))}
-      </div>
-      {items.map((item) => (
-        <div className="data-table__row" key={item.id}>
+    <>
+      <p className="data-table__hint">左右滑动查看全部列 ›</p>
+      <div className={`data-table data-table--${variant}`}>
+        <div className="data-table__head" aria-hidden>
           {columns.map((column) => (
-            <span key={column.key}>{column.render(item)}</span>
+            <span key={column.key} className={column.key === 'actions' ? 'data-table__head-action' : undefined}>
+              {column.label}
+            </span>
           ))}
         </div>
-      ))}
-    </div>
+        {items.map((item) => (
+          <div className="data-table__row" key={item.id}>
+            {columns.map((column) => (
+              <span key={column.key}>{column.render(item)}</span>
+            ))}
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
 
@@ -369,7 +385,12 @@ function RowActions({
       <button type="button" className="text-btn" onClick={onEdit}>
         编辑
       </button>
-      <button type="button" className="text-btn" onClick={onToggle} disabled={busy}>
+      <button
+        type="button"
+        className={`text-btn${active ? ' text-btn--danger' : ''}`}
+        onClick={onToggle}
+        disabled={busy}
+      >
         {active ? '停用' : '启用'}
       </button>
     </span>
@@ -411,14 +432,18 @@ function CustomerPanel({ canEdit }: { canEdit: boolean }) {
     <div className={`data-layout${canEdit ? '' : ' data-layout--single'}`}>
       <Panel title="客户" hint="订单快照来源；停用不影响历史订单" count={collection.meta?.total ?? null}>
         <DataTable
+          variant="customers"
           items={collection.items}
           loading={collection.loading}
           error={collection.error}
           emptyTitle="还没有客户"
           onRetry={collection.reload}
           columns={[
-            { key: 'code', label: '编码', render: (item) => <span className="mono">{item.code}</span> },
-            { key: 'name', label: '名称', render: (item) => <strong>{item.name}</strong> },
+            {
+              key: 'primary',
+              label: '名称 / 编码',
+              render: (item) => <PrimaryCell name={item.name} code={item.code} />,
+            },
             { key: 'contact', label: '联系人', render: (item) => item.contact ?? '—' },
             { key: 'phone', label: '电话', render: (item) => <span className="mono">{item.phone ?? '—'}</span> },
             {
@@ -431,7 +456,7 @@ function CustomerPanel({ canEdit }: { canEdit: boolean }) {
               ? [
                   {
                     key: 'actions',
-                    label: '',
+                    label: '操作',
                     render: (item: Customer) => (
                       <RowActions
                         active={item.active}
@@ -558,14 +583,18 @@ function SupplierPanel({ canEdit }: { canEdit: boolean }) {
     <div className={`data-layout${canEdit ? '' : ' data-layout--single'}`}>
       <Panel title="供应商" hint="采购单与电镀服务的来源" count={collection.meta?.total ?? null}>
         <DataTable
+          variant="suppliers"
           items={collection.items}
           loading={collection.loading}
           error={collection.error}
           emptyTitle="还没有供应商"
           onRetry={collection.reload}
           columns={[
-            { key: 'code', label: '编码', render: (item) => <span className="mono">{item.code}</span> },
-            { key: 'name', label: '名称', render: (item) => <strong>{item.name}</strong> },
+            {
+              key: 'primary',
+              label: '名称 / 编码',
+              render: (item) => <PrimaryCell name={item.name} code={item.code} />,
+            },
             { key: 'contact', label: '联系人', render: (item) => item.contact ?? '—' },
             { key: 'phone', label: '电话', render: (item) => <span className="mono">{item.phone ?? '—'}</span> },
             { key: 'active', label: '状态', render: (item) => <StatusCell active={item.active} /> },
@@ -573,7 +602,7 @@ function SupplierPanel({ canEdit }: { canEdit: boolean }) {
               ? [
                   {
                     key: 'actions',
-                    label: '',
+                    label: '操作',
                     render: (item: Supplier) => (
                       <RowActions
                         active={item.active}
@@ -693,21 +722,25 @@ function PartPanel({ canEdit }: { canEdit: boolean }) {
     <div className={`data-layout${canEdit ? '' : ' data-layout--single'}`}>
       <Panel title="配件" hint="采购物料主数据，名称与规格为快照来源" count={collection.meta?.total ?? null}>
         <DataTable
+          variant="parts"
           items={collection.items}
           loading={collection.loading}
           error={collection.error}
           emptyTitle="还没有配件"
           onRetry={collection.reload}
           columns={[
-            { key: 'code', label: '编码', render: (item) => <span className="mono">{item.code}</span> },
-            { key: 'name', label: '名称', render: (item) => <strong>{item.name}</strong> },
+            {
+              key: 'primary',
+              label: '名称 / 编码',
+              render: (item) => <PrimaryCell name={item.name} code={item.code} />,
+            },
             { key: 'spec', label: '规格', render: (item) => item.spec },
             { key: 'active', label: '状态', render: (item) => <StatusCell active={item.active} /> },
             ...(canEdit
               ? [
                   {
                     key: 'actions',
-                    label: '',
+                    label: '操作',
                     render: (item: Part) => (
                       <RowActions
                         active={item.active}
@@ -822,14 +855,18 @@ function DepartmentPanel({ canEdit }: { canEdit: boolean }) {
     <div className={`data-layout${canEdit ? '' : ' data-layout--single'}`}>
       <Panel title="部门" hint="部门类别决定现场人员能看到的任务范围" count={collection.meta?.total ?? null}>
         <DataTable
+          variant="departments"
           items={collection.items}
           loading={collection.loading}
           error={collection.error}
           emptyTitle="还没有部门"
           onRetry={collection.reload}
           columns={[
-            { key: 'code', label: '编码', render: (item) => <span className="mono">{item.code}</span> },
-            { key: 'name', label: '名称', render: (item) => <strong>{item.name}</strong> },
+            {
+              key: 'primary',
+              label: '名称 / 编码',
+              render: (item) => <PrimaryCell name={item.name} code={item.code} />,
+            },
             {
               key: 'category',
               label: '类别',
@@ -847,7 +884,7 @@ function DepartmentPanel({ canEdit }: { canEdit: boolean }) {
               ? [
                   {
                     key: 'actions',
-                    label: '',
+                    label: '操作',
                     render: (item: DepartmentRow) => (
                       <RowActions
                         active={item.active !== false}
@@ -977,21 +1014,25 @@ function EmployeePanel({ canEdit }: { canEdit: boolean }) {
     <div className={`data-layout${canEdit ? '' : ' data-layout--single'}`}>
       <Panel title="员工" hint="生产任务必须指派给目标部门的有效员工" count={collection.meta?.total ?? null}>
         <DataTable
+          variant="employees"
           items={collection.items}
           loading={collection.loading}
           error={collection.error}
           emptyTitle="还没有员工"
           onRetry={collection.reload}
           columns={[
-            { key: 'code', label: '编码', render: (item) => <span className="mono">{item.code}</span> },
-            { key: 'name', label: '姓名', render: (item) => <strong>{item.name}</strong> },
+            {
+              key: 'primary',
+              label: '姓名 / 编码',
+              render: (item) => <PrimaryCell name={item.name} code={item.code} />,
+            },
             { key: 'department', label: '部门', render: (item) => item.department.name },
             { key: 'active', label: '状态', render: (item) => <StatusCell active={item.active} /> },
             ...(canEdit
               ? [
                   {
                     key: 'actions',
-                    label: '',
+                    label: '操作',
                     render: (item: Employee) => (
                       <RowActions
                         active={item.active}

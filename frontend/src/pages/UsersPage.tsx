@@ -211,14 +211,16 @@ export function UsersPage() {
         ) : users.length === 0 ? (
           <EmptyState title="还没有账号" description="点击右上角新建账号。" />
         ) : (
-          <div className="user-table">
+          <>
+            <p className="data-table__hint">左右滑动查看全部列 ›</p>
+            <div className="user-table">
             <div className="user-table__head" aria-hidden>
               <span>姓名 / 用户名</span>
               <span>角色</span>
               <span>部门</span>
               <span>状态</span>
               <span>会话</span>
-              <span />
+              <span>操作</span>
             </div>
 
             {users.map((item) => {
@@ -253,7 +255,7 @@ export function UsersPage() {
                     </button>
                     <button
                       type="button"
-                      className="text-btn"
+                      className="text-btn text-btn--danger"
                       onClick={() => void revokeSessions(item)}
                       disabled={item.activeSessions === 0}
                     >
@@ -261,7 +263,7 @@ export function UsersPage() {
                     </button>
                     <button
                       type="button"
-                      className="text-btn"
+                      className={`text-btn${item.active ? ' text-btn--danger' : ''}`}
                       onClick={() => void toggleActive(item)}
                       disabled={isSelf}
                     >
@@ -271,7 +273,8 @@ export function UsersPage() {
                 </div>
               );
             })}
-          </div>
+            </div>
+          </>
         )}
       </section>
 

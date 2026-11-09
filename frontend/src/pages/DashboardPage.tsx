@@ -272,6 +272,13 @@ export function DashboardPage() {
               <EmptyState title="还没有订单" description="创建第一张订单后，看板会自动汇总。" />
             ) : (
               <div className="dash-list">
+                <div className="dash-list__head" aria-hidden>
+                  <span>订单 / 客户</span>
+                  <span>产品</span>
+                  <span>状态</span>
+                  <span>交期</span>
+                  <span>金额</span>
+                </div>
                 {data.recentOrders.map((order) => {
                   const hint = dueHint(order.dueDate);
                   return (
