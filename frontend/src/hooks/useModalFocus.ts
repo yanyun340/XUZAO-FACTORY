@@ -28,8 +28,11 @@ export function useModalFocus(
     if (!open) return;
     const card = cardRef.current;
     const returnTo = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    // 锁根滚动容器（html）：正文宽度由 scrollbar-gutter 保底，
+    // 弹窗开合不会让背后的页面左右移动。
+    const root = document.documentElement;
+    const previousOverflow = root.style.overflow;
+    root.style.overflow = 'hidden';
 
     const initial =
       card?.querySelector<HTMLElement>('[data-autofocus]') ??
@@ -69,7 +72,7 @@ export function useModalFocus(
     document.addEventListener('keydown', onKeyDown, true);
     return () => {
       document.removeEventListener('keydown', onKeyDown, true);
-      document.body.style.overflow = previousOverflow;
+      root.style.overflow = previousOverflow;
       returnTo?.focus();
     };
   }, [open]);

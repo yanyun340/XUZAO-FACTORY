@@ -11,6 +11,12 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* 滚动条常驻且固定宽度：登录页/工作台、短页/长页、开/关登录弹层之间
+     内容宽度完全一致，不会出现左右偏移。thin 只影响观感，不影响这份恒定性。 */
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.35) transparent;
 }
 
 body {

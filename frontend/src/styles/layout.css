@@ -5,6 +5,11 @@
 
 /* ============================== 登录 ============================== */
 
+/* 渐变放在 body 上随画布铺满：滚动条预留的 gutter 也盖住，右侧不会留白条 */
+body:has(.landing) {
+  background: linear-gradient(180deg, #ffffff 0%, #dbeafe 45%, #93c5fd 75%, #60a5fa 100%);
+}
+
 .landing {
   /* 落地页：纯白画布 + 单一靛蓝强调，底部渐变舞台承载流程演示 */
   --k-ink: #111827;
@@ -19,9 +24,16 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  /* 旧引擎兜底 */
   overflow-x: hidden;
+  /* clip 不创建滚动容器。之前用 hidden 时 overflow-y 会被算成 auto，
+     入场动画把主视觉下移 12px，内容瞬时超出 909px 长出一条 15px 竖滚动条，
+     动画结束滚动条消失，整页（含居中导航）右移 7.5px——就是登录页/退出登录/
+     刷新时看到的横向偏移。这里裁切但不滚动，偏移不再发生。 */
+  overflow-x: clip;
   color: var(--k-ink);
-  background: linear-gradient(180deg, #ffffff 0%, #dbeafe 45%, #93c5fd 75%, #60a5fa 100%);
+  /* 渐变由 body 铺满整个画布，这里保持透明 */
+  background: transparent;
 }
 
 /* 跟随指针的极光色斑：垫在内容之下，只动 transform */
@@ -635,7 +647,10 @@
   }
 }
 
-/* 弹层打开时锁住页面滚动 */
+/* 弹层打开时锁住页面滚动。
+   主锁在 html 上：根滚动条常驻，锁定后由 scrollbar-gutter 继续占位，
+   正文宽度不变，弹层与背后的页面都不会右移。body 那条只作旧引擎兜底。 */
+html:has(.login-modal[open]),
 body:has(.login-modal[open]) {
   overflow: hidden;
 }
@@ -816,17 +831,23 @@ body:has(.login-modal[open]) {
 
 /* ============================== 应用骨架 ============================== */
 
+/* 工作台画布也铺在 body 上：滚动条槽位与页面同色，右缘不出现色带/白条 */
+body:has(.shell),
+body:has(.boot) {
+  background:
+    radial-gradient(90% 55% at 100% 0%, rgba(219, 234, 254, 0.5) 0%, rgba(219, 234, 254, 0) 62%),
+    linear-gradient(180deg, #ffffff 0%, #f7f9ff 46%, #eef3ff 100%);
+  background-attachment: fixed;
+}
+
 .shell {
   display: grid;
   grid-template-columns: 240px minmax(0, 1fr);
   gap: 0;
   min-height: 100dvh;
   padding: 0;
-  /* 登录页的白→蓝渐变在工作台里压到极浅：顶部冷白，向下过渡到浅靛蓝 */
-  background:
-    radial-gradient(90% 55% at 100% 0%, rgba(219, 234, 254, 0.5) 0%, rgba(219, 234, 254, 0) 62%),
-    linear-gradient(180deg, #ffffff 0%, #f7f9ff 46%, #eef3ff 100%);
-  background-attachment: fixed;
+  /* 背景由 body 铺满整个画布，这里保持透明 */
+  background: transparent;
 }
 
 .rail {

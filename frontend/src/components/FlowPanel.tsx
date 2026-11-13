@@ -62,6 +62,13 @@ function PurchaseForm({ ctx }: { ctx: Ctx }) {
   const priceOk = /^(0|[1-9]\d{0,9})(\.\d{1,2})?$/.test(unitPrice.trim());
   const ready = supplierId !== '' && partId !== '' && qty !== null && priceOk;
 
+  // 按钮为什么点不了，必须写在按钮旁边；只给 not-allowed 光标不算解释。
+  const missing: string[] = [];
+  if (!supplierId) missing.push('供应商');
+  if (!partId) missing.push('配件');
+  if (qty === null) missing.push('采购数量（正整数）');
+  if (!priceOk) missing.push('采购单价（最多两位小数）');
+
   return (
     <div className="flow-form">
       <Field label="供应商" htmlFor="flow-supplier" required>
@@ -109,7 +116,7 @@ function PurchaseForm({ ctx }: { ctx: Ctx }) {
             id="flow-purchase-price"
             className="input mono"
             inputMode="decimal"
-            placeholder="0.00"
+            placeholder="如 12.50"
             value={unitPrice}
             onChange={(event) => setUnitPrice(event.target.value)}
           />
@@ -118,6 +125,11 @@ function PurchaseForm({ ctx }: { ctx: Ctx }) {
       <p className="flow-form__meta">
         电镀为 F 项，本项目未启用：采购项不记录镀层，利润也不计镀层成本。
       </p>
+      {ready ? null : (
+        <p className="flow-form__hint" role="status" aria-live="polite">
+          还需填写：{missing.join('、')}
+        </p>
+      )}
       <Button
         loading={ctx.pending === 'create-purchase'}
         disabled={!ready}
