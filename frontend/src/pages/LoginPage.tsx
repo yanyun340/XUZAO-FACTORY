@@ -40,6 +40,68 @@ export function LoginPage() {
   const activeRef = useRef(0);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const focusPasswordRef = useRef(false);
+  const glowRef = useRef<HTMLDivElement>(null);
+
+  // 指针色斑：只写 transform，rAF 内做指数平滑，避免每帧触发样式重算
+  useEffect(() => {
+    const glow = glowRef.current;
+    if (!glow) return;
+
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    let frame = 0;
+    let currentX = 0;
+    let currentY = 0;
+    let targetX = 0;
+    let targetY = 0;
+    let primed = false;
+
+    const render = () => {
+      frame = 0;
+      const dx = targetX - currentX;
+      const dy = targetY - currentY;
+      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
+        currentX = targetX;
+        currentY = targetY;
+      } else {
+        currentX += dx * 0.16;
+        currentY += dy * 0.16;
+        frame = window.requestAnimationFrame(render);
+      }
+      glow.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+    };
+
+    const handleMove = (event: PointerEvent) => {
+      if (!canHover.matches || reduceMotion.matches) return;
+      targetX = event.clientX;
+      targetY = event.clientY;
+      if (!primed) {
+        primed = true;
+        currentX = targetX;
+        currentY = targetY;
+        glow.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+        glow.classList.add('is-active');
+      }
+      if (!frame) frame = window.requestAnimationFrame(render);
+    };
+
+    const handleLeave = () => {
+      primed = false;
+      glow.classList.remove('is-active');
+    };
+
+    window.addEventListener('pointermove', handleMove, { passive: true });
+    document.documentElement.addEventListener('pointerleave', handleLeave);
+    window.addEventListener('blur', handleLeave);
+
+    return () => {
+      window.removeEventListener('pointermove', handleMove);
+      document.documentElement.removeEventListener('pointerleave', handleLeave);
+      window.removeEventListener('blur', handleLeave);
+      window.cancelAnimationFrame(frame);
+    };
+  }, []);
 
   // 进入页面自动从 01 播到 06，播完停在 06；手动点击节点后同样暂停
   useEffect(() => {
@@ -175,6 +237,8 @@ export function LoginPage() {
 
   return (
     <div className="landing">
+      <div ref={glowRef} className="landing__glow" aria-hidden />
+
       <header className="landing__nav">
         <div className="login__nav-left">
           <div className="login__brand-top">
@@ -266,76 +330,89 @@ export function LoginPage() {
             <CloseIcon size={16} />
           </button>
 
-          <div className="login__card-head">
-            <p className="eyebrow">XUZAO / SIGN IN</p>
-            <h2 className="login__card-title" id="login-title">
-              登录工作台
-            </h2>
-            <p className="login__card-sub">使用分配给你的工厂角色账号进入系统。</p>
-          </div>
+          <aside className="login-modal__brand" aria-label="序造 XuZao">
+            <BrandMark className="brand__mark" size={64} />
+            <span className="login-modal__wordmark">
+              <strong>序造</strong>
+              <span className="mono">XUZAO / FACTORY OS</span>
+            </span>
+            <p className="login-modal__tagline">一单到底，全厂协同</p>
+            <p className="login-modal__meta mono">本地部署 · 演示环境</p>
+            <BrandMark className="login-modal__watermark" size={220} aria-hidden />
+          </aside>
 
-          <form className="login__form" onSubmit={(event) => void handleSubmit(event)}>
-            <Field label="用户名" htmlFor="username" required>
-              <input
-                id="username"
-                className="input"
-                autoComplete="username"
-                value={username}
-                onChange={(event) => setUsername(event.target.value)}
-                placeholder="例如 admin"
-              />
-            </Field>
-
-            <Field label="密码" htmlFor="password" required>
-              <div className="input-wrap">
-                <input
-                  id="password"
-                  className="input input--password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder="输入登录密码"
-                />
-                <button
-                  type="button"
-                  className="input-reveal"
-                  onClick={() => setShowPassword((value) => !value)}
-                >
-                  {showPassword ? '隐藏' : '显示'}
-                </button>
-              </div>
-            </Field>
-
-            {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
-
-            <button type="submit" className="btn btn--primary btn--block" disabled={submitting}>
-              <span className="btn__label">{submitting ? '正在验证…' : '进入工作台'}</span>
-              <span className="btn__trailing">
-                <ArrowUpRight size={16} />
-              </span>
-            </button>
-          </form>
-
-          <div className="login__demo">
-            <p className="login__demo-label">演示账号</p>
-            <div className="login__demo-chips">
-              {DEMO_ACCOUNTS.map((account) => (
-                <button
-                  type="button"
-                  key={account.username}
-                  className={`chip${username === account.username ? ' chip--active' : ''}`}
-                  onClick={() => {
-                    setUsername(account.username);
-                    setError(null);
-                  }}
-                >
-                  {account.label}
-                  <code>{account.username}</code>
-                </button>
-              ))}
+          <div className="login-modal__panel">
+            <div className="login__card-head">
+              <p className="eyebrow">SIGN IN / 工作台</p>
+              <h2 className="login__card-title" id="login-title">
+                登录工作台
+              </h2>
+              <p className="login__card-sub">使用分配给你的工厂角色账号进入系统。</p>
             </div>
-            <p className="login__demo-hint">密码见交付说明中的本地演示环境配置。</p>
+
+            <form className="login__form" onSubmit={(event) => void handleSubmit(event)}>
+              <Field label="用户名" htmlFor="username" required>
+                <input
+                  id="username"
+                  className="input"
+                  autoComplete="username"
+                  value={username}
+                  onChange={(event) => setUsername(event.target.value)}
+                  placeholder="例如 admin"
+                />
+              </Field>
+
+              <Field label="密码" htmlFor="password" required>
+                <div className="input-wrap">
+                  <input
+                    id="password"
+                    className="input input--password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder="输入登录密码"
+                  />
+                  <button
+                    type="button"
+                    className="input-reveal"
+                    onClick={() => setShowPassword((value) => !value)}
+                  >
+                    {showPassword ? '隐藏' : '显示'}
+                  </button>
+                </div>
+              </Field>
+
+              {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
+
+              <button type="submit" className="btn btn--primary btn--block" disabled={submitting}>
+                <span className="btn__label">{submitting ? '正在验证…' : '进入工作台'}</span>
+                <span className="btn__trailing">
+                  <ArrowUpRight size={16} />
+                </span>
+              </button>
+            </form>
+
+            <div className="login__demo">
+              <p className="login__demo-label">演示账号</p>
+              <div className="login__demo-chips">
+                {DEMO_ACCOUNTS.map((account) => (
+                  <button
+                    type="button"
+                    key={account.username}
+                    className={`chip${username === account.username ? ' chip--active' : ''}`}
+                    onClick={() => {
+                      setUsername(account.username);
+                      setError(null);
+                    }}
+                  >
+                    {account.label}
+                    <code>{account.username}</code>
+                  </button>
+                ))}
+              </div>
+              <p className="login__demo-hint">密码见交付说明中的本地演示环境配置。</p>
+            </div>
           </div>
         </div>
       </dialog>

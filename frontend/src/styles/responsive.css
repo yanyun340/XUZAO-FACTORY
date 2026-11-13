@@ -124,7 +124,10 @@
     align-items: center;
     gap: 16px;
     padding: 12px 16px;
+    /* 窄屏侧栏变成浮起的白色导航条，需要描边与浅阴影和画布分开 */
+    border: 1px solid var(--line);
     border-radius: var(--radius-lg);
+    box-shadow: 0 8px 24px rgba(30, 41, 59, 0.06);
     overflow: visible;
   }
 
@@ -423,8 +426,44 @@
     line-height: 1.7;
   }
 
+  .login-modal {
+    width: calc(100vw - 24px);
+    border-radius: 24px 24px 24px 64px;
+  }
+
   .login-modal__card {
-    padding: 24px 20px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .login-modal__brand {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 22px 20px 0;
+  }
+
+  .login-modal .login-modal__brand .brand__mark {
+    width: 40px;
+    height: 40px;
+  }
+
+  .login-modal__wordmark {
+    gap: 3px;
+    margin-top: 0;
+  }
+
+  .login-modal__wordmark strong {
+    font-size: 18px;
+  }
+
+  .login-modal__tagline,
+  .login-modal__meta,
+  .login-modal__watermark {
+    display: none;
+  }
+
+  .login-modal__panel {
+    padding: 18px 20px 24px;
   }
 
   .login__card-title {
