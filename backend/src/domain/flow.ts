@@ -1,5 +1,5 @@
 import { Prisma } from '../generated/prisma/client.ts';
-import type { Role } from '../generated/prisma/enums.ts';
+import type { OrderStatus, Role } from '../generated/prisma/enums.ts';
 
 /**
  * 订单主链所需的完整聚合。
@@ -56,6 +56,42 @@ export const flowInclude = {
 
 export type OrderFlowRow = Prisma.OrderGetPayload<{ include: typeof flowInclude }>;
 
+/**
+ * 列表页只需要算数量与阶段，不需要时间线、操作人姓名等重字段。
+ * 与 flowInclude 保持同一张关系图，但砍掉展示用关联。
+ */
+export const listFlowInclude = {
+  items: true,
+  purchaseOrders: {
+    include: { items: { include: { arrivals: true } } },
+  },
+  productions: {
+    include: { feedbacks: true, qcRecords: { include: { decision: true } } },
+  },
+  packingRecords: true,
+  shipments: true,
+} satisfies Prisma.OrderInclude;
+
+export type OrderListRow = Prisma.OrderGetPayload<{ include: typeof listFlowInclude }>;
+
+/** computeQuantities 只依赖这几个集合；列表行与详情行都满足。 */
+export type QuantitySource = {
+  items: ReadonlyArray<{ quantity: number }>;
+  purchaseOrders: ReadonlyArray<{
+    items: ReadonlyArray<{ quantity: number; arrivals: ReadonlyArray<{ quantity: number }> }>;
+  }>;
+  productions: ReadonlyArray<{
+    feedbacks: ReadonlyArray<{ quantity: number }>;
+    qcRecords: ReadonlyArray<{
+      inspectedQty: number;
+      qualifiedQty: number;
+      decision: { releasedQty: number } | null;
+    }>;
+  }>;
+  packingRecords: ReadonlyArray<{ quantity: number }>;
+  shipments: ReadonlyArray<{ quantity: number }>;
+};
+
 /** 数量口径：全部来自有效业务记录求和，不依赖可被前端改写的汇总字段。 */
 export interface FlowQuantities {
   orderQty: number;
@@ -76,7 +112,7 @@ function sum(values: number[]): number {
   return values.reduce((total, value) => total + value, 0);
 }
 
-export function computeQuantities(order: OrderFlowRow): FlowQuantities {
+export function computeQuantities(order: QuantitySource): FlowQuantities {
   const orderQty = sum(order.items.map((item) => item.quantity));
   const purchaseQty = sum(
     order.purchaseOrders.flatMap((po) => po.items.map((item) => item.quantity)),
@@ -165,11 +201,22 @@ export type OrderAction =
   | 'record-shipment';
 
 /**
+ * 动作守卫只需要「状态 + 采购单 + 生产任务（含部门）+ 数量」。
+ * 列表行、详情行都满足，待办队列因此不必拉完整聚合。
+ */
+export type ActionSource = Omit<QuantitySource, 'productions'> & {
+  status: OrderStatus;
+  productions: ReadonlyArray<
+    QuantitySource['productions'][number] & { departmentId: string }
+  >;
+};
+
+/**
  * 允许动作由后端按「角色 + 状态 + 已发生记录 + 数量闸门」计算。
  * 前端只负责渲染，任何动作提交时都会再次校验。
  */
 export function computeAllowedActions(
-  order: OrderFlowRow,
+  order: ActionSource,
   quantities: FlowQuantities,
   role: Role,
   userId: string,

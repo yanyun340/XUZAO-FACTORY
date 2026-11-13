@@ -1,0 +1,514 @@
+/* ============================================================
+   tables.css · 面板与表格：列表、状态徽章、工序色带、加载/空态/提示。
+   原 styles.css 第 1362–1806 行，顺序与原文一致。
+   ============================================================ */
+
+/* ============================== 面板与表格 ============================== */
+
+.panel {
+  /* 面板里常放可横向滚动的宽表，别让表格的 min-content 撑破所在网格或视口 */
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  padding: 24px;
+  box-shadow: var(--shadow-contact);
+}
+
+.panel--pad {
+  padding: 24px;
+}
+
+.panel__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 4px;
+}
+
+.panel__title {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.panel__meta {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.panel__count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+  padding-top: 3px;
+}
+
+.order-table {
+  overflow-x: auto;
+}
+
+.order-table__head,
+.order-row {
+  display: grid;
+  grid-template-columns:
+    minmax(190px, 1.4fr) minmax(150px, 1.1fr) 118px minmax(300px, 1.75fr) 112px 24px;
+  align-items: center;
+  gap: 14px;
+  min-width: 960px;
+}
+
+.order-table__head {
+  padding: 12px 10px 9px;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.order-table__amount {
+  text-align: right;
+}
+
+.order-row {
+  position: relative;
+  padding: 14px 10px;
+  border-top: 1px solid var(--line);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: background-color 160ms var(--ease-out), transform 160ms var(--ease-out);
+}
+
+.order-row__primary {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.order-row__no {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.order-row__customer {
+  margin-top: 3px;
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.order-row__product {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 12px;
+}
+
+.order-row__product > span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.order-row__product small {
+  margin-top: 2px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.order-row__qty,
+.order-row__due {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+}
+
+.order-row__qty small,
+.order-row__due small {
+  font-size: 10px;
+  color: var(--muted);
+  font-family: var(--font-body);
+}
+
+.order-row__status {
+  display: flex;
+}
+
+/* 六段工序色带：已完成降调、当前工序提亮、逾期转红 */
+.order-table__stages-head,
+.order-row__stages {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 2px;
+  min-width: 0;
+}
+
+.order-table__stages-head {
+  text-align: center;
+}
+
+.stage-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 3px 2px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 550;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  background: rgba(17, 24, 39, 0.035);
+  color: var(--muted);
+  /* 工序推进时淡入新状态，读得出"刚刚变过"；不做逐行入场 */
+  transition:
+    background-color 180ms var(--ease-out),
+    color 180ms var(--ease-out),
+    box-shadow 180ms var(--ease-out);
+}
+
+.stage-cell[data-state='done'] {
+  background: rgba(4, 120, 87, 0.1);
+  color: var(--green);
+}
+
+.stage-cell[data-state='doing'] {
+  background: rgba(180, 83, 9, 0.14);
+  color: var(--amber);
+  font-weight: 650;
+  box-shadow: inset 0 0 0 1px rgba(180, 83, 9, 0.22);
+}
+
+.stage-cell[data-state='blocked'] {
+  background: rgba(220, 38, 38, 0.14);
+  color: var(--vermilion);
+  font-weight: 650;
+  box-shadow: inset 0 0 0 1px rgba(220, 38, 38, 0.26);
+}
+
+.order-row__amount {
+  text-align: right;
+  font-size: 12.5px;
+}
+
+.order-row__go {
+  display: flex;
+  justify-content: flex-end;
+  color: var(--muted);
+  opacity: 0.38;
+  transform: translateX(-3px);
+  transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .order-row:hover {
+    background: var(--surface-2);
+  }
+
+  .order-row:hover .order-row__go {
+    opacity: 1;
+    transform: translateX(0);
+    color: var(--pine);
+  }
+}
+
+.due {
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.due--normal {
+  color: var(--muted);
+}
+
+.due--soon {
+  color: var(--amber);
+}
+
+.due--overdue {
+  color: #ef4444;
+}
+
+/* 状态芯片：10% 底色 + 实色文字 + 圆点，不靠实色块抢注意力 */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  color: var(--muted);
+  background: rgba(107, 114, 128, 0.1);
+}
+
+.status__dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* 待接手：等采购 / 等质检，用中性灰，不抢进行中的注意力 */
+.status--waiting {
+  color: var(--muted);
+  background: rgba(107, 114, 128, 0.1);
+}
+
+/* 进行中：采购、生产、包装、发货共用强调色 */
+.status--active {
+  color: var(--pine);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+/* 待放行：质检完成但还没派包装，是流程里唯一的半完成态 */
+.status--review {
+  color: #6d28d9;
+  background: rgba(124, 58, 237, 0.1);
+}
+
+.status--done {
+  color: #059669;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+/* 逾期：交期已过且未完成，盖过状态本身 */
+.status--overdue {
+  color: #dc2626;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  padding: 14px 6px 4px;
+  border-top: 1px solid var(--line);
+  margin-top: 4px;
+}
+
+.pager__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  color: var(--ink-2);
+  transition: background-color 160ms var(--ease-out), opacity 160ms var(--ease-out);
+}
+
+.pager__btn:disabled {
+  opacity: 0.35;
+}
+
+.pager__status {
+  font-size: 10.5px;
+  color: var(--muted);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pager__btn:hover:not(:disabled) {
+    background: rgba(17, 24, 39, 0.05);
+  }
+}
+
+/* ============================== 加载 / 空状态 / 提示 ============================== */
+
+.spinner {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.spinner__ring {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--line-strong);
+  border-top-color: var(--pine);
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+
+.boot {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+}
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px 6px;
+}
+
+.skeleton__line {
+  display: block;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(17, 24, 39, 0.08);
+  animation: pulse 1.5s var(--ease-in-out) infinite;
+}
+
+.skeleton__line:nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.skeleton__line:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+.skeleton__line:nth-child(4) {
+  animation-delay: 360ms;
+}
+
+.skeleton__line:nth-child(5) {
+  animation-delay: 480ms;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 56px 20px 50px;
+}
+
+.empty__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px dashed var(--line-strong);
+  color: var(--muted);
+  font-size: 17px;
+  margin-bottom: 16px;
+}
+
+.empty__title {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 500;
+}
+
+.empty__description {
+  margin-top: 7px;
+  max-width: 420px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.empty__action {
+  margin-top: 20px;
+}
+
+.notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  font-size: 12px;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.notice--error {
+  background: rgba(220, 38, 38, 0.07);
+  border: 1px solid rgba(220, 38, 38, 0.16);
+  color: #ef4444;
+}
+
+.notice--info {
+  background: rgba(99, 102, 241, 0.06);
+  border: 1px solid rgba(99, 102, 241, 0.12);
+  color: var(--pine);
+}
+
+.notice__retry {
+  flex-shrink: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 2px 0;
+}
+
+/* ============================== 语义表格 ============================== */
+
+/*
+ * DataTable 用原生 table/tr/td 承担无障碍语义，布局仍由页面既有的 grid 类决定。
+ * 不使用 display: contents（会丢表语义），改为把 table/thead/tbody block 化；
+ * 单元格不加 display —— grid 子项会自动 block 化，保持原有排版。
+ * 重置一律用 :where() 置零特异性，避免覆盖 .stock-table__num 之类的既有规则。
+ */
+table.table-semantic {
+  display: block;
+  width: 100%;
+}
+
+.table-semantic > thead,
+.table-semantic > tbody {
+  display: block;
+}
+
+/*
+ * 最小宽度由页面既有规则（如 .audit-table > *）决定，这里只负责消费 DataTable 的
+ * minWidth 入参；:where() 置零特异性，页面规则与断点覆盖永远优先。默认不设下限。
+ */
+:where(.table-semantic) > :where(thead, tbody) {
+  min-width: var(--table-min, 0px);
+}
+
+:where(.table-semantic) :where(th, td) {
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+
+:where(.table-semantic) :where(th) {
+  font: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  text-align: inherit;
+  background: transparent;
+}
+
+/* 密度档：不加修饰类时保持拆分前的 14px 行内距与 22px 单元格内距 */
+.table--compact > tbody > tr {
+  padding-top: var(--row-py-compact);
+  padding-bottom: var(--row-py-compact);
+}
+
+.table--comfortable > tbody > tr {
+  padding-top: var(--row-py-comfortable);
+  padding-bottom: var(--row-py-comfortable);
+}

@@ -1,0 +1,127 @@
+/* ============================================================
+   brand-mark.css · 标志动效
+   入场：五组棱线按「序」依次落笔，出檐最后落到位（约 800ms，仅在挂载时一次）
+   hover：整枚标志绕竖轴翻转 180°（等距投影左右镜像后与原图重合，落点不跳）
+   缓动沿用 tokens.css 的 --ease-out / --ease-in-out，不另立曲线。
+   ============================================================ */
+
+/* ---------- 入场：逐段落笔 ---------- */
+
+/* pathLength="1" 让所有棱统一成 1 个单位长度，一个 dasharray 就够用 */
+.brand__mark .mark__stroke {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: mark-draw 380ms var(--ease-out) both;
+}
+
+/* 立方体轮廓 → 予的两折 → 竖棱 → 广的出檐：stagger 80–90ms */
+.brand__mark .mark__fold--a {
+  animation-duration: 280ms;
+  animation-delay: 120ms;
+}
+
+.brand__mark .mark__fold--b {
+  animation-duration: 280ms;
+  animation-delay: 200ms;
+}
+
+.brand__mark .mark__spine {
+  animation-duration: 300ms;
+  animation-delay: 280ms;
+}
+
+/* 出檐是最后落位的「盖子」：边画边从上方 2 个单位落到最终位置 */
+.brand__mark .mark__eave {
+  animation:
+    mark-draw 340ms var(--ease-out) 440ms both,
+    mark-land 360ms var(--ease-out) 440ms both;
+}
+
+/* 字标跟随落笔节奏淡入并上浮 4px，让标记与文字读作一个整体 */
+.brand__text,
+.login__brand-lockup,
+.auth__brand-lockup {
+  animation: mark-lockup 320ms var(--ease-out) 260ms both;
+}
+
+@keyframes mark-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes mark-land {
+  from {
+    transform: translateY(-2px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes mark-lockup {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- hover：绕竖轴翻转 ---------- */
+
+/* 基线就写明完整函数表，transition 才能从同一串函数插值到 180° */
+.brand__mark {
+  transform: perspective(420px) rotateY(0deg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .brand__mark {
+    transition: transform 520ms var(--ease-in-out);
+  }
+
+  .brand:hover .brand__mark,
+  .login__brand-top:hover .brand__mark,
+  .auth__brand:hover .brand__mark,
+  .brand__mark:hover {
+    transform: perspective(420px) rotateY(180deg);
+  }
+}
+
+/* ---------- 减少动态：保留淡入，去掉位移与翻转 ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .brand__mark .mark__stroke {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+
+  .brand__text,
+  .login__brand-lockup,
+  .auth__brand-lockup {
+    animation: mark-fade 200ms ease both;
+  }
+
+  .brand__mark,
+  .brand:hover .brand__mark,
+  .login__brand-top:hover .brand__mark,
+  .auth__brand:hover .brand__mark,
+  .brand__mark:hover {
+    transform: none;
+    transition: none;
+  }
+}
+
+@keyframes mark-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

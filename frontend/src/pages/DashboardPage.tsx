@@ -24,6 +24,20 @@ const STATUS_ORDER: OrderStatus[] = [
   'COMPLETED',
 ];
 
+/** 变化率芯片：正绿、负红、持平中性；不编造数据，只有可比区间才渲染。 */
+function deltaChipClass(percent: number | null): string {
+  if (percent === null || percent === 0) return 'kpi__chip kpi__chip--flat';
+  return percent > 0 ? 'kpi__chip kpi__chip--up' : 'kpi__chip kpi__chip--down';
+}
+
+function deltaText(percent: number): string {
+  return `${percent > 0 ? '+' : ''}${percent}%`;
+}
+
+function sharePercent(value: number, total: number): number {
+  return total === 0 ? 0 : Math.round((value / total) * 100);
+}
+
 function today(): string {
   const now = new Date();
   const date = new Intl.DateTimeFormat('zh-CN', {
@@ -99,10 +113,11 @@ export function DashboardPage() {
           ) : null}
           <button
             type="button"
-            className="icon-btn"
+            className={loading ? 'icon-btn icon-btn--spin' : 'icon-btn'}
             onClick={() => setReloadToken((token) => token + 1)}
             title="刷新看板"
             aria-label="刷新看板"
+            aria-busy={loading}
           >
             <RefreshIcon size={17} />
           </button>
@@ -136,23 +151,57 @@ export function DashboardPage() {
         <>
           <section className="kpi-grid" aria-label="关键指标">
             <article className="kpi">
-              <p className="kpi__label">订单总数</p>
-              <strong className="kpi__value mono">{formatNumber(total)}</strong>
-              <p className="kpi__note">累计创建</p>
+              <div className="kpi__top">
+                <p className="kpi__label">订单总数</p>
+                {data.inflow.createdDeltaPercent !== null ? (
+                  <span
+                    className={deltaChipClass(data.inflow.createdDeltaPercent)}
+                    title={`近 7 天新增 ${data.inflow.createdRecent7d} 单 · 前 7 天 ${data.inflow.createdPrevious7d} 单`}
+                  >
+                    {deltaText(data.inflow.createdDeltaPercent)}
+                  </span>
+                ) : null}
+              </div>
+              <strong className="kpi__value">{formatNumber(total)}</strong>
+              <p className="kpi__note">累计创建 · 近 7 天新增 {formatNumber(data.inflow.createdRecent7d)} 单</p>
             </article>
             <article className="kpi">
-              <p className="kpi__label">在产订单</p>
-              <strong className="kpi__value mono">{formatNumber(inProduction)}</strong>
+              <div className="kpi__top">
+                <p className="kpi__label">在产订单</p>
+                {total > 0 ? (
+                  <span className="kpi__chip kpi__chip--share" title="占全部订单比例">
+                    占 {sharePercent(inProduction, total)}%
+                  </span>
+                ) : null}
+              </div>
+              <strong className="kpi__value">{formatNumber(inProduction)}</strong>
               <p className="kpi__note">生产 · 质检 · 包装</p>
             </article>
             <article className="kpi">
-              <p className="kpi__label">待采购</p>
-              <strong className="kpi__value mono">{formatNumber(pending)}</strong>
+              <div className="kpi__top">
+                <p className="kpi__label">待采购</p>
+                {total > 0 ? (
+                  <span className="kpi__chip kpi__chip--share" title="占全部订单比例">
+                    占 {sharePercent(pending, total)}%
+                  </span>
+                ) : null}
+              </div>
+              <strong className="kpi__value">{formatNumber(pending)}</strong>
               <p className="kpi__note">含采购中</p>
             </article>
-            <article className="kpi kpi--accent">
-              <p className="kpi__label">完成率</p>
-              <strong className="kpi__value mono">{completionRate}%</strong>
+            <article className="kpi">
+              <div className="kpi__top">
+                <p className="kpi__label">完成率</p>
+                {data.inflow.completedDeltaPercent !== null ? (
+                  <span
+                    className={deltaChipClass(data.inflow.completedDeltaPercent)}
+                    title={`近 7 天完成 ${data.inflow.completedRecent7d} 单 · 前 7 天 ${data.inflow.completedPrevious7d} 单`}
+                  >
+                    {deltaText(data.inflow.completedDeltaPercent)}
+                  </span>
+                ) : null}
+              </div>
+              <strong className="kpi__value">{completionRate}%</strong>
               <p className="kpi__note">
                 {formatNumber(completed)} / {formatNumber(total)} 已完成
               </p>
@@ -179,7 +228,7 @@ export function DashboardPage() {
                       return (
                         <span
                           key={status}
-                          className={`dist__seg dist__seg--${STATUS_META[status].tone}`}
+                          className={`dist__seg dist__seg--${STATUS_META[status].chart}`}
                           style={{ flexGrow: value }}
                           title={`${STATUS_META[status].label} ${value} 单`}
                         />
@@ -190,7 +239,7 @@ export function DashboardPage() {
                     {STATUS_ORDER.map((status) => (
                       <li key={status} className="dist-legend__item">
                         <span
-                          className={`dist-legend__dot dist-legend__dot--${STATUS_META[status].tone}`}
+                          className={`dist-legend__dot dist-legend__dot--${STATUS_META[status].chart}`}
                           aria-hidden
                         />
                         <span className="dist-legend__label">{STATUS_META[status].label}</span>
@@ -257,7 +306,7 @@ export function DashboardPage() {
             </section>
           </div>
 
-          <section className="panel">
+          <section className="panel panel--table">
             <div className="panel__head">
               <div>
                 <h2 className="panel__title">最近订单</h2>
@@ -288,7 +337,7 @@ export function DashboardPage() {
                         <small>{order.customerName}</small>
                       </span>
                       <span className="dash-list__product">{order.productSummary}</span>
-                      <StatusBadge status={order.status} />
+                      <StatusBadge status={order.status} dueDate={order.dueDate} />
                       <span className="dash-list__due">
                         <span className="mono">{formatDateOnly(order.dueDate)}</span>
                         <small className={`due due--${hint.tone}`}>{hint.text}</small>

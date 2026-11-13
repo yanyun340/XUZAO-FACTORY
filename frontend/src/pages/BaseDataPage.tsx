@@ -3,7 +3,9 @@ import { createPortal } from 'react-dom';
 import { ApiError, apiGetPage, apiPatch, apiPost } from '../api/client';
 import type { Customer, Department, PageMeta } from '../api/types';
 import { useAuth } from '../auth/AuthContext';
+import { DataTable } from '../components/DataTable';
 import { PlusIcon } from '../components/Icons';
+import { announce } from '../components/LiveAnnouncer';
 import {
   Button,
   EmptyState,
@@ -12,6 +14,7 @@ import {
   LoadingBlock,
   SectionHeading,
 } from '../components/ui';
+import { useModalFocus } from '../hooks/useModalFocus';
 import { formatDateOnly } from '../lib/format';
 
 type TabKey = 'customers' | 'suppliers' | 'parts' | 'departments' | 'employees';
@@ -105,7 +108,8 @@ function PrimaryCell({ name, code }: { name: string; code: string }) {
   );
 }
 
-function DataTable<T extends { id: string }>({
+function RecordsTable<T extends { id: string }>({
+  label,
   variant,
   columns,
   items,
@@ -114,6 +118,8 @@ function DataTable<T extends { id: string }>({
   emptyTitle,
   onRetry,
 }: {
+  /** 表格的无障碍名称，如「客户列表」 */
+  label: string;
   variant: string;
   columns: Array<{ key: string; label: string; render: (item: T) => ReactNode }>;
   items: T[];
@@ -142,22 +148,20 @@ function DataTable<T extends { id: string }>({
   return (
     <>
       <p className="data-table__hint">左右滑动查看全部列 ›</p>
-      <div className={`data-table data-table--${variant}`}>
-        <div className="data-table__head" aria-hidden>
-          {columns.map((column) => (
-            <span key={column.key} className={column.key === 'actions' ? 'data-table__head-action' : undefined}>
-              {column.label}
-            </span>
-          ))}
-        </div>
-        {items.map((item) => (
-          <div className="data-table__row" key={item.id}>
-            {columns.map((column) => (
-              <span key={column.key}>{column.render(item)}</span>
-            ))}
-          </div>
-        ))}
-      </div>
+      <DataTable
+        label={label}
+        tableClassName={`data-table data-table--${variant}`}
+        headClassName="data-table__head"
+        rowClassName="data-table__row"
+        rowKey={(item) => item.id}
+        rows={items}
+        columns={columns.map((column) => ({
+          key: column.key,
+          title: column.label,
+          headClassName: column.key === 'actions' ? 'data-table__head-action' : undefined,
+          cell: column.render,
+        }))}
+      />
     </>
   );
 }
@@ -199,6 +203,7 @@ function useCreate(endpoint: string, onDone: () => void) {
     try {
       await apiPost(endpoint, body);
       setSaved(true);
+      announce('已添加');
       onDone();
       return true;
     } catch (caught) {
@@ -221,6 +226,7 @@ function useUpdate(onDone: () => void) {
     setError(null);
     try {
       await apiPatch(path, body);
+      announce('已保存');
       onDone();
       return true;
     } catch (caught) {
@@ -272,24 +278,14 @@ function EditDialog({
   const set = (key: string, value: string | boolean) =>
     setValues((current) => ({ ...current, [key]: value }));
 
-  // 弹窗打开时锁住背后页面滚动，Esc 关闭；不用键盘提交，避免误触。
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !busy) onClose();
-    };
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    document.addEventListener('keydown', onKeyDown);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener('keydown', onKeyDown);
-    };
-  }, [busy, onClose]);
+  // 锁滚动、Esc 关闭（提交中不关，避免丢输入）、焦点陷阱与归还，统一由原语处理。
+  const cardRef = useModalFocus(true, onClose, { canClose: () => !busy });
 
   return createPortal(
     <div className="modal" role="dialog" aria-modal="true" aria-label={title}>
       <button type="button" className="modal__backdrop" aria-label="关闭" onClick={onClose} />
       <form
+        ref={cardRef}
         className="modal__card"
         onSubmit={(event) => {
           event.preventDefault();
@@ -300,7 +296,7 @@ function EditDialog({
         <h2 className="modal__title">{title}</h2>
         <p className="modal__sub">{sub}</p>
 
-        {fields.map((field) =>
+        {fields.map((field, index) =>
           field.kind === 'check' ? (
             <label className="check-field" key={field.key}>
               <input
@@ -318,6 +314,7 @@ function EditDialog({
                 value={String(values[field.key] ?? '')}
                 onChange={(event) => set(field.key, event.target.value)}
                 required={field.required}
+                data-autofocus={index === 0 ? '' : undefined}
               >
                 {field.options?.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -335,7 +332,7 @@ function EditDialog({
                 onChange={(event) => set(field.key, event.target.value)}
                 required={field.required}
                 placeholder={field.placeholder}
-                autoFocus={field.key === fields[0]?.key}
+                data-autofocus={index === 0 ? '' : undefined}
               />
             </label>
           ),
@@ -431,7 +428,8 @@ function CustomerPanel({ canEdit }: { canEdit: boolean }) {
   return (
     <div className={`data-layout${canEdit ? '' : ' data-layout--single'}`}>
       <Panel title="客户" hint="订单快照来源；停用不影响历史订单" count={collection.meta?.total ?? null}>
-        <DataTable
+        <RecordsTable
+          label="客户列表"
           variant="customers"
           items={collection.items}
           loading={collection.loading}
@@ -582,7 +580,8 @@ function SupplierPanel({ canEdit }: { canEdit: boolean }) {
   return (
     <div className={`data-layout${canEdit ? '' : ' data-layout--single'}`}>
       <Panel title="供应商" hint="采购单与电镀服务的来源" count={collection.meta?.total ?? null}>
-        <DataTable
+        <RecordsTable
+          label="供应商列表"
           variant="suppliers"
           items={collection.items}
           loading={collection.loading}
@@ -721,7 +720,8 @@ function PartPanel({ canEdit }: { canEdit: boolean }) {
   return (
     <div className={`data-layout${canEdit ? '' : ' data-layout--single'}`}>
       <Panel title="配件" hint="采购物料主数据，名称与规格为快照来源" count={collection.meta?.total ?? null}>
-        <DataTable
+        <RecordsTable
+          label="配件列表"
           variant="parts"
           items={collection.items}
           loading={collection.loading}
@@ -854,7 +854,8 @@ function DepartmentPanel({ canEdit }: { canEdit: boolean }) {
   return (
     <div className={`data-layout${canEdit ? '' : ' data-layout--single'}`}>
       <Panel title="部门" hint="部门类别决定现场人员能看到的任务范围" count={collection.meta?.total ?? null}>
-        <DataTable
+        <RecordsTable
+          label="部门列表"
           variant="departments"
           items={collection.items}
           loading={collection.loading}
@@ -1013,7 +1014,8 @@ function EmployeePanel({ canEdit }: { canEdit: boolean }) {
   return (
     <div className={`data-layout${canEdit ? '' : ' data-layout--single'}`}>
       <Panel title="员工" hint="生产任务必须指派给目标部门的有效员工" count={collection.meta?.total ?? null}>
-        <DataTable
+        <RecordsTable
+          label="员工列表"
           variant="employees"
           items={collection.items}
           loading={collection.loading}

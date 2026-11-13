@@ -1,6 +1,7 @@
 import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './auth/AuthContext';
 import { AppShell } from './components/AppShell';
+import { LiveAnnouncer } from './components/LiveAnnouncer';
 import { Spinner } from './components/ui';
 import { AuditLogPage } from './pages/AuditLogPage';
 import { BaseDataPage } from './pages/BaseDataPage';
@@ -12,6 +13,7 @@ import { NewOrderPage } from './pages/NewOrderPage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { OrderDetailPage } from './pages/OrderDetailPage';
 import { OrdersPage } from './pages/OrdersPage';
+import { TasksPage } from './pages/TasksPage';
 import { UsersPage } from './pages/UsersPage';
 
 function RequireAuth() {
@@ -57,11 +59,13 @@ function NotFound() {
 export default function App() {
   return (
     <AuthProvider>
+      <LiveAnnouncer />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route element={<RequireAuth />}>
           <Route element={<AppShell />}>
             <Route index element={<DashboardPage />} />
+            <Route path="tasks" element={<TasksPage />} />
             <Route path="orders" element={<OrdersPage />} />
             <Route path="orders/new" element={<NewOrderPage />} />
             <Route path="orders/:id" element={<OrderDetailPage />} />

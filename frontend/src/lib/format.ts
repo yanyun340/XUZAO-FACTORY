@@ -1,14 +1,23 @@
-import type { OrderStatus, Role } from '../api/types';
+import type { OrderAction, OrderStatus, Role, StageKey } from '../api/types';
 
-export const STATUS_META: Record<OrderStatus, { label: string; tone: string; short: string }> = {
-  PENDING_PURCHASE: { label: '待采购', tone: 'amber', short: '待采购' },
-  PURCHASING: { label: '采购中', tone: 'amber', short: '采购中' },
-  IN_PRODUCTION: { label: '生产中', tone: 'blue', short: '生产中' },
-  PENDING_QC: { label: '待质检', tone: 'violet', short: '待质检' },
-  QC_DONE: { label: '质检完成', tone: 'teal', short: '质检完成' },
-  PACKING: { label: '包装中', tone: 'cyan', short: '包装中' },
-  SHIPPING: { label: '发货中', tone: 'orange', short: '发货中' },
-  COMPLETED: { label: '已完成', tone: 'green', short: '已完成' },
+/**
+ * 状态徽章只保留五个语义色：待接手、进行中、待放行、已完成、已逾期。
+ * 两个 "waiting" 状态离得很远（采购前 / 质检前），同色不冲突。
+ */
+export type StatusTone = 'waiting' | 'active' | 'review' | 'done' | 'overdue';
+
+export const STATUS_META: Record<
+  OrderStatus,
+  { label: string; tone: StatusTone; chart: string; short: string }
+> = {
+  PENDING_PURCHASE: { label: '待采购', tone: 'waiting', chart: 'amber', short: '待采购' },
+  PURCHASING: { label: '采购中', tone: 'active', chart: 'amber', short: '采购中' },
+  IN_PRODUCTION: { label: '生产中', tone: 'active', chart: 'blue', short: '生产中' },
+  PENDING_QC: { label: '待质检', tone: 'waiting', chart: 'violet', short: '待质检' },
+  QC_DONE: { label: '质检完成', tone: 'review', chart: 'teal', short: '质检完成' },
+  PACKING: { label: '包装中', tone: 'active', chart: 'cyan', short: '包装中' },
+  SHIPPING: { label: '发货中', tone: 'active', chart: 'orange', short: '发货中' },
+  COMPLETED: { label: '已完成', tone: 'done', chart: 'green', short: '已完成' },
 };
 
 export const STATUS_FLOW: OrderStatus[] = [
@@ -28,6 +37,46 @@ export const ROLE_LABEL: Record<Role, string> = {
   PRODUCTION: '生产',
   QC: '品控',
   PACKING: '包装',
+};
+
+/** 六段工序的固定顺序，与后端 computeStages 保持一致。 */
+export const STAGE_LABELS: Record<StageKey, string> = {
+  purchase: '采购',
+  arrival: '到货',
+  production: '生产',
+  qc: '质检',
+  packing: '包装',
+  shipping: '发货',
+};
+
+/** 流转动作的按钮名，订单详情与待办队列共用。 */
+export const ACTION_LABEL: Record<OrderAction, string> = {
+  'create-purchase': '创建采购单',
+  'record-arrival': '登记到货',
+  'dispatch-production': '下发生产',
+  'production-feedback': '反馈完成数量',
+  'dispatch-qc': '下发质检',
+  'qc-entry': '录入质检结果',
+  'qc-decision': '放行决策',
+  'dispatch-packing': '下发包装',
+  'record-packing': '登记包装',
+  'trigger-shipping': '触发发货',
+  'record-shipment': '登记发货',
+};
+
+/** 待办卡上的一句话说明：告诉现场角色这一步到底要录什么。 */
+export const ACTION_HINT: Record<OrderAction, string> = {
+  'create-purchase': '选供应商与配件，建立采购单',
+  'record-arrival': '按到货批次登记实收数量',
+  'dispatch-production': '到货已齐，指派生产部门',
+  'production-feedback': '报工本工序完成数量',
+  'dispatch-qc': '完工批次送品控检验',
+  'qc-entry': '录入检验数量与合格数',
+  'qc-decision': '确定放行、返工或报废',
+  'dispatch-packing': '放行批次交给包装',
+  'record-packing': '按可包装剩余登记数量',
+  'trigger-shipping': '包装完成，触发发货',
+  'record-shipment': '登记本次发出的数量',
 };
 
 /** 时间线事件的中文名，订单详情与通知中心共用。 */

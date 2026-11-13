@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { ApiError, apiGet, apiGetPage } from '../api/client';
 import type { AuditFacets, AuditLogItem, PageMeta } from '../api/types';
-import { ChevronLeft, ChevronRight, SearchIcon } from '../components/Icons';
+import { DataTable } from '../components/DataTable';
+import { SearchIcon } from '../components/Icons';
+import { Pagination } from '../components/Pagination';
 import { Button, EmptyState, InlineNotice, LoadingBlock } from '../components/ui';
 import {
   auditActionLabel,
@@ -198,25 +200,28 @@ export function AuditLogPage() {
           </select>
         </label>
 
-        <label className="audit-filters__field">
-          <span>起</span>
-          <input
-            className="input"
-            type="date"
-            value={draft.from}
-            onChange={(event) => setDraft({ ...draft, from: event.target.value })}
-          />
-        </label>
+        {/* 起止日期作为一个整体换行，避免两个标签被拆到不同行 */}
+        <div className="audit-filters__range">
+          <label className="audit-filters__field">
+            <span>起</span>
+            <input
+              className="input"
+              type="date"
+              value={draft.from}
+              onChange={(event) => setDraft({ ...draft, from: event.target.value })}
+            />
+          </label>
 
-        <label className="audit-filters__field">
-          <span>止</span>
-          <input
-            className="input"
-            type="date"
-            value={draft.to}
-            onChange={(event) => setDraft({ ...draft, to: event.target.value })}
-          />
-        </label>
+          <label className="audit-filters__field">
+            <span>止</span>
+            <input
+              className="input"
+              type="date"
+              value={draft.to}
+              onChange={(event) => setDraft({ ...draft, to: event.target.value })}
+            />
+          </label>
+        </div>
 
         <div className="audit-filters__actions">
           <Button type="submit" className="btn--sm">
@@ -256,91 +261,97 @@ export function AuditLogPage() {
             }
           />
         ) : (
-          <div className="audit-table">
-            <div className="audit-table__head" aria-hidden>
-              <span>时间 / 操作人</span>
-              <span>动作</span>
-              <span>对象</span>
-              <span>结果</span>
-              <span />
-            </div>
-
-            {items.map((item) => {
-              const isOpen = expanded === item.id;
-              return (
-                <div className={`audit-row${isOpen ? ' is-open' : ''}`} key={item.id}>
-                  <span className="audit-row__who">
+          <DataTable
+            label="操作记录"
+            tableClassName="audit-table"
+            headClassName="audit-table__head"
+            rowClassName={(item) => `audit-row${expanded === item.id ? ' is-open' : ''}`}
+            rowKey={(item) => item.id}
+            rows={items}
+            expansion={{
+              rowClassName: 'audit-detail-row',
+              cellClassName: 'audit-row__detail',
+              render: (item) =>
+                expanded === item.id ? (
+                  <>
+                    <div className="audit-detail">
+                      <p className="audit-detail__label">改前</p>
+                      <pre className="audit-detail__json">{preview(item.before)}</pre>
+                    </div>
+                    <div className="audit-detail">
+                      <p className="audit-detail__label">改后</p>
+                      <pre className="audit-detail__json">{preview(item.after)}</pre>
+                    </div>
+                    <p className="audit-detail__request mono">请求 ID {item.requestId}</p>
+                  </>
+                ) : null,
+            }}
+            columns={[
+              {
+                key: 'who',
+                title: '时间 / 操作人',
+                className: 'audit-row__who',
+                cell: (item) => (
+                  <>
                     <strong className="mono">{formatDateTime(item.createdAt)}</strong>
                     <small>{item.actorName ?? '系统'}</small>
-                  </span>
-                  <span className="audit-row__action">
+                  </>
+                ),
+              },
+              {
+                key: 'action',
+                title: '动作',
+                className: 'audit-row__action',
+                cell: (item) => (
+                  <>
                     <strong>{auditActionLabel(item.action)}</strong>
                     <small className="mono">{item.action}</small>
-                  </span>
-                  <span className="audit-row__resource">
+                  </>
+                ),
+              },
+              {
+                key: 'resource',
+                title: '对象',
+                className: 'audit-row__resource',
+                cell: (item) => (
+                  <>
                     <strong>{auditResourceLabel(item.resourceType)}</strong>
                     <small className="mono">
                       {item.resourceId ? item.resourceId.slice(0, 8) : '—'}
                     </small>
-                  </span>
-                  <span
-                    className={`audit-row__result audit-row__result--${item.result.toLowerCase()}`}
-                  >
-                    {item.result === 'SUCCESS' ? '成功' : '失败'}
-                  </span>
-                  <button
-                    type="button"
-                    className="text-btn audit-row__toggle"
-                    aria-expanded={isOpen}
-                    onClick={() => setExpanded(isOpen ? null : item.id)}
-                  >
-                    {isOpen ? '收起' : '详情'}
-                  </button>
-
-                  {isOpen ? (
-                    <div className="audit-row__detail">
-                      <div className="audit-detail">
-                        <p className="audit-detail__label">改前</p>
-                        <pre className="audit-detail__json">{preview(item.before)}</pre>
-                      </div>
-                      <div className="audit-detail">
-                        <p className="audit-detail__label">改后</p>
-                        <pre className="audit-detail__json">{preview(item.after)}</pre>
-                      </div>
-                      <p className="audit-detail__request mono">请求 ID {item.requestId}</p>
-                    </div>
-                  ) : null}
-                </div>
-              );
-            })}
-          </div>
+                  </>
+                ),
+              },
+              {
+                key: 'result',
+                title: '结果',
+                className: (item) =>
+                  `audit-row__result audit-row__result--${item.result.toLowerCase()}`,
+                cell: (item) => (item.result === 'SUCCESS' ? '成功' : '失败'),
+              },
+              {
+                key: 'toggle',
+                title: '操作',
+                className: 'audit-row__toggle-cell',
+                cell: (item) => {
+                  const isOpen = expanded === item.id;
+                  return (
+                    <button
+                      type="button"
+                      className="text-btn audit-row__toggle"
+                      aria-expanded={isOpen}
+                      onClick={() => setExpanded(isOpen ? null : item.id)}
+                    >
+                      {isOpen ? '收起' : '详情'}
+                    </button>
+                  );
+                },
+              },
+            ]}
+          />
         )}
 
-        {meta && meta.totalPages > 1 ? (
-          <div className="pager">
-            <button
-              type="button"
-              className="pager__btn"
-              onClick={() => setPage((value) => Math.max(1, value - 1))}
-              disabled={page <= 1}
-            >
-              <ChevronLeft size={16} />
-              上一页
-            </button>
-            <span className="pager__status mono">
-              {page} / {meta.totalPages}
-            </span>
-            <button
-              type="button"
-              className="pager__btn"
-              onClick={() => setPage((value) => Math.min(meta.totalPages, value + 1))}
-              disabled={page >= meta.totalPages}
-            >
-              下一页
-              <ChevronRight size={16} />
-            </button>
-          </div>
-        ) : null}
+        <Pagination page={page} totalPages={meta?.totalPages ?? 1} onChange={setPage} />
       </section>
     </div>
   );

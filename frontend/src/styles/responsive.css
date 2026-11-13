@@ -1,0 +1,444 @@
+/* ============================================================
+   responsive.css · 响应式断点：1400 / 1180 / 760px。
+   原 styles.css 第 2814–3263 行，顺序与原文一致。
+   ============================================================ */
+
+/* ============================== 响应式 ============================== */
+
+/*
+ * 六列全显约需 984px 表内宽度（视口 ≈ 1400px）；
+ * 更窄先收起箭头列并收窄色带字号，≤1180px 再切卡片。
+ */
+@media (max-width: 1400px) {
+  .order-table__head,
+  .order-row {
+    grid-template-columns:
+      minmax(145px, 1.2fr) minmax(110px, 1fr) 96px minmax(264px, 1.6fr) 86px;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .order-row__go,
+  .order-table__head > span:last-child {
+    display: none;
+  }
+
+  .stage-cell {
+    padding: 2px 1px;
+    font-size: 10.5px;
+  }
+}
+
+@media (max-width: 1180px) {
+  .shell {
+    grid-template-columns: 226px minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .main {
+    padding-right: 10px;
+  }
+
+  /* 侧栏吃掉 300px 后六段色带已放不下整行，改成卡片 */
+  .order-table {
+    overflow: visible;
+  }
+
+  .order-table__head {
+    display: none;
+  }
+
+  .order-row {
+    grid-template-columns: 1fr auto;
+    min-width: 0;
+    gap: 10px 16px;
+    padding: 16px;
+    margin-bottom: 10px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+
+  .order-row__primary,
+  .order-row__product {
+    grid-column: 1 / -1;
+  }
+
+  /* 卡片里色带独占一行，六格等宽 */
+  .order-row__stages {
+    grid-column: 1 / -1;
+    gap: 3px;
+  }
+
+  .stage-cell {
+    min-height: 30px;
+    padding: 2px 1px;
+    font-size: 10px;
+  }
+
+  .order-row__qty,
+  .order-row__due,
+  .order-row__status,
+  .order-row__amount {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: 7px;
+    text-align: left;
+  }
+
+  .order-row__qty::before,
+  .order-row__due::before,
+  .order-row__status::before,
+  .order-row__amount::before {
+    content: attr(data-label);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+
+  .order-row__go {
+    display: none;
+  }
+}
+
+@media (max-width: 980px) {
+  .shell {
+    /* 侧栏在窄屏变成顶部横向导航；用 minmax(0,1fr) 防止导航的 min-content 撑破视口 */
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    padding: 14px;
+  }
+
+  .rail,
+  .main {
+    min-width: 0;
+  }
+
+  .rail {
+    position: sticky;
+    top: 12px;
+    z-index: 20;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    border-radius: var(--radius-lg);
+    overflow: visible;
+  }
+
+  .rail__top {
+    flex-direction: row;
+    align-items: center;
+    gap: 18px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .rail__nav {
+    flex-direction: row;
+    gap: 2px;
+    overflow-x: auto;
+  }
+
+  .rail__link {
+    padding: 8px 11px;
+    white-space: nowrap;
+  }
+
+  .rail__link--active::before {
+    display: none;
+  }
+
+  .rail__foot {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .rail__hint {
+    display: none;
+  }
+
+  .rail__user {
+    border-top: 0;
+    padding: 0;
+    gap: 8px;
+  }
+
+  .rail__identity small {
+    display: none;
+  }
+
+  .brand__text small {
+    display: none;
+  }
+
+  .main {
+    padding: 12px 8px 70px;
+  }
+
+  .form-layout,
+  .detail-grid,
+  .data-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .form-layout__main,
+  .detail-grid__main,
+  .detail-grid__aside {
+    min-width: 0;
+  }
+
+  .form-layout__aside,
+  .detail-grid__aside {
+    position: static;
+  }
+
+  .detail-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .detail-head__amount {
+    align-items: flex-start;
+  }
+
+  .landing__title {
+    font-size: clamp(48px, 8vw, 76px);
+  }
+
+  .landing__lede {
+    max-width: 640px;
+    font-size: 15px;
+  }
+
+  .landing__demo {
+    padding: 20px 22px 16px;
+  }
+
+  .page-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 760px) {
+  body {
+    font-size: 13.5px;
+  }
+
+  .rail {
+    flex-wrap: wrap;
+  }
+
+  .rail__top {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .brand {
+    padding: 0;
+  }
+
+  .tabs {
+    /* 右缘渐隐提示可横向滑动 */
+    padding-right: 18px;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 22px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 22px), transparent);
+  }
+
+  .rail {
+    /* 不吸顶，避免较高的 3×3 导航长期占掉内容视口；relative 供身份块绝对定位 */
+    position: relative;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .rail__top {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .rail__foot {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    margin-left: 0;
+  }
+
+  .rail__nav {
+    width: 100%;
+    /* 手机上把入口全部铺成 3 列网格，避免横向滑动只看到两项 */
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 3px;
+  }
+
+  .rail__link {
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 9px 7px;
+    font-size: 12px;
+  }
+
+  .rail__index {
+    font-size: 8.5px;
+  }
+
+  .rail__nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rail__foot {
+    margin-left: auto;
+  }
+
+  .page-head {
+    padding-top: 6px;
+  }
+
+  .page-title {
+    font-size: 32px;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search {
+    width: 100%;
+  }
+
+  .filter-bar__right {
+    justify-content: space-between;
+  }
+
+  .pager {
+    justify-content: space-between;
+  }
+
+  .form-card,
+  .summary,
+  .detail-card {
+    padding: 20px;
+    border-radius: var(--radius-lg);
+  }
+
+  .form-grid,
+  .form-grid--item {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid--item .field:nth-child(3),
+  .form-grid--item .field:nth-child(4) {
+    grid-row: auto;
+  }
+
+  .detail-head__meta {
+    gap: 8px;
+  }
+
+  .progress {
+    padding-bottom: 2px;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent);
+  }
+
+  .progress::-webkit-scrollbar {
+    display: none;
+  }
+
+  .item-table__head,
+  .item-table__row {
+    /* 手机上压缩固定列，把宽度让给产品名，避免竖排折字 */
+    grid-template-columns: minmax(0, 1.5fr) 40px 64px 78px;
+    gap: 6px;
+  }
+
+  .landing__nav {
+    padding: 14px 18px;
+    gap: 10px;
+  }
+
+  .landing__nav-cta {
+    height: 36px;
+    padding: 0 16px;
+    font-size: 13px;
+  }
+
+  .login__brand-latin {
+    display: none;
+  }
+
+  .landing__hero {
+    padding: 34px 18px 30px;
+  }
+
+  .landing__title {
+    font-size: clamp(40px, 13vw, 64px);
+  }
+
+  .landing__badge {
+    margin-bottom: 18px;
+    font-size: 12px;
+  }
+
+  .landing__lede {
+    max-width: 34ch;
+    font-size: 14px;
+  }
+
+  .landing__hero-cta {
+    height: 50px;
+    margin-top: 28px;
+  }
+
+  .landing__stage {
+    min-height: 340px;
+    padding: 30px 14px 14px;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .landing__demo {
+    padding: 18px 14px 12px;
+    border-radius: 16px;
+  }
+
+  .landing__demo-label {
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+  }
+
+  .landing__fineprint {
+    font-size: 9.5px;
+    line-height: 1.7;
+  }
+
+  .login-modal__card {
+    padding: 24px 20px;
+  }
+
+  .login__card-title {
+    font-size: 18px;
+  }
+
+  .notice {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .data-table__head,
+  .data-table__row {
+    min-width: 520px;
+  }
+}

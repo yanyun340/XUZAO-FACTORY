@@ -1,0 +1,98 @@
+/* ============================================================
+   tokens.css · 设计令牌：颜色、字色、圆角、缓动、字体栈。全站唯一取值来源。
+   原 styles.css 第 1–45 行，顺序与原文一致。
+   ============================================================ */
+
+/* ============================================================
+   序造 XuZao · 视觉基线（仪表盘布局）
+   近黑侧栏 + 雾灰画布 + 白卡片 + 单一靛蓝强调；12px 卡片圆角、
+   1px #f3f4f6 描边、两级极浅阴影；Inter 正文 + JetBrains Mono 数字。
+   令牌名称沿用旧版（松绿/纸面等语义名），只重映射取值，避免改动全站选择器。
+   ============================================================ */
+
+:root {
+  /* ── 表面与文字 ─────────────────────────────────────────── */
+  --paper: #f9fafb; /* 画布 Mist */
+  --paper-deep: #f3f4f6;
+  --surface: #ffffff; /* 卡片 / 输入框 */
+  --surface-2: #f9fafb; /* 次级填充、hover 行 */
+  --ink: #111827; /* 标题与主要数字 */
+  --ink-2: #374151;
+  --muted: #6b7280;
+  --line: #f3f4f6; /* 卡片描边 / 行分隔 */
+  --line-strong: #d1d5db; /* 输入框边框 */
+
+  /* ── 单一靛蓝：--pine 为主操作，--focus 只用于焦点/选中 ──── */
+  --pine: #6366f1;
+  --pine-2: #4f46e5; /* press / hover 更深一档 */
+  --pine-3: #4f46e5;
+  --cream: #ffffff; /* 主色上的文字 */
+  --cream-dim: rgba(255, 255, 255, 0.72);
+
+  /* ── 语义色（仅状态，不作大面积填充） ───────────────────── */
+  --vermilion: #ef4444;
+  --amber: #b45309;
+  --blue: #6366f1; /* 与强调色同源的进行中 */
+  --violet: #7c3aed;
+  --teal: #0f766e;
+  --cyan: #0891b2;
+  --orange: #c2410c;
+  --green: #10b981;
+
+  --focus: #6366f1; /* 焦点环 / 选中态，永不用于大块填充 */
+
+  /* ── 侧栏（近黑面板） ───────────────────────────────────── */
+  --rail-bg: #111827;
+  --rail-text: rgba(255, 255, 255, 0.7);
+  --rail-text-strong: #ffffff;
+  --rail-hover: rgba(255, 255, 255, 0.06);
+  --rail-active: rgba(255, 255, 255, 0.1);
+  --rail-line: rgba(255, 255, 255, 0.08);
+
+  /* ── 图表序列：单一靛蓝族的顺序色阶，禁止彩虹色 ─────────── */
+  --chart-1: #c7d2fe;
+  --chart-2: #a5b4fc;
+  --chart-3: #818cf8;
+  --chart-4: #6366f1;
+  --chart-5: #4f46e5;
+  --chart-6: #4338ca;
+  --chart-7: #3730a3;
+
+  /* ── 圆角：卡片 12 / 按钮 8 / 输入 8 / 芯片 8，上限 16 ──── */
+  --radius-xl: 16px;
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --radius-sm: 8px;
+
+  /* ── 阴影：接触 + 抬升两级，均为极浅中性 ─────────────────── */
+  --shadow-contact: 0 1px 2px rgba(17, 24, 39, 0.06);
+  --shadow-lift: 0 4px 12px rgba(17, 24, 39, 0.08);
+
+  /* ── 订单历程时间线：连接线与节点描边用中性板岩透明度 ────── */
+  --tl-line: rgba(30, 41, 59, 0.25);
+  --tl-ring: rgba(30, 41, 59, 0.3);
+  --line-card: #e2e8f0;
+  --shadow-tl: 0 2px 8px rgba(15, 23, 42, 0.06);
+  --shadow-tl-lift: 0 8px 24px rgba(15, 23, 42, 0.1);
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+
+  /* ── 字体：正文 Inter，数字与 ID 用 JetBrains Mono ───────── */
+  --font-body: "Inter", "Inter var", "PingFang SC", "HarmonyOS Sans SC",
+    "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --font-display: "Inter", "Inter var", "PingFang SC", "HarmonyOS Sans SC",
+    "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas,
+    monospace;
+
+  /* ── 表格密度：三档行内距 ──────────────────────────────────
+     标准档等于拆分前写死的 14px，因此不改变现有视觉；
+     紧凑/宽松只在表格加 table--compact / table--comfortable 时生效。
+     行高由内容决定（双行名称单元格约 71px），这里只控制上下内距。 */
+  --row-py: 14px;
+  --row-py-compact: 9px;
+  --row-py-comfortable: 20px;
+  /* 单元格横向内距：现有表格写在行容器的 padding 上（22px），暂无逐档差异 */
+  --cell-px: 22px;
+}

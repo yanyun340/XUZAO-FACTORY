@@ -3,8 +3,12 @@ import { createPortal } from 'react-dom';
 import { ApiError, apiGetPage, apiPost } from '../api/client';
 import type { InventoryLogItem, PageMeta, PartStock, ProductStock } from '../api/types';
 import { useAuth } from '../auth/AuthContext';
-import { ChevronLeft, ChevronRight, PlusIcon, SearchIcon } from '../components/Icons';
+import { PlusIcon, SearchIcon } from '../components/Icons';
+import { DataTable } from '../components/DataTable';
+import { announce } from '../components/LiveAnnouncer';
+import { Pagination } from '../components/Pagination';
 import { Button, EmptyState, InlineNotice, LoadingBlock } from '../components/ui';
+import { useModalFocus } from '../hooks/useModalFocus';
 import { formatDateTime, formatNumber } from '../lib/format';
 
 type Tab = 'parts' | 'products' | 'logs';
@@ -45,6 +49,10 @@ export function InventoryPage() {
   const [newName, setNewName] = useState('');
   const [newSpec, setNewSpec] = useState('');
   const [newQty, setNewQty] = useState('0');
+
+  const cardRef = useModalFocus(adjusting !== null, () => setAdjusting(null), {
+    canClose: () => !busy,
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -111,8 +119,10 @@ export function InventoryPage() {
       try {
         await apiPost(
           `/inventory/${adjusting.kind === 'part' ? 'parts' : 'products'}/${adjusting.id}/adjust`,
-          { delta: amount, reason: reason.trim() }        );
+          { delta: amount, reason: reason.trim() },
+        );
         setAdjusting(null);
+        announce(`库存已调整 ${amount > 0 ? '+' : ''}${amount}`);
         setReloadToken((token) => token + 1);
       } catch (caught) {
         setAdjustError(caught instanceof ApiError ? caught.message : '库存调整失败，请稍后重试');
@@ -271,27 +281,49 @@ export function InventoryPage() {
           parts.length === 0 ? (
             <EmptyState title="没有匹配的配件库存" description="先在基础数据里创建配件，库存台账会自动生成。" />
           ) : (
-            <div className="stock-table">
-              <div className="stock-table__head" aria-hidden>
-                <span>配件</span>
-                <span>规格</span>
-                <span className="stock-table__num">库存</span>
-                <span>更新时间</span>
-                <span />
-              </div>
-              {parts.map((row) => (
-                <div key={row.id} className="stock-row">
-                  <span className="stock-row__name">
-                    <strong>{row.name}</strong>
-                    <small className="mono">{row.code}</small>
-                  </span>
-                  <span className="stock-row__spec">{row.spec}</span>
-                  <span className={`stock-row__num mono${row.quantity === 0 ? ' is-muted' : ''}`}>
-                    {formatNumber(row.quantity)}
-                  </span>
-                  <span className="stock-row__time mono">{formatDateTime(row.updatedAt)}</span>
-                  <span className="stock-row__action">
-                    {isAdmin ? (
+            <DataTable
+              label="配件库存"
+              tableClassName="stock-table"
+              headClassName="stock-table__head"
+              rowClassName="stock-row"
+              rowKey={(row) => row.id}
+              rows={parts}
+              columns={[
+                {
+                  key: 'name',
+                  title: '配件',
+                  className: 'stock-row__name',
+                  cell: (row) => (
+                    <>
+                      <strong>{row.name}</strong>
+                      <small className="mono">{row.code}</small>
+                    </>
+                  ),
+                },
+                {
+                  key: 'spec',
+                  title: '规格',
+                  className: 'stock-row__spec',
+                  cell: (row) => row.spec,
+                },
+                {
+                  key: 'quantity',
+                  title: '库存',
+                  headClassName: 'stock-table__num',
+                  className: (row) => `stock-row__num mono${row.quantity === 0 ? ' is-muted' : ''}`,
+                  cell: (row) => formatNumber(row.quantity),
+                },
+                {
+                  key: 'updatedAt',
+                  title: '更新时间',
+                  className: 'stock-row__time mono',
+                  cell: (row) => formatDateTime(row.updatedAt),
+                },
+                {
+                  key: 'action',
+                  className: 'stock-row__action',
+                  cell: (row) =>
+                    isAdmin ? (
                       <button
                         type="button"
                         className="text-btn"
@@ -306,11 +338,10 @@ export function InventoryPage() {
                       >
                         调整
                       </button>
-                    ) : null}
-                  </span>
-                </div>
-              ))}
-            </div>
+                    ) : null,
+                },
+              ]}
+            />
           )
         ) : tab === 'products' ? (
           products.length === 0 ? (
@@ -319,26 +350,44 @@ export function InventoryPage() {
               description="创建订单后产品会自动登记；也可以由管理员手动建档。"
             />
           ) : (
-            <div className="stock-table">
-              <div className="stock-table__head" aria-hidden>
-                <span>商品</span>
-                <span>规格</span>
-                <span className="stock-table__num">库存</span>
-                <span>更新时间</span>
-                <span />
-              </div>
-              {products.map((row) => (
-                <div key={row.id} className="stock-row">
-                  <span className="stock-row__name">
-                    <strong>{row.productName}</strong>
-                  </span>
-                  <span className="stock-row__spec">{row.spec}</span>
-                  <span className={`stock-row__num mono${row.quantity === 0 ? ' is-muted' : ''}`}>
-                    {formatNumber(row.quantity)}
-                  </span>
-                  <span className="stock-row__time mono">{formatDateTime(row.updatedAt)}</span>
-                  <span className="stock-row__action">
-                    {isAdmin ? (
+            <DataTable
+              label="商品库存"
+              tableClassName="stock-table"
+              headClassName="stock-table__head"
+              rowClassName="stock-row"
+              rowKey={(row) => row.id}
+              rows={products}
+              columns={[
+                {
+                  key: 'name',
+                  title: '商品',
+                  className: 'stock-row__name',
+                  cell: (row) => <strong>{row.productName}</strong>,
+                },
+                {
+                  key: 'spec',
+                  title: '规格',
+                  className: 'stock-row__spec',
+                  cell: (row) => row.spec,
+                },
+                {
+                  key: 'quantity',
+                  title: '库存',
+                  headClassName: 'stock-table__num',
+                  className: (row) => `stock-row__num mono${row.quantity === 0 ? ' is-muted' : ''}`,
+                  cell: (row) => formatNumber(row.quantity),
+                },
+                {
+                  key: 'updatedAt',
+                  title: '更新时间',
+                  className: 'stock-row__time mono',
+                  cell: (row) => formatDateTime(row.updatedAt),
+                },
+                {
+                  key: 'action',
+                  className: 'stock-row__action',
+                  cell: (row) =>
+                    isAdmin ? (
                       <button
                         type="button"
                         className="text-btn"
@@ -353,63 +402,64 @@ export function InventoryPage() {
                       >
                         调整
                       </button>
-                    ) : null}
-                  </span>
-                </div>
-              ))}
-            </div>
+                    ) : null,
+                },
+              ]}
+            />
           )
         ) : logs.length === 0 ? (
           <EmptyState title="还没有出入库记录" description="任何一次手工调整都会写一条流水。" />
         ) : (
-          <div className="log-table">
-            {logs.map((row) => (
-              <div className="log-row" key={row.id}>
-                <span className={`log-row__kind log-row__kind--${row.kind.toLowerCase()}`}>
-                  {row.kind === 'PART' ? '配件' : '商品'}
-                </span>
-                <span className="log-row__target">{row.target}</span>
-                <span className="log-row__delta mono">
-                  {row.before} → <strong className={row.delta > 0 ? 'is-up' : 'is-down'}>{row.after}</strong>
-                  <small>
-                    {row.delta > 0 ? '+' : ''}
-                    {row.delta}
-                  </small>
-                </span>
-                <span className="log-row__reason">{row.reason}</span>
-                <span className="log-row__meta mono">
-                  {row.operatorName} · {formatDateTime(row.createdAt)}
-                </span>
-              </div>
-            ))}
-          </div>
+          <DataTable
+            label="出入库流水"
+            tableClassName="log-table"
+            rowClassName="log-row"
+            rowKey={(row) => row.id}
+            rows={logs}
+            columns={[
+              {
+                key: 'kind',
+                className: (row) => `log-row__kind log-row__kind--${row.kind.toLowerCase()}`,
+                cell: (row) => (row.kind === 'PART' ? '配件' : '商品'),
+              },
+              {
+                key: 'target',
+                className: 'log-row__target',
+                cell: (row) => row.target,
+              },
+              {
+                key: 'delta',
+                className: 'log-row__delta mono',
+                cell: (row) => (
+                  <>
+                    {row.before} →{' '}
+                    <strong className={row.delta > 0 ? 'is-up' : 'is-down'}>{row.after}</strong>
+                    <small>
+                      {row.delta > 0 ? '+' : ''}
+                      {row.delta}
+                    </small>
+                  </>
+                ),
+              },
+              {
+                key: 'reason',
+                className: 'log-row__reason',
+                cell: (row) => row.reason,
+              },
+              {
+                key: 'meta',
+                className: 'log-row__meta mono',
+                cell: (row) => (
+                  <>
+                    {row.operatorName} · {formatDateTime(row.createdAt)}
+                  </>
+                ),
+              },
+            ]}
+          />
         )}
 
-        {meta && meta.totalPages > 1 ? (
-          <div className="pager">
-            <button
-              type="button"
-              className="pager__btn"
-              onClick={() => setPage((value) => Math.max(1, value - 1))}
-              disabled={page <= 1}
-            >
-              <ChevronLeft size={16} />
-              上一页
-            </button>
-            <span className="pager__status mono">
-              {page} / {meta.totalPages}
-            </span>
-            <button
-              type="button"
-              className="pager__btn"
-              onClick={() => setPage((value) => Math.min(meta.totalPages, value + 1))}
-              disabled={page >= meta.totalPages}
-            >
-              下一页
-              <ChevronRight size={16} />
-            </button>
-          </div>
-        ) : null}
+        <Pagination page={page} totalPages={meta?.totalPages ?? 1} onChange={setPage} />
       </section>
 
       {/* portal 到 body：.page 的入场 transform 会改变 fixed 的包含块，导致弹窗偏位 */}
@@ -422,7 +472,7 @@ export function InventoryPage() {
             aria-label="关闭"
             onClick={() => setAdjusting(null)}
           />
-          <form className="modal__card" onSubmit={(event) => void submitAdjust(event)}>
+          <form ref={cardRef} className="modal__card" onSubmit={(event) => void submitAdjust(event)}>
             <p className="eyebrow">STOCK ADJUST</p>
             <h2 className="modal__title">调整库存</h2>
             <p className="modal__sub">{adjusting.label}</p>
@@ -439,7 +489,7 @@ export function InventoryPage() {
                 value={delta}
                 onChange={(event) => setDelta(event.target.value)}
                 placeholder="正数入库，负数出库"
-                autoFocus
+                data-autofocus
               />
             </label>
 

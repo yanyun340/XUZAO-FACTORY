@@ -7,13 +7,15 @@ import type {
   Part,
   Supplier,
 } from '../api/types';
-import { formatMoney } from '../lib/format';
+import { ACTION_LABEL, formatMoney } from '../lib/format';
 import { ArrowRight, CheckIcon } from './Icons';
 import { Button, Field, InlineNotice } from './ui';
 
 interface PanelProps {
   order: OrderDetail;
   onUpdated: (detail: OrderDetail) => void;
+  /** 从待办队列点进来时，把对应动作排到第一个并高亮面板。 */
+  focusAction?: OrderAction | null;
 }
 
 interface Ctx {
@@ -21,20 +23,6 @@ interface Ctx {
   pending: OrderAction | null;
   run: (action: OrderAction, path: string, body: unknown) => void;
 }
-
-const ACTION_LABEL: Partial<Record<OrderAction, string>> = {
-  'create-purchase': '创建采购单',
-  'record-arrival': '登记到货',
-  'dispatch-production': '下发生产',
-  'production-feedback': '反馈完成数量',
-  'dispatch-qc': '下发质检',
-  'qc-entry': '录入质检结果',
-  'qc-decision': '放行决策',
-  'dispatch-packing': '下发包装',
-  'record-packing': '登记包装',
-  'trigger-shipping': '触发发货',
-  'record-shipment': '登记发货',
-};
 
 function toInt(value: string): number | null {
   if (!/^\d+$/.test(value.trim())) return null;
@@ -535,7 +523,7 @@ function renderAction(action: OrderAction, ctx: Ctx, key: string) {
   }
 }
 
-export function FlowPanel({ order, onUpdated }: PanelProps) {
+export function FlowPanel({ order, onUpdated, focusAction }: PanelProps) {
   const [pending, setPending] = useState<OrderAction | null>(null);
   const [error, setError] = useState<string | null>(null);
   const keyRef = useRef<{ action: OrderAction; key: string } | null>(null);
@@ -543,6 +531,9 @@ export function FlowPanel({ order, onUpdated }: PanelProps) {
   const actions = order.allowedActions.filter(
     (action): action is OrderAction => action !== 'view',
   );
+  if (focusAction) {
+    actions.sort((a, b) => Number(b === focusAction) - Number(a === focusAction));
+  }
 
   const run = async (action: OrderAction, path: string, body: unknown) => {
     setPending(action);
@@ -574,8 +565,12 @@ export function FlowPanel({ order, onUpdated }: PanelProps) {
   if (actions.length === 0) return null;
 
   return (
-    <div className="bezelt">
-      <div className="detail-card detail-card--tight">
+    <div className="bezelt" id="flow-actions">
+      <div
+        className={`detail-card detail-card--tight${
+          focusAction && actions[0] === focusAction ? ' detail-card--focus' : ''
+        }`}
+      >
         <p className="eyebrow">流转操作</p>
         {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
         {actions.map((action) => renderAction(action, ctx, `${action}-${order.updatedAt}`))}

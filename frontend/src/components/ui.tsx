@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
-import { STATUS_META } from '../lib/format';
-import type { OrderStatus } from '../api/types';
+import { ACTION_LABEL, STAGE_LABELS, STATUS_META, todayDateInput, type StatusTone } from '../lib/format';
+import type { OrderAction, OrderStage, OrderStatus } from '../api/types';
 
 export function Button({
   variant = 'primary',
@@ -33,12 +33,70 @@ export function Button({
   );
 }
 
-export function StatusBadge({ status }: { status: OrderStatus }) {
+export function StatusBadge({
+  status,
+  dueDate,
+}: {
+  status: OrderStatus;
+  /** 传入交期后，未完成且已过交期的订单自动转为逾期色。 */
+  dueDate?: string;
+}) {
   const meta = STATUS_META[status];
+  const overdue = status !== 'COMPLETED' && dueDate !== undefined && dueDate < todayDateInput();
+  const tone: StatusTone = overdue ? 'overdue' : meta.tone;
+
   return (
-    <span className={`status status--${meta.tone}`}>
+    <span
+      className={`status status--${tone}`}
+      title={overdue ? `${meta.label} · 已过交期 ${dueDate}` : undefined}
+      aria-label={overdue ? `${meta.label}，已逾期` : undefined}
+    >
       <span className="status__dot" aria-hidden />
       {meta.label}
+    </span>
+  );
+}
+
+/**
+ * 六段工序色带：列表行与待办卡共用同一套格子。
+ * 没有工序数据（旧接口）时不渲染，由调用方回退到状态徽章。
+ */
+export function StageRibbon({
+  stages,
+  dataLabel,
+  className = '',
+}: {
+  stages: OrderStage[] | undefined;
+  /** 窄屏卡片里显示的字段名。 */
+  dataLabel?: string;
+  className?: string;
+}) {
+  if (!stages || stages.length === 0) return null;
+
+  return (
+    <span className={`order-row__stages stage-ribbon ${className}`.trim()} data-label={dataLabel}>
+      {stages.map((stage) => (
+        <span
+          key={stage.key}
+          className="stage-cell"
+          data-state={stage.state}
+          title={`${STAGE_LABELS[stage.key]} · ${stage.label}`}
+        >
+          {stage.label}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/** 待办卡的主操作：动作名 + 本次数量。数量为 0 时只写动作。 */
+export function ActionTag({ action, taskQty }: { action: OrderAction; taskQty: number }) {
+  return (
+    <span className="action-tag">
+      <span className="action-tag__label">{ACTION_LABEL[action]}</span>
+      {taskQty > 0 ? (
+        <span className="action-tag__qty mono">{taskQty} 件</span>
+      ) : null}
     </span>
   );
 }

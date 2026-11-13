@@ -1,0 +1,277 @@
+/* ============================================================
+   components.css · 通用控件：按钮、表单。
+   原 styles.css 第 196–442 行，顺序与原文一致。
+   企业简洁风：8px 圆角、单一企业蓝、150ms ease-out、焦点环带偏移。
+   ============================================================ */
+
+/* ============================== 通用：按钮 ============================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  white-space: nowrap;
+  transition:
+    background-color 150ms var(--ease-out),
+    color 150ms var(--ease-out),
+    border-color 150ms var(--ease-out),
+    transform 150ms var(--ease-out),
+    box-shadow 150ms var(--ease-out);
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+}
+
+.btn--primary {
+  background: var(--pine);
+  color: var(--cream);
+  box-shadow: var(--shadow-contact);
+}
+
+.btn--secondary {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line-strong);
+  padding-right: 16px;
+}
+
+.btn--ghost {
+  color: var(--ink-2);
+  padding: 8px 12px;
+}
+
+.btn--block {
+  width: 100%;
+}
+
+/* 有尾部圆形图标时收紧右内边距，让圆环与按钮边缘成呼吸感 */
+.btn:has(.btn__trailing) {
+  padding-right: 6px;
+}
+
+.btn__label {
+  padding: 2px 0;
+}
+
+.btn__trailing {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  transition: transform 150ms var(--ease-out), background-color 150ms var(--ease-out);
+}
+
+.btn--secondary .btn__trailing {
+  background: rgba(17, 24, 39, 0.06);
+}
+
+.btn__spinner {
+  width: 16px;
+  height: 16px;
+  margin-right: 12px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  border-top-color: var(--cream);
+  animation: spin 700ms linear infinite;
+}
+
+.btn--secondary .btn__spinner {
+  border-color: rgba(17, 24, 39, 0.2);
+  border-top-color: var(--ink);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn--primary:hover:not(:disabled) {
+    background: var(--pine-2);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .btn--primary:hover .btn__trailing {
+    transform: translateX(2px) translateY(-1px);
+    background: rgba(255, 255, 255, 0.22);
+  }
+
+  .btn--secondary:hover:not(:disabled) {
+    border-color: #9ca3af;
+    background: var(--surface-2);
+  }
+
+  .btn--ghost:hover:not(:disabled) {
+    background: rgba(17, 24, 39, 0.05);
+  }
+}
+
+/* 按下时压过 hover 的位移，手感是「按下去」而不是「浮起来」 */
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .btn__trailing {
+    transition-duration: 0ms;
+  }
+
+  .btn--primary:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* ============================== 通用：表单 ============================== */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.field__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.field__required {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--vermilion);
+  background: rgba(220, 38, 38, 0.08);
+  border-radius: 999px;
+  padding: 0 6px;
+}
+
+.field__hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.field__error {
+  font-size: 12px;
+  color: #ef4444;
+}
+
+.input {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.5;
+  transition: border-color 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
+}
+
+.input::placeholder {
+  color: #9ca3af;
+}
+
+/* 焦点：蓝边框 + 2px 偏移环，outline 不占用盒模型 */
+.input:focus {
+  outline: 2px solid rgba(99, 102, 241, 0.35);
+  outline-offset: 2px;
+  border-color: var(--focus);
+}
+
+.input:disabled {
+  opacity: 0.6;
+}
+
+.input--select {
+  appearance: none;
+  padding-right: 36px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.input--textarea {
+  min-height: 96px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.input-wrap {
+  position: relative;
+}
+
+.input--password {
+  padding-right: 64px;
+}
+
+.input-reveal {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--muted);
+  border-radius: var(--radius-sm);
+}
+
+.select {
+  appearance: none;
+  min-height: 36px;
+  padding: 6px 32px 6px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  font-size: 14px;
+  color: var(--ink);
+  transition: border-color 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
+}
+
+.select:focus {
+  outline: 2px solid rgba(99, 102, 241, 0.35);
+  outline-offset: 2px;
+  border-color: var(--focus);
+}
+
+.select-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.select-wrap__label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .input,
+  .select {
+    transition-duration: 0ms;
+  }
+}

@@ -1,0 +1,151 @@
+/* ============================================================
+   base.css · 基础元素：reset、排版基线、焦点与文本控件。
+   原 styles.css 第 46–195 行，顺序与原文一致。
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  position: relative;
+}
+
+::selection {
+  background: rgba(99, 102, 241, 0.18);
+}
+
+h1,
+h2,
+h3,
+p,
+dl,
+dd,
+dt,
+ol,
+ul {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+/* 焦点环：企业蓝 + 偏移，不改变盒子尺寸 */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.is-muted {
+  color: var(--muted);
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.dot-sep {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--line-strong);
+}
+
+.text-link {
+  display: inline-block;
+  color: var(--pine);
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.3);
+  padding-bottom: 1px;
+  transition: border-color 150ms var(--ease-out), color 150ms var(--ease-out);
+}
+
+.text-btn {
+  border: 0;
+  background: transparent;
+  padding: 4px 0;
+  min-height: 28px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  border-bottom: 1px solid transparent;
+  transition: color 150ms var(--ease-out), border-color 150ms var(--ease-out);
+}
+
+.text-btn--danger {
+  color: var(--vermilion);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .text-link:hover {
+    color: var(--pine-2);
+    border-color: var(--pine-2);
+  }
+
+  .text-btn:hover {
+    color: var(--pine);
+    border-color: var(--line-strong);
+  }
+
+  .text-btn--danger:hover {
+    color: #ef4444;
+    border-color: rgba(220, 38, 38, 0.4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-link,
+  .text-btn {
+    transition-duration: 0ms;
+  }
+}

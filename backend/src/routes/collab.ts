@@ -103,7 +103,7 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
   app.get('/api/v1/dashboard', { preHandler: authenticate }, async (request, reply) => {
     const auth = authContext(request);
 
-    const [statusRows, recentOrders, totals, productionRow] = await Promise.all([
+    const [statusRows, recentOrders, totals, productionRow, flowRow] = await Promise.all([
       prisma.$queryRaw<StatusRow[]>`
         SELECT status::text AS status, COUNT(*)::bigint AS count
         FROM "orders"
@@ -126,10 +126,36 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
         SELECT
           (SELECT COUNT(*) FROM "production_orders")::bigint AS tasks,
           (SELECT COALESCE(SUM("quantity"), 0) FROM "production_feedbacks")::bigint AS done`,
+      // 近 7 天 vs 前 7 天的真实流量：新增订单、完成订单。用于 KPI 卡的变化率芯片。
+      prisma.$queryRaw<
+        Array<{
+          created_recent: bigint;
+          created_previous: bigint;
+          completed_recent: bigint;
+          completed_previous: bigint;
+        }>
+      >`
+        SELECT
+          COUNT(*) FILTER (WHERE "createdAt" >= now() - interval '7 days')::bigint AS created_recent,
+          COUNT(*) FILTER (WHERE "createdAt" >= now() - interval '14 days'
+                             AND "createdAt" <  now() - interval '7 days')::bigint AS created_previous,
+          COUNT(*) FILTER (WHERE "completedAt" >= now() - interval '7 days')::bigint AS completed_recent,
+          COUNT(*) FILTER (WHERE "completedAt" >= now() - interval '14 days'
+                             AND "completedAt" <  now() - interval '7 days')::bigint AS completed_previous
+        FROM "orders"`,
     ]);
 
     const statusCounts: Record<string, number> = {};
     for (const row of statusRows) statusCounts[row.status] = Number(row.count);
+
+    const flow = flowRow[0] ?? {
+      created_recent: 0n,
+      created_previous: 0n,
+      completed_recent: 0n,
+      completed_previous: 0n,
+    };
+    const percentDelta = (recent: number, previous: number): number | null =>
+      previous === 0 ? null : Math.round(((recent - previous) / previous) * 100);
 
     const totalsRow = totals[0] ?? { sales: '0', purchase: '0', production: '0' };
     const sales = Number(totalsRow.sales);
@@ -143,6 +169,20 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
       production: {
         tasks: Number(productionRow[0]?.tasks ?? 0),
         completedFeedback: Number(productionRow[0]?.done ?? 0),
+      },
+      inflow: {
+        createdRecent7d: Number(flow.created_recent),
+        createdPrevious7d: Number(flow.created_previous),
+        createdDeltaPercent: percentDelta(
+          Number(flow.created_recent),
+          Number(flow.created_previous),
+        ),
+        completedRecent7d: Number(flow.completed_recent),
+        completedPrevious7d: Number(flow.completed_previous),
+        completedDeltaPercent: percentDelta(
+          Number(flow.completed_recent),
+          Number(flow.completed_previous),
+        ),
       },
       profit: {
         sales: sales.toFixed(2),

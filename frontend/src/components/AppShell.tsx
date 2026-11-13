@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { apiGet } from '../api/client';
 import type { NotificationSummary } from '../api/types';
 import { useAuth } from '../auth/AuthContext';
 import { ROLE_LABEL } from '../lib/format';
+import { BrandMark } from './BrandMark';
 import { BoxIcon, LogOutIcon } from './Icons';
 
 interface NavItem {
@@ -15,15 +16,16 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/', index: '01', label: '工厂看板' },
-  { to: '/orders', index: '02', label: '订单总览' },
-  { to: '/orders/new', index: '03', label: '新建订单', adminOnly: true },
-  { to: '/inventory', index: '04', label: '库存' },
-  { to: '/base-data', index: '05', label: '基础数据' },
-  { to: '/exceptions', index: '06', label: '异常', adminOnly: true },
-  { to: '/notifications', index: '07', label: '通知', badgeKey: 'notifications' },
-  { to: '/audit', index: '08', label: '审计日志', adminOnly: true },
-  { to: '/users', index: '09', label: '账号', adminOnly: true },
+  { to: '/tasks', index: '01', label: '待办' },
+  { to: '/', index: '02', label: '工厂看板' },
+  { to: '/orders', index: '03', label: '订单总览' },
+  { to: '/orders/new', index: '04', label: '新建订单', adminOnly: true },
+  { to: '/inventory', index: '05', label: '库存' },
+  { to: '/base-data', index: '06', label: '基础数据' },
+  { to: '/exceptions', index: '07', label: '异常', adminOnly: true },
+  { to: '/notifications', index: '08', label: '通知', badgeKey: 'notifications' },
+  { to: '/audit', index: '09', label: '审计日志', adminOnly: true },
+  { to: '/users', index: '10', label: '账号', adminOnly: true },
 ];
 
 function initials(name: string): string {
@@ -64,6 +66,8 @@ export function AppShell() {
   if (!user) return null;
 
   const items = NAV_ITEMS.filter((item) => !item.adminOnly || user.role === 'ADMIN');
+  // 当前项下标：桌面端由同一个指示块滑到该槽位，窄屏由 CSS 隐藏指示块
+  const activeIndex = items.findIndex((item) => isActivePath(item.to, pathname));
 
   const handleLogout = async () => {
     await logout();
@@ -75,16 +79,19 @@ export function AppShell() {
       <aside className="rail">
         <div className="rail__top">
           <div className="brand">
-            <span className="brand__mark" aria-hidden>
-              序
-            </span>
+            <BrandMark className="brand__mark" size={30} />
             <span className="brand__text">
               <strong>序造</strong>
               <small>XUZAO / FACTORY OS</small>
             </span>
           </div>
 
-          <nav className="rail__nav" aria-label="主导航">
+          <nav
+            className="rail__nav"
+            aria-label="主导航"
+            style={{ '--rail-active-index': Math.max(activeIndex, 0) } as CSSProperties}
+          >
+            {activeIndex >= 0 ? <span className="rail__indicator" aria-hidden /> : null}
             {items.map((item) => {
               const active = isActivePath(item.to, pathname);
               return (

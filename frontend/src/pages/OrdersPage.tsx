@@ -12,8 +12,17 @@ import {
   RefreshIcon,
   SearchIcon,
 } from '../components/Icons';
-import { Button, EmptyState, InlineNotice, LoadingBlock, SectionHeading, StatusBadge } from '../components/ui';
 import {
+  Button,
+  EmptyState,
+  InlineNotice,
+  LoadingBlock,
+  SectionHeading,
+  StageRibbon,
+  StatusBadge,
+} from '../components/ui';
+import {
+  STAGE_LABELS,
   STATUS_OPTIONS,
   dueHint,
   formatDateOnly,
@@ -23,6 +32,8 @@ import {
 } from '../lib/format';
 
 const PAGE_SIZE = 12;
+
+const STAGE_NAMES = Object.values(STAGE_LABELS);
 
 export function OrdersPage() {
   const { user } = useAuth();
@@ -260,9 +271,12 @@ export function OrdersPage() {
             <div className="order-table__head" aria-hidden>
               <span>订单 / 客户</span>
               <span>产品</span>
-              <span>数量</span>
               <span>交期</span>
-              <span>状态</span>
+              <span className="order-table__stages-head">
+                {STAGE_NAMES.map((name) => (
+                  <span key={name}>{name}</span>
+                ))}
+              </span>
               <span className="order-table__amount">金额</span>
               <span />
             </div>
@@ -283,12 +297,10 @@ export function OrdersPage() {
 
                   <span className="order-row__product">
                     <span>{order.productSummary}</span>
-                    {order.itemCount > 1 ? <small>{order.itemCount} 项明细</small> : null}
-                  </span>
-
-                  <span className="order-row__qty" data-label="数量">
-                    <span className="mono">{formatNumber(order.totalQuantity)}</span>
-                    <small>件</small>
+                    <small>
+                      {order.itemCount > 1 ? `${order.itemCount} 项 · ` : ''}
+                      {formatNumber(order.totalQuantity)} 件
+                    </small>
                   </span>
 
                   <span className="order-row__due" data-label="交期">
@@ -296,9 +308,13 @@ export function OrdersPage() {
                     <small className={`due due--${hint.tone}`}>{hint.text}</small>
                   </span>
 
-                  <span className="order-row__status" data-label="状态">
-                    <StatusBadge status={order.status} />
-                  </span>
+                  {order.stages ? (
+                    <StageRibbon stages={order.stages} dataLabel="工序" />
+                  ) : (
+                    <span className="order-row__status" data-label="状态">
+                      <StatusBadge status={order.status} dueDate={order.dueDate} />
+                    </span>
+                  )}
 
                   <span className={`order-row__amount mono${order.moneyVisible ? '' : ' is-muted'}`} data-label="金额">
                     {order.moneyVisible ? formatMoney(order.totalAmount) : '不可见'}

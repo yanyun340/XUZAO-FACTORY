@@ -5,6 +5,7 @@ import type { Department, ManagedUser, PageMeta, Role } from '../api/types';
 import { useAuth } from '../auth/AuthContext';
 import { PlusIcon } from '../components/Icons';
 import { Button, EmptyState, InlineNotice, LoadingBlock } from '../components/ui';
+import { useModalFocus } from '../hooks/useModalFocus';
 import { ROLE_LABEL } from '../lib/format';
 
 const ROLES: Role[] = ['ADMIN', 'LOGISTICS', 'PRODUCTION', 'QC', 'PACKING'];
@@ -36,6 +37,10 @@ export function UsersPage() {
   const [role, setRole] = useState<Role>('ADMIN');
   const [departmentId, setDepartmentId] = useState('');
   const [active, setActive] = useState(true);
+
+  const cardRef = useModalFocus(modal !== null, () => setModal(null), {
+    canClose: () => !busy,
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -291,7 +296,7 @@ export function UsersPage() {
                 aria-label="关闭"
                 onClick={() => setModal(null)}
               />
-              <form className="modal__card" onSubmit={(event) => void submit(event)}>
+              <form ref={cardRef} className="modal__card" onSubmit={(event) => void submit(event)}>
                 <p className="eyebrow">
                   {modal.mode === 'create' ? 'NEW ACCOUNT' : modal.mode === 'edit' ? 'EDIT ACCOUNT' : 'RESET PASSWORD'}
                 </p>
@@ -318,7 +323,7 @@ export function UsersPage() {
                         onChange={(event) => setUsername(event.target.value)}
                         maxLength={30}
                         placeholder="字母、数字、下划线"
-                        autoFocus
+                        data-autofocus
                         required
                       />
                     </label>

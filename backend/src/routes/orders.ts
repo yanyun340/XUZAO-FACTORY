@@ -2,8 +2,8 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { authenticate, authContext, requireAdmin } from '../auth/guards.ts';
 import { prisma } from '../db.ts';
-import { flowInclude } from '../domain/flow.ts';
-import { toOrderDetail, toOrderSummary } from '../domain/orders.ts';
+import { flowInclude, listFlowInclude } from '../domain/flow.ts';
+import { toOrderDetail, toOrderSummaryWithStages } from '../domain/orders.ts';
 import { Errors } from '../errors.ts';
 import { OrderStatus } from '../generated/prisma/enums.ts';
 import { ok } from '../http/respond.ts';
@@ -75,16 +75,18 @@ export async function orderRoutes(app: FastifyInstance): Promise<void> {
       prisma.order.count({ where }),
       prisma.order.findMany({
         where,
-        include: { items: true },
+        include: listFlowInclude,
         orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         skip: (query.page - 1) * query.pageSize,
         take: query.pageSize,
       }),
     ]);
 
+    const today = shanghaiDateKey();
+
     return ok(
       reply,
-      orders.map((order) => toOrderSummary(order, auth.user.role)),
+      orders.map((order) => toOrderSummaryWithStages(order, auth.user.role, today)),
       200,
       {
         page: query.page,

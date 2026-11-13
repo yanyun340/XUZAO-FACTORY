@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { ApiError, apiGet } from '../api/client';
-import type { OrderDetail } from '../api/types';
+import type { OrderAction, OrderDetail } from '../api/types';
 import { useAuth } from '../auth/AuthContext';
 import { AttachmentPanel } from '../components/AttachmentPanel';
+import { DataTable } from '../components/DataTable';
 import { FlowLedger, FlowPanel } from '../components/FlowPanel';
 import { ReportException } from '../components/ReportException';
 import { ArrowLeft, CheckIcon } from '../components/Icons';
@@ -57,6 +58,14 @@ function nextStep(order: OrderDetail): { owner: string; text: string } {
 }
 
 
+/**
+ * 事件流里每一条都是已发生的事实：最后一条是「你在这里」（主色 + 外环），
+ * 其余全部填完成绿。不给节点分重要等级——空心节点会被读成「未完成」。
+ */
+function nodeState(index: number, total: number): 'current' | 'done' {
+  return index === total - 1 ? 'current' : 'done';
+}
+
 function eventDetail(payload: Record<string, unknown> | null): string | null {
   if (!payload) return null;
   const quantity = payload['quantity'];
@@ -72,6 +81,10 @@ export function OrderDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const focusAction = (searchParams.get('action') as OrderAction | null) ?? null;
+  const fromTasks = searchParams.get('from') === 'tasks';
+  const scrolledRef = useRef<string | null>(null);
   const [order, setOrder] = useState<OrderDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<{ message: string; notFound: boolean } | null>(null);
@@ -105,6 +118,19 @@ export function OrderDetailPage() {
       cancelled = true;
     };
   }, [id]);
+
+  // 从待办队列点进来：订单加载后把流转操作面板滚到视线中央，只滚一次
+  useEffect(() => {
+    if (!order || !focusAction) return;
+    const key = `${order.id}:${focusAction}`;
+    if (scrolledRef.current === key) return;
+    const target = document.getElementById('flow-actions');
+    if (!target) return;
+
+    scrolledRef.current = key;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+  }, [order, focusAction]);
 
   if (loading) {
     return (
@@ -153,9 +179,9 @@ export function OrderDetailPage() {
 
   return (
     <div className="page">
-      <Link className="back-link" to="/orders">
+      <Link className="back-link" to={fromTasks ? '/tasks' : '/orders'}>
         <ArrowLeft size={16} />
-        返回订单总览
+        {fromTasks ? '返回待办' : '返回订单总览'}
       </Link>
 
       {showCreated ? (
@@ -172,7 +198,7 @@ export function OrderDetailPage() {
           <p className="eyebrow">ORDER / {order.orderNo}</p>
           <h1 className="page-title detail-head__title">{order.customerName}</h1>
           <div className="detail-head__meta">
-            <StatusBadge status={order.status} />
+            <StatusBadge status={order.status} dueDate={order.dueDate} />
             <span className={`due due--${hint.tone}`}>{hint.text}</span>
             <span className="dot-sep" aria-hidden />
             <span>交期 {formatDateOnly(order.dueDate)}</span>
@@ -217,25 +243,45 @@ export function OrderDetailPage() {
                 </span>
               </div>
 
-              <div className="item-table">
-                <div className="item-table__head" aria-hidden>
-                  <span>产品</span>
-                  <span>数量</span>
-                  <span>单价</span>
-                  <span>小计</span>
-                </div>
-                {order.items.map((item) => (
-                  <div className="item-table__row" key={item.id}>
-                    <span className="item-table__product">
-                      <strong>{item.productName}</strong>
-                      <small>{item.spec}</small>
-                    </span>
-                    <span className="mono">{formatNumber(item.quantity)}</span>
-                    <span className="mono">{canSeeMoney ? formatMoney(item.unitPrice) : '—'}</span>
-                    <span className="mono">{canSeeMoney ? formatMoney(item.lineAmount) : '—'}</span>
-                  </div>
-                ))}
-              </div>
+              <DataTable
+                label="产品明细"
+                tableClassName="item-table"
+                headClassName="item-table__head"
+                rowClassName="item-table__row"
+                rowKey={(item) => item.id}
+                rows={order.items}
+                columns={[
+                  {
+                    key: 'product',
+                    title: '产品',
+                    className: 'item-table__product',
+                    cell: (item) => (
+                      <>
+                        <strong>{item.productName}</strong>
+                        <small>{item.spec}</small>
+                      </>
+                    ),
+                  },
+                  {
+                    key: 'quantity',
+                    title: '数量',
+                    className: 'mono',
+                    cell: (item) => formatNumber(item.quantity),
+                  },
+                  {
+                    key: 'unitPrice',
+                    title: '单价',
+                    className: 'mono',
+                    cell: (item) => (canSeeMoney ? formatMoney(item.unitPrice) : '—'),
+                  },
+                  {
+                    key: 'lineAmount',
+                    title: '小计',
+                    className: 'mono',
+                    cell: (item) => (canSeeMoney ? formatMoney(item.lineAmount) : '—'),
+                  },
+                ]}
+              />
 
               {!canSeeMoney ? (
                 <p className="detail-card__lock">
@@ -246,45 +292,11 @@ export function OrderDetailPage() {
           </section>
 
           <FlowLedger order={order} />
-
-          <section className="bezelt">
-            <div className="detail-card">
-              <div className="detail-card__head">
-                <h2>操作记录</h2>
-                <span className="detail-card__note mono">
-                  {order.timeline.length} {order.timeline.length === 1 ? 'EVENT' : 'EVENTS'}
-                </span>
-              </div>
-
-              {order.timeline.length === 0 ? (
-                <p className="detail-card__empty">暂时没有记录。</p>
-              ) : (
-                <ol className="timeline">
-                  {order.timeline.map((event) => (
-                    <li className="timeline__item" key={event.id}>
-                      <span className="timeline__dot" aria-hidden />
-                      <div className="timeline__body">
-                        <p className="timeline__title">
-                          {eventLabel(event.type)}
-                          {eventDetail(event.payload) ? (
-                            <span className="timeline__detail"> · {eventDetail(event.payload)}</span>
-                          ) : null}
-                        </p>
-                        <p className="timeline__meta">
-                          {event.actorName} · {formatDateTime(event.createdAt)}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              )}
-            </div>
-          </section>
         </div>
 
         <aside className="detail-grid__aside">
           {hasAction ? (
-            <FlowPanel order={order} onUpdated={setOrder} />
+            <FlowPanel order={order} onUpdated={setOrder} focusAction={focusAction} />
           ) : (
             <div className="bezelt">
               <div className="detail-card detail-card--tight">
@@ -346,6 +358,47 @@ export function OrderDetailPage() {
           </p>
         </aside>
       </div>
+
+      <section className="panel vtl-panel" aria-labelledby="order-history-title">
+        <div className="panel__head">
+          <div>
+            <h2 className="panel__title" id="order-history-title">订单历程</h2>
+            <p className="panel__meta">按发生顺序排列，全部来自订单事件流。</p>
+          </div>
+          <span className="panel__count mono">
+            {order.timeline.length} {order.timeline.length === 1 ? 'EVENT' : 'EVENTS'}
+          </span>
+        </div>
+
+        {order.timeline.length === 0 ? (
+          <p className="detail-card__empty">暂时没有记录。</p>
+        ) : (
+          <ol className="vtl">
+            {order.timeline.map((event, index) => {
+              const state = nodeState(index, order.timeline.length);
+              const detail = eventDetail(event.payload);
+              return (
+                <li
+                  className={`vtl__item vtl__item--${index % 2 === 0 ? 'left' : 'right'}`}
+                  key={event.id}
+                >
+                  <article className="vtl__card">
+                    <time className="vtl__time" dateTime={event.createdAt}>
+                      {formatDateTime(event.createdAt)}
+                    </time>
+                    <h3 className="vtl__title">{eventLabel(event.type)}</h3>
+                    <p className="vtl__body">
+                      {event.actorName}
+                      {detail ? <span className="vtl__detail"> · {detail}</span> : null}
+                    </p>
+                  </article>
+                  <span className={`vtl__node vtl__node--${state}`} aria-hidden />
+                </li>
+              );
+            })}
+          </ol>
+        )}
+      </section>
     </div>
   );
 }

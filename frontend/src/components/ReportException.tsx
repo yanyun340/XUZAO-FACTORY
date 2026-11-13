@@ -1,7 +1,9 @@
 import { useState, type FormEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { ApiError, apiPost } from '../api/client';
+import { useModalFocus } from '../hooks/useModalFocus';
 import { AlertIcon } from './Icons';
+import { announce } from './LiveAnnouncer';
 import { Button } from './ui';
 
 /** 平板端也能用：任何已登录角色都可以对当前订单上报现场异常。 */
@@ -11,6 +13,8 @@ export function ReportException({ orderId }: { orderId: string }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+
+  const cardRef = useModalFocus(open, () => setOpen(false), { canClose: () => !busy });
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -26,6 +30,7 @@ export function ReportException({ orderId }: { orderId: string }) {
       setDescription('');
       setDone(true);
       setOpen(false);
+      announce('异常已上报');
     } catch (caught) {
       setError(caught instanceof ApiError ? caught.message : '上报失败，请稍后重试');
     } finally {
@@ -59,7 +64,7 @@ export function ReportException({ orderId }: { orderId: string }) {
             aria-label="关闭"
             onClick={() => setOpen(false)}
           />
-          <form className="modal__card" onSubmit={(event) => void submit(event)}>
+          <form ref={cardRef} className="modal__card" onSubmit={(event) => void submit(event)}>
             <p className="eyebrow">INCIDENT REPORT</p>
             <h2 className="modal__title">上报异常</h2>
             <p className="modal__sub">描述越具体，管理员处理越快。上报会记录你的身份与时间。</p>
@@ -73,7 +78,7 @@ export function ReportException({ orderId }: { orderId: string }) {
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
                 placeholder="例如：3 号机台配件尺寸偏差，无法装配，已暂停该批次"
-                autoFocus
+                data-autofocus
               />
             </label>
 

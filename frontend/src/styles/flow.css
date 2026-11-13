@@ -1,0 +1,177 @@
+/* ============================================================
+   flow.css · 登录页六节点进度条
+   01 采购 → 02 到货 → 03 生产 → 04 质检 → 05 包装 → 06 发货
+   进入页面自动播放，每 1.8s 前进一格，播到 06 暂停；
+   节点是按钮，点击任意节点跳到该环节并暂停。
+   填充与光点 560ms ease-in-out 跟随，已完成节点实心、
+   当前节点描边高亮 + 外发光。
+   ============================================================ */
+
+.login__flowbar {
+  width: min(720px, calc(100% - 40px));
+  margin: clamp(18px, 2.6vh, 26px) auto 0;
+  padding: 20px 0 14px;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.flow {
+  position: relative;
+}
+
+/* 轨道两端各内缩半格，正好落在首尾节点的圆心 */
+.flow__rail {
+  position: absolute;
+  top: 25px;
+  left: calc(100% / 12);
+  right: calc(100% / 12);
+  height: 1px;
+  background: #e5e7eb;
+  /* 圆点用 cqw 沿轨道换算位移，不再动画 left */
+  container-type: inline-size;
+}
+
+/* 填充走 scaleX（合成层），500ms 内完成八成位移，余下时间柔顺收尾 */
+.flow__fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--ink);
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 560ms var(--ease-in-out);
+}
+
+.flow__dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--pine);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.16);
+  /* 100cqw = 轨道自身宽度，与节点间距一起缩放；只动 transform */
+  transform: translate(-50%, -50%) translateX(calc(var(--flow-p, 0) * 100cqw));
+  transition: transform 560ms var(--ease-in-out);
+}
+
+.flow__nodes {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+/* 节点本身是按钮：整列可点，点击跳转并暂停 */
+.flow__node {
+  appearance: none;
+  -webkit-appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.flow__node:focus-visible {
+  outline: 2px solid rgba(99, 102, 241, 0.5);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .flow__node:hover .flow__label {
+    color: var(--ink-2);
+  }
+
+  .flow__node:not(.is-active):not(.is-done):hover .flow__mark {
+    border-color: #94a3b8;
+  }
+}
+
+.flow__num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  color: #b0b7c3;
+  transition: color 380ms var(--ease-out) 150ms;
+}
+
+.flow__mark {
+  width: 10px;
+  height: 10px;
+  margin-top: 10px;
+  border-radius: 50%;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  /* 节点状态比光点晚 150ms 点亮、380ms 完成，正好在光点抵达时落定 */
+  transition:
+    background-color 380ms var(--ease-out) 150ms,
+    border-color 380ms var(--ease-out) 150ms,
+    box-shadow 380ms var(--ease-out) 150ms;
+}
+
+.flow__label {
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: #9ca3af;
+  transition: color 380ms var(--ease-out) 150ms;
+}
+
+.flow__node.is-done .flow__num {
+  color: var(--muted);
+}
+
+.flow__node.is-done .flow__mark {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.flow__node.is-done .flow__label {
+  color: var(--ink-2);
+}
+
+.flow__node.is-active .flow__num {
+  color: var(--pine);
+}
+
+.flow__node.is-active .flow__mark {
+  border-color: var(--pine);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.14);
+}
+
+.flow__node.is-active .flow__label {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+
+@media (max-width: 640px) {
+  .login__flowbar {
+    width: calc(100% - 32px);
+    padding-top: 18px;
+  }
+
+  .flow__label {
+    font-size: 11.5px;
+  }
+
+  }
+
+@media (prefers-reduced-motion: reduce) {
+  .flow__fill,
+  .flow__dot,
+  .flow__num,
+  .flow__mark,
+  .flow__label {
+    transition: none;
+  }
+}

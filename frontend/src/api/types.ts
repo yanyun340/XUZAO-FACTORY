@@ -57,6 +57,16 @@ export interface Part {
   createdAt: string;
 }
 
+/** 订单行的六段工序色带，顺序固定：采购→到货→生产→质检→包装→发货。 */
+export type StageKey = 'purchase' | 'arrival' | 'production' | 'qc' | 'packing' | 'shipping';
+export type StageState = 'done' | 'doing' | 'blocked' | 'todo';
+
+export interface OrderStage {
+  key: StageKey;
+  state: StageState;
+  label: string;
+}
+
 export interface OrderSummary {
   id: string;
   orderNo: string;
@@ -65,6 +75,8 @@ export interface OrderSummary {
   customerContact: string | null;
   dueDate: string;
   status: OrderStatus;
+  /** 列表接口返回；详情接口的摘要也带同一份。旧缓存缺失时前端回退到状态徽章。 */
+  stages?: OrderStage[];
   remark: string | null;
   itemCount: number;
   productSummary: string;
@@ -214,6 +226,14 @@ export interface OrderDetail extends OrderSummary {
   timeline: TimelineEntry[];
 }
 
+/** 待办队列的一行：订单摘要 + 六段工序 + 当前角色可立即执行的主操作。 */
+export interface TaskItem extends OrderSummary {
+  stages: OrderStage[];
+  action: OrderAction;
+  /** 本次可处理数量，口径与后端动作的数量闸门一致。 */
+  taskQty: number;
+}
+
 export interface PageMeta {
   requestId: string;
   page: number;
@@ -262,6 +282,15 @@ export interface NotificationSummary {
 export interface DashboardData {
   statusCounts: Record<string, number>;
   totalOrders: number;
+  /** 近 7 天 vs 前 7 天的真实流量，用于 KPI 变化率芯片；前 7 天为 0 时变化率不可比。 */
+  inflow: {
+    createdRecent7d: number;
+    createdPrevious7d: number;
+    createdDeltaPercent: number | null;
+    completedRecent7d: number;
+    completedPrevious7d: number;
+    completedDeltaPercent: number | null;
+  };
   production: { tasks: number; completedFeedback: number };
   profit: {
     sales: string;

@@ -15,6 +15,7 @@ import { flowRoutes } from './routes/flow.ts';
 import { healthRoutes } from './routes/health.ts';
 import { inventoryRoutes } from './routes/inventory.ts';
 import { orderRoutes } from './routes/orders.ts';
+import { taskRoutes } from './routes/tasks.ts';
 import { userRoutes } from './routes/users.ts';
 
 const WRITE_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
@@ -139,6 +140,7 @@ export function buildApp(): FastifyInstance {
   app.register(authRoutes);
   app.register(exportRoutes);
   app.register(orderRoutes);
+  app.register(taskRoutes);
   app.register(flowRoutes);
   app.register(baseDataRoutes);
   app.register(collabRoutes);

@@ -1,12 +1,15 @@
 import { Prisma } from '../generated/prisma/client.ts';
 import type { Order, OrderItem } from '../generated/prisma/client.ts';
-import type { Role } from '../generated/prisma/enums.ts';
+import type { OrderStatus, Role } from '../generated/prisma/enums.ts';
 import { toDateOnly } from '../lib/time.ts';
 import {
   computeAllowedActions,
   computeProfit,
   computeQuantities,
+  type FlowQuantities,
+  type OrderAction,
   type OrderFlowRow,
+  type OrderListRow,
 } from './flow.ts';
 
 export type OrderWithItems = Order & { items: OrderItem[] };
@@ -68,6 +71,210 @@ export function toOrderSummary(order: OrderWithItems, role: Role) {
     allowedActions: [] as string[],
   };
 }
+
+/** 订单行的六段工序：顺序固定，前端按下标渲染成色带。 */
+export type StageKey = 'purchase' | 'arrival' | 'production' | 'qc' | 'packing' | 'shipping';
+export type StageState = 'done' | 'doing' | 'blocked' | 'todo';
+
+export interface OrderStage {
+  key: StageKey;
+  state: StageState;
+  label: string;
+}
+
+export const STAGE_ORDER: StageKey[] = [
+  'purchase',
+  'arrival',
+  'production',
+  'qc',
+  'packing',
+  'shipping',
+];
+
+const STAGE_WORDS: Record<StageKey, { todo: string; doing: string; done: string }> = {
+  purchase: { todo: '待采购', doing: '采购中', done: '已下单' },
+  arrival: { todo: '待到货', doing: '部分到货', done: '已到货' },
+  production: { todo: '待生产', doing: '生产中', done: '已完工' },
+  qc: { todo: '待质检', doing: '质检中', done: '已质检' },
+  packing: { todo: '待包装', doing: '包装中', done: '已包装' },
+  shipping: { todo: '待发货', doing: '发货中', done: '已发货' },
+};
+
+/**
+ * 当前工序还没留下任何数量时，不能写成「…中」（采购还没下单、货一件没到、
+ * 质检还没登记，说「进行中」都是假话），退回待办措辞；派工即算开工的
+ * 生产/包装/发货仍用「…中」。
+ */
+function doingLabel(key: StageKey, started: boolean): string {
+  if (started) return STAGE_WORDS[key].doing;
+  return STAGE_WORDS[key].todo;
+}
+
+const ACTIVE_STAGE: Record<OrderStatus, StageKey | null> = {
+  PENDING_PURCHASE: 'purchase',
+  PURCHASING: 'arrival',
+  IN_PRODUCTION: 'production',
+  PENDING_QC: 'qc',
+  QC_DONE: 'qc',
+  PACKING: 'packing',
+  SHIPPING: 'shipping',
+  COMPLETED: null,
+};
+
+/**
+ * 阶段态由「数量是否走完」+「状态机当前停在哪」共同决定：
+ * 数量达标 = done，当前工序 = doing，逾期卡在当前工序 = blocked，其余 todo。
+ */
+export function computeStages(
+  quantities: FlowQuantities,
+  status: OrderStatus,
+  dueDate: string,
+  today: string,
+): OrderStage[] {
+  const target: Record<StageKey, number> = {
+    purchase: quantities.orderQty,
+    arrival: quantities.purchaseQty,
+    production: quantities.orderQty,
+    qc: quantities.producedQty,
+    packing: quantities.releasedQty || quantities.qualifiedQty,
+    shipping: quantities.packedQty,
+  };
+  const value: Record<StageKey, number> = {
+    purchase: quantities.purchaseQty,
+    arrival: quantities.arrivedQty,
+    production: quantities.producedQty,
+    qc: quantities.inspectedQty,
+    packing: quantities.packedQty,
+    shipping: quantities.shippedQty,
+  };
+
+  // 采购单还没建出来时，状态虽然已是「采购中」，实际仍停在采购段
+  const active =
+    status === 'PURCHASING' && quantities.purchaseQty === 0
+      ? 'purchase'
+      : ACTIVE_STAGE[status];
+  const overdue = status !== 'COMPLETED' && dueDate < today;
+
+  // 该工序是否真的动过工：采购看有没有下单，到货/质检看数量；
+  // 生产、包装、发货以「派工」为开工，状态已推进就写「…中」，与筛选器用词一致
+  const started: Record<StageKey, boolean> = {
+    purchase: status === 'PURCHASING',
+    arrival: quantities.arrivedQty > 0,
+    production: true,
+    qc: quantities.inspectedQty > 0,
+    packing: true,
+    shipping: true,
+  };
+
+  return STAGE_ORDER.map((key) => {
+    let state: StageState;
+    if (status === 'COMPLETED') state = 'done';
+    else if (target[key] > 0 && value[key] >= target[key]) state = 'done';
+    else if (key === active) state = overdue ? 'blocked' : 'doing';
+    else state = 'todo';
+
+    const words = STAGE_WORDS[key];
+    const label =
+      state === 'blocked'
+        ? '逾期'
+        : state === 'done'
+          ? words.done
+          : state === 'doing'
+            ? doingLabel(key, started[key])
+            : words.todo;
+
+    return { key, state, label };
+  });
+}
+
+/** 列表行：在摘要上补六段工序色带。 */
+export function toOrderSummaryWithStages(order: OrderListRow, role: Role, today: string) {
+  const summary = toOrderSummary(order, role);
+  return {
+    ...summary,
+    stages: computeStages(computeQuantities(order), order.status, summary.dueDate, today),
+  };
+}
+
+/** 待办卡上的「本次可处理量」——与对应动作的数量闸门同源。 */
+function taskQuantity(
+  action: OrderAction,
+  quantities: FlowQuantities,
+  productionQty: number,
+): number {
+  const raw = (() => {
+    switch (action) {
+      case 'create-purchase':
+        return quantities.orderQty;
+      case 'record-arrival':
+        return quantities.purchaseQty - quantities.arrivedQty;
+      case 'dispatch-production':
+        return quantities.arrivedQty;
+      case 'production-feedback':
+        return productionQty - quantities.producedQty;
+      case 'dispatch-qc':
+        return quantities.producedQty;
+      case 'qc-entry':
+        return quantities.producedQty - quantities.inspectedQty;
+      case 'qc-decision':
+        return quantities.inspectedQty;
+      case 'dispatch-packing':
+      case 'record-packing':
+        return quantities.packableRemaining;
+      case 'trigger-shipping':
+        return quantities.packedQty;
+      case 'record-shipment':
+        return quantities.shippableRemaining;
+    }
+  })();
+  return Math.max(0, raw);
+}
+
+export interface TaskItem extends ReturnType<typeof toOrderSummaryWithStages> {
+  action: OrderAction;
+  taskQty: number;
+}
+
+/**
+ * 待办队列的一行：只保留当前角色**立刻能推进**的订单，并带上主操作与数量。
+ * 没有可执行动作时返回 null，调用方据此过滤。
+ */
+export function toTaskItem(
+  order: OrderListRow,
+  role: Role,
+  userId: string,
+  departmentId: string | null,
+  today: string,
+): TaskItem | null {
+  const quantities = computeQuantities(order);
+  const actions = computeAllowedActions(order, quantities, role, userId, departmentId);
+  const action = actions[0];
+  if (!action) return null;
+
+  const productionQty = order.productions.at(-1)?.quantity ?? 0;
+
+  return {
+    ...toOrderSummaryWithStages(order, role, today),
+    action,
+    taskQty: taskQuantity(action, quantities, productionQty),
+  };
+}
+
+/** 各角色关心的状态：只查这些状态的订单，避免把整张表拉进内存再做动作判定。 */
+export const TASK_STATUSES: Record<Role, OrderStatus[]> = {
+  ADMIN: [
+    'PENDING_PURCHASE',
+    'PURCHASING',
+    'IN_PRODUCTION',
+    'PENDING_QC',
+    'QC_DONE',
+    'PACKING',
+  ],
+  LOGISTICS: ['PURCHASING', 'SHIPPING'],
+  PRODUCTION: ['IN_PRODUCTION'],
+  QC: ['PENDING_QC'],
+  PACKING: ['PACKING'],
+};
 
 export function toOrderDetail(
   order: OrderFlowRow,
