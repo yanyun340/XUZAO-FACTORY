@@ -416,6 +416,86 @@
   color: var(--muted);
 }
 
+/* ---------- 利润数字滚动 ----------
+   每个数字位是一列 0-9，整列上移到目标位。钱数里的 ¥、千分位、小数点不参与滚动。
+   时长与错峰写成变量：卡上想更快只需覆盖这四行，不用改结构。 */
+
+/* .profit__item span 的 10px 小字规则会命中滚动数字内部的每一个 span，
+   这里把它们拉回 dd 的 20px 与正文色（权重 0,2,1 > 0,1,1）。 */
+.profit--dash .roll-number,
+.profit--dash .roll-number span {
+  font-size: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
+
+.profit--dash {
+  --roll-duration: 1100ms;
+  --roll-stagger: 55ms;
+}
+
+.roll-number {
+  display: inline-flex;
+  align-items: baseline;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.roll-number__visual {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.roll-number__sep {
+  display: inline;
+  font: inherit;
+}
+
+.counter-roll-container {
+  display: inline-flex;
+  overflow: hidden;
+  width: 1ch;
+  height: 1em;
+  line-height: 1;
+  justify-content: center;
+}
+
+.counter-roll-digit {
+  display: inline-flex;
+  will-change: transform;
+  animation: counter-roll var(--roll-duration, 1100ms) cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--digit-index, 0) * var(--roll-stagger, 55ms) + var(--roll-delay, 0ms));
+}
+
+@keyframes counter-roll {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(calc(var(--counter-target, 0) * -1em));
+  }
+}
+
+/* 每一列里 0-9 竖排，行高与裁切窗口同高 */
+.counter-roll-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.counter-roll-column span {
+  height: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .counter-roll-digit {
+    animation: none;
+  }
+}
+
 .progress-stat {
   display: grid;
   gap: 12px;

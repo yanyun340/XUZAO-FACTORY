@@ -73,7 +73,10 @@ body:has(.landing) {
 /* 顶部导航条：左品牌与说明下拉，右登录入口 */
 .landing__nav {
   position: relative;
-  z-index: 1;
+  /* 必须高于 .landing__hero / .landing__stage（两者同为 z-index:1 且在 DOM 中更靠后）：
+     下拉面板的 z-index 只在导航自己的层叠上下文里生效，导航层不抬高，
+     面板右边就会压到主视觉下面，露出底下的大标题与那层蓝色。 */
+  z-index: 30;
   width: 100%;
   max-width: 1320px;
   margin-inline: auto;
@@ -308,6 +311,49 @@ body:has(.landing) {
   transform: scale(0.98);
 }
 
+/* ---------- 已登录时的身份与退出 ---------- */
+.landing__account {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 4px 4px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.06);
+}
+
+.landing__account-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--k-ink);
+}
+
+.landing__account-exit {
+  height: 30px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--k-muted);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition:
+    background-color 140ms var(--ease-out),
+    color 140ms var(--ease-out);
+}
+
+.landing__account-exit:hover {
+  background: rgba(17, 24, 39, 0.06);
+  color: var(--k-ink);
+}
+
+.landing__account-exit:active {
+  transform: scale(0.97);
+}
+
 /* ---------- 主视觉 ---------- */
 .landing__hero {
   position: relative;
@@ -401,6 +447,14 @@ body:has(.landing) {
   transition:
     transform 150ms var(--ease-out),
     box-shadow 150ms var(--ease-out);
+}
+
+/* 登录成功后停在首页：告诉用户下一步是上面那颗「进入系统」 */
+.landing__signed-in {
+  margin-top: 14px;
+  font-size: 12.5px;
+  letter-spacing: 0.01em;
+  color: var(--k-muted);
 }
 
 /* ---------- 底部渐变舞台 + 流程演示 ---------- */

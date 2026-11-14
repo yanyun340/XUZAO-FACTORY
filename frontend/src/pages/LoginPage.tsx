@@ -6,7 +6,7 @@ import {
   type FormEvent,
   type MouseEvent as ReactMouseEvent,
 } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ApiError } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 import { DropdownNav, type NavMenu } from '../components/DropdownNav';
@@ -26,7 +26,7 @@ const STEP_MS = 1800;
 const FLOW = ['采购', '到货', '生产', '质检', '包装', '发货'];
 
 export function LoginPage() {
-  const { user, login, loading: authLoading } = useAuth();
+  const { user, login, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [username, setUsername] = useState('admin');
@@ -159,11 +159,18 @@ export function LoginPage() {
     if (event.target === dialogRef.current) closeLogin();
   };
 
-  if (!authLoading && user) {
-    return <Navigate to="/orders" replace />;
-  }
-
+  // 登录成功也停在首页：工作台只能从「进入系统」进入。
+  // 若之前是被 RequireAuth 从某个内页踢回来的，进入系统后回到那一页。
   const from = (location.state as { from?: string } | null)?.from ?? '/orders';
+  const enterTarget = from.startsWith('/') ? from : '/orders';
+
+  const handleEnter = () => {
+    if (user) {
+      navigate(enterTarget, { replace: true });
+      return;
+    }
+    openLogin();
+  };
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -177,7 +184,9 @@ export function LoginPage() {
     setSubmitting(true);
     try {
       await login(username.trim(), password);
-      navigate(from.startsWith('/') ? from : '/orders', { replace: true });
+      setSubmitting(false);
+      setPassword('');
+      closeLogin();
     } catch (caught) {
       setError(caught instanceof ApiError ? caught.message : '登录失败，请稍后重试');
       setSubmitting(false);
@@ -252,9 +261,22 @@ export function LoginPage() {
           </div>
           <DropdownNav menus={menus} />
         </div>
-        <button type="button" className="landing__nav-cta" onClick={() => openLogin()}>
-          登录
-        </button>
+        {user ? (
+          <div className="landing__account">
+            <span className="landing__account-name">{user.displayName}</span>
+            <button
+              type="button"
+              className="landing__account-exit"
+              onClick={() => void logout()}
+            >
+              退出登录
+            </button>
+          </div>
+        ) : (
+          <button type="button" className="landing__nav-cta" onClick={() => openLogin()}>
+            登录
+          </button>
+        )}
       </header>
 
       <main className="landing__hero">
@@ -272,9 +294,14 @@ export function LoginPage() {
           </span>
           <span className="login__lede-narrow">订单到发货，全程在同一条数据链上协作。</span>
         </p>
-        <button type="button" className="landing__hero-cta" onClick={() => openLogin()}>
+        <button type="button" className="landing__hero-cta" onClick={handleEnter}>
           进入系统
         </button>
+        {user ? (
+          <p className="landing__signed-in" role="status">
+            已登录为 {user.displayName} · 点击「进入系统」进入工作台
+          </p>
+        ) : null}
       </main>
 
       <section className="landing__stage" aria-label="订单流转演示">
@@ -347,7 +374,7 @@ export function LoginPage() {
               <h2 className="login__card-title" id="login-title">
                 登录工作台
               </h2>
-              <p className="login__card-sub">使用分配给你的工厂角色账号进入系统。</p>
+              <p className="login__card-sub">使用分配给你的工厂角色账号登录，再从首页进入工作台。</p>
             </div>
 
             <form className="login__form" onSubmit={(event) => void handleSubmit(event)}>
@@ -386,7 +413,7 @@ export function LoginPage() {
               {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
 
               <button type="submit" className="btn btn--primary btn--block" disabled={submitting}>
-                <span className="btn__label">{submitting ? '正在验证…' : '进入工作台'}</span>
+                <span className="btn__label">{submitting ? '正在验证…' : '登录'}</span>
                 <span className="btn__trailing">
                   <ArrowUpRight size={16} />
                 </span>

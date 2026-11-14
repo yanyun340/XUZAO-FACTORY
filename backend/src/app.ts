@@ -20,6 +20,23 @@ import { userRoutes } from './routes/users.ts';
 
 const WRITE_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
+/**
+ * 上传来源校验：APP_ORIGIN 支持逗号分隔多个地址。
+ * 开发环境额外放行局域网 IP，便于手机连同一 Wi-Fi 直接调试。
+ */
+function isAllowedOrigin(origin: string | undefined): boolean {
+  if (!origin) return false;
+  const allowed = config.appOrigin.split(',').map((item) => item.trim());
+  if (allowed.includes(origin)) return true;
+  if (config.isProduction) return false;
+  try {
+    const { protocol, hostname } = new URL(origin);
+    return protocol === 'http:' && /^\d{1,3}(\.\d{1,3}){3}$/.test(hostname);
+  } catch {
+    return false;
+  }
+}
+
 const FIELD_LABELS: Record<string, string> = {
   username: '用户名',
   code: '编码',
@@ -57,7 +74,7 @@ export function buildApp(): FastifyInstance {
     // 附件上传只能用 multipart，额外要求 Origin 与站点一致
     if (contentType.includes('multipart/form-data')) {
       const origin = request.headers.origin;
-      if (!origin || origin !== config.appOrigin) {
+      if (!isAllowedOrigin(origin)) {
         throw Errors.forbidden('上传请求来源不合法');
       }
       return;

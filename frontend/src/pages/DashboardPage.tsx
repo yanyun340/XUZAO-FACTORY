@@ -4,6 +4,7 @@ import { ApiError, apiGet } from '../api/client';
 import type { DashboardData, NotificationSummary, OrderStatus } from '../api/types';
 import { useAuth } from '../auth/AuthContext';
 import { ArrowUpRight, RefreshIcon } from '../components/Icons';
+import { RollingNumber } from '../components/RollingNumber';
 import { EmptyState, InlineNotice, LoadingBlock, StatusBadge } from '../components/ui';
 import {
   STATUS_META,
@@ -266,20 +267,41 @@ export function DashboardPage() {
                   <dl className="profit profit--dash">
                     <div className="profit__item">
                       <dt>销售额</dt>
-                      <dd className="mono">{formatMoney(data.profit.sales)}</dd>
+                      <dd className="mono">
+                        <RollingNumber
+                          key={`sales-${reloadToken}`}
+                          value={formatMoney(data.profit.sales)}
+                        />
+                      </dd>
                     </div>
                     <div className="profit__item">
                       <dt>采购成本</dt>
-                      <dd className="mono">{formatMoney(data.profit.purchaseCost)}</dd>
+                      <dd className="mono">
+                        <RollingNumber
+                          key={`purchase-${reloadToken}`}
+                          value={formatMoney(data.profit.purchaseCost)}
+                          delay={90}
+                        />
+                      </dd>
                     </div>
                     <div className="profit__item">
                       <dt>生产成本</dt>
-                      <dd className="mono">{formatMoney(data.profit.productionCost)}</dd>
+                      <dd className="mono">
+                        <RollingNumber
+                          key={`production-${reloadToken}`}
+                          value={formatMoney(data.profit.productionCost)}
+                          delay={180}
+                        />
+                      </dd>
                     </div>
                     <div className="profit__item profit__item--total">
                       <dt>毛利</dt>
                       <dd className="mono">
-                        {formatMoney(data.profit.profit)}
+                        <RollingNumber
+                          key={`profit-${reloadToken}`}
+                          value={formatMoney(data.profit.profit)}
+                          delay={270}
+                        />
                         <span className="profit__margin">{data.profit.marginPercent}%</span>
                       </dd>
                     </div>
