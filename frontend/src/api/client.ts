@@ -117,6 +117,10 @@ export async function apiPatch<T>(path: string, body?: unknown): Promise<T> {
   return (await request<T>(path, { method: 'PATCH', body })).data;
 }
 
+export async function apiDelete<T>(path: string): Promise<T> {
+  return (await request<T>(path, { method: 'DELETE' })).data;
+}
+
 /** multipart 上传：不设置 Content-Type，交给浏览器补 boundary。 */
 export async function apiPostForm<T>(path: string, form: FormData): Promise<T> {
   let response: Response;

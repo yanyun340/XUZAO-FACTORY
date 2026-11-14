@@ -1,6 +1,6 @@
 # 序造 XuZao 文档索引
 
-当前版本：`0.1.0`（第三轮考核交付版本）
+当前版本：`0.2.0`（第三轮考核交付版本）
 更新时间：2026-11-04
 适用代码：本仓库当前提交（`main` 分支，未打 tag）
 
@@ -25,8 +25,9 @@
 
 | 证据 | 位置 | 说明 |
 | --- | --- | --- |
-| 自动化测试代码 | `backend/tests/` | 6 个 Vitest 文件，真实隔离库 `xuzao_test` |
-| 最近一次执行结果 | `tests/reports/2026-11-04-backend-tests.md` | 51 个用例全部通过，命令与耗时均已记录 |
+| 自动化测试代码 | `backend/tests/` | 13 个 Vitest 文件，真实隔离库 `xuzao_test` |
+| 最近一次执行结果 | `tests/reports/2026-11-14-backend-tests.md` | 102 个用例全部通过，命令与耗时均已记录 |
+| 部署与回退演练 | `tests/reports/2026-11-14-deploy-rollback.md` | `/ready` 三项检查；0.1.0 代码运行在 0.2.0 结构上的回退演练 |
 | 备份恢复演练 | `tests/reports/2026-11-04-backup-restore.md` | 恢复到新库 `xuzao_restore_verify_20261104b` 与隔离附件目录，28 张表 + 2 个附件核对一致 |
 | 手工冒烟脚本 | `scripts/smoke-*.mjs` | 开发期使用，不作为自动化验收证据；说明见 `tests/README.md` |
 | 视觉检查截图 | `.shots/`（不入交付包） | 桌面与 390px 视口的页面截图，属于过程材料 |

@@ -1,9 +1,11 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { ApiError, apiGetPage, apiPatch, apiPost } from '../api/client';
-import type { Customer, Department, PageMeta } from '../api/types';
+import type { Customer, Department, PageMeta, SupplierType } from '../api/types';
 import { useAuth } from '../auth/AuthContext';
 import { DataTable } from '../components/DataTable';
+import { ImportDialog } from '../components/ImportDialog';
+import { PartSuppliersDialog } from '../components/PartSuppliersDialog';
 import { PlusIcon } from '../components/Icons';
 import { announce } from '../components/LiveAnnouncer';
 import {
@@ -15,7 +17,11 @@ import {
   SectionHeading,
 } from '../components/ui';
 import { useModalFocus } from '../hooks/useModalFocus';
-import { formatDateOnly } from '../lib/format';
+import {
+  SUPPLIER_TYPE_LABEL,
+  SUPPLIER_TYPE_OPTIONS,
+  formatDateOnly,
+} from '../lib/format';
 
 type TabKey = 'customers' | 'suppliers' | 'parts' | 'departments' | 'employees';
 
@@ -33,6 +39,7 @@ interface Supplier {
   name: string;
   contact: string | null;
   phone: string | null;
+  type: SupplierType;
   active: boolean;
   createdAt: string;
 }
@@ -552,10 +559,12 @@ function SupplierPanel({ canEdit }: { canEdit: boolean }) {
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
   const [phone, setPhone] = useState('');
+  const [type, setType] = useState<SupplierType>('NORMAL');
   const create = useCreate('/suppliers', () => {
     setName('');
     setContact('');
     setPhone('');
+    setType('NORMAL');
     collection.reload();
   });
   const [editing, setEditing] = useState<Supplier | null>(null);
@@ -569,6 +578,7 @@ function SupplierPanel({ canEdit }: { canEdit: boolean }) {
     if (!name.trim()) return;
     await create.submit({
       name: name.trim(),
+      type,
       ...(contact.trim() ? { contact: contact.trim() } : {}),
       ...(phone.trim() ? { phone: phone.trim() } : {}),
     });
@@ -596,6 +606,11 @@ function SupplierPanel({ canEdit }: { canEdit: boolean }) {
             },
             { key: 'contact', label: '联系人', render: (item) => item.contact ?? '—' },
             { key: 'phone', label: '电话', render: (item) => <span className="mono">{item.phone ?? '—'}</span> },
+            {
+              key: 'type',
+              label: '类型',
+              render: (item) => SUPPLIER_TYPE_LABEL[item.type] ?? item.type,
+            },
             { key: 'active', label: '状态', render: (item) => <StatusCell active={item.active} /> },
             ...(canEdit
               ? [
@@ -647,6 +662,20 @@ function SupplierPanel({ canEdit }: { canEdit: boolean }) {
                 placeholder="选填"
               />
             </Field>
+            <Field label="供应商类型" htmlFor="supplier-type">
+              <select
+                id="supplier-type"
+                className="input input--select"
+                value={type}
+                onChange={(event) => setType(event.target.value as SupplierType)}
+              >
+                {SUPPLIER_TYPE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </Field>
             {create.error ? <InlineNotice tone="error">{create.error}</InlineNotice> : null}
             {create.saved ? <InlineNotice tone="info">供应商已添加。</InlineNotice> : null}
             <Button type="submit" loading={create.submitting} trailing={<PlusIcon size={16} />}>
@@ -666,12 +695,20 @@ function SupplierPanel({ canEdit }: { canEdit: boolean }) {
             name: editing.name,
             contact: editing.contact ?? '',
             phone: editing.phone ?? '',
+            type: editing.type,
             active: editing.active,
           }}
           fields={[
             { key: 'name', label: '供应商名称', kind: 'text', required: true },
             { key: 'contact', label: '联系人', kind: 'text', placeholder: '选填' },
             { key: 'phone', label: '电话', kind: 'text', placeholder: '选填' },
+            {
+              key: 'type',
+              label: '供应商类型',
+              kind: 'select',
+              required: true,
+              options: SUPPLIER_TYPE_OPTIONS,
+            },
             { key: 'active', label: '启用（停用后不能用于新建采购）', kind: 'check' },
           ]}
           busy={update.busy}
@@ -685,6 +722,7 @@ function SupplierPanel({ canEdit }: { canEdit: boolean }) {
               name: String(values.name ?? '').trim(),
               contact: String(values.contact ?? '').trim() || null,
               phone: String(values.phone ?? '').trim() || null,
+              type: String(values.type ?? editing.type),
               active: Boolean(values.active),
             })
           }
@@ -704,6 +742,7 @@ function PartPanel({ canEdit }: { canEdit: boolean }) {
     collection.reload();
   });
   const [editing, setEditing] = useState<Part | null>(null);
+  const [supplierPart, setSupplierPart] = useState<Part | null>(null);
   const update = useUpdate(() => {
     setEditing(null);
     collection.reload();
@@ -742,12 +781,21 @@ function PartPanel({ canEdit }: { canEdit: boolean }) {
                     key: 'actions',
                     label: '操作',
                     render: (item: Part) => (
-                      <RowActions
-                        active={item.active}
-                        onEdit={() => setEditing(item)}
-                        onToggle={() => toggle(item)}
-                        busy={update.busy}
-                      />
+                      <div className="row-actions">
+                        <button
+                          type="button"
+                          className="text-btn"
+                          onClick={() => setSupplierPart(item)}
+                        >
+                          供应商
+                        </button>
+                        <RowActions
+                          active={item.active}
+                          onEdit={() => setEditing(item)}
+                          onToggle={() => toggle(item)}
+                          busy={update.busy}
+                        />
+                      </div>
                     ),
                   },
                 ]
@@ -813,6 +861,17 @@ function PartPanel({ canEdit }: { canEdit: boolean }) {
           }
         />
       ) : null}
+
+      {supplierPart ? (
+        <PartSuppliersDialog
+          key={supplierPart.id}
+          part={supplierPart}
+          onClose={() => {
+            setSupplierPart(null);
+            collection.reload();
+          }}
+        />
+      ) : null}
     </div>
   );
 }
@@ -831,9 +890,11 @@ function DepartmentPanel({ canEdit }: { canEdit: boolean }) {
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [category, setCategory] = useState('PRODUCTION');
+  const [priceVisible, setPriceVisible] = useState(false);
   const create = useCreate('/departments', () => {
     setCode('');
     setName('');
+    setPriceVisible(false);
     collection.reload();
   });
   const [editing, setEditing] = useState<DepartmentRow | null>(null);
@@ -845,7 +906,12 @@ function DepartmentPanel({ canEdit }: { canEdit: boolean }) {
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     if (!code.trim() || !name.trim()) return;
-    await create.submit({ code: code.trim(), name: name.trim(), category });
+    await create.submit({
+      code: code.trim(),
+      name: name.trim(),
+      category,
+      unitPriceVisible: priceVisible,
+    });
   };
 
   const toggle = (item: DepartmentRow) =>
@@ -874,6 +940,11 @@ function DepartmentPanel({ canEdit }: { canEdit: boolean }) {
               render: (item) =>
                 DEPARTMENT_CATEGORIES.find((entry) => entry.value === item.category)?.label ??
                 item.category,
+            },
+            {
+              key: 'price',
+              label: '工艺价',
+              render: (item) => (item.unitPriceVisible ? '部门可见' : '默认隐藏'),
             },
             {
               key: 'employees',
@@ -936,6 +1007,14 @@ function DepartmentPanel({ canEdit }: { canEdit: boolean }) {
                 ))}
               </select>
             </Field>
+            <label className="check-field">
+              <input
+                type="checkbox"
+                checked={priceVisible}
+                onChange={(event) => setPriceVisible(event.target.checked)}
+              />
+              <span>本部门可见生产计件单价（默认隐藏）</span>
+            </label>
             {create.error ? <InlineNotice tone="error">{create.error}</InlineNotice> : null}
             {create.saved ? <InlineNotice tone="info">部门已添加。</InlineNotice> : null}
             <Button type="submit" loading={create.submitting} trailing={<PlusIcon size={16} />}>
@@ -955,6 +1034,7 @@ function DepartmentPanel({ canEdit }: { canEdit: boolean }) {
             name: editing.name,
             category: editing.category,
             active: editing.active !== false,
+            unitPriceVisible: editing.unitPriceVisible === true,
           }}
           fields={[
             { key: 'name', label: '部门名称', kind: 'text', required: true },
@@ -966,6 +1046,11 @@ function DepartmentPanel({ canEdit }: { canEdit: boolean }) {
               options: DEPARTMENT_CATEGORIES,
             },
             { key: 'active', label: '启用（停用后不能再承接新任务）', kind: 'check' },
+            {
+              key: 'unitPriceVisible',
+              label: '本部门可见生产计件单价',
+              kind: 'check',
+            },
           ]}
           busy={update.busy}
           error={update.error}
@@ -978,6 +1063,7 @@ function DepartmentPanel({ canEdit }: { canEdit: boolean }) {
               name: String(values.name ?? '').trim(),
               category: String(values.category ?? editing.category),
               active: Boolean(values.active),
+              unitPriceVisible: Boolean(values.unitPriceVisible),
             })
           }
         />
@@ -1132,6 +1218,8 @@ function EmployeePanel({ canEdit }: { canEdit: boolean }) {
 export function BaseDataPage() {
   const { user } = useAuth();
   const [tab, setTab] = useState<TabKey>('customers');
+  const [importOpen, setImportOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const canEdit = user?.role === 'ADMIN';
   const activeTab = TABS.find((entry) => entry.key === tab)!;
 
@@ -1163,16 +1251,31 @@ export function BaseDataPage() {
         ))}
       </div>
 
-      <p className="tab-caption">
-        <span className="mono">/ {activeTab.key.toUpperCase()}</span>
-        {activeTab.hint}
-      </p>
+      <div className="tab-caption-row">
+        <p className="tab-caption">
+          <span className="mono">/ {activeTab.key.toUpperCase()}</span>
+          {activeTab.hint}
+        </p>
+        {canEdit ? (
+          <button type="button" className="btn btn--secondary btn--sm" onClick={() => setImportOpen(true)}>
+            <span className="btn__label">Excel 导入</span>
+          </button>
+        ) : null}
+      </div>
 
+      <div key={refreshKey}>
       {tab === 'customers' ? <CustomerPanel canEdit={canEdit} /> : null}
       {tab === 'suppliers' ? <SupplierPanel canEdit={canEdit} /> : null}
       {tab === 'parts' ? <PartPanel canEdit={canEdit} /> : null}
       {tab === 'departments' ? <DepartmentPanel canEdit={canEdit} /> : null}
       {tab === 'employees' ? <EmployeePanel canEdit={canEdit} /> : null}
+      </div>
+
+      <ImportDialog
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        onImported={() => setRefreshKey((key) => key + 1)}
+      />
     </div>
   );
 }

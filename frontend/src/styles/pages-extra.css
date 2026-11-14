@@ -43,7 +43,27 @@
   border-radius: 999px;
   font-size: 14px;
   color: var(--muted);
+  white-space: nowrap;
   transition: color 150ms var(--ease-out), background-color 150ms var(--ease-out);
+}
+
+@media (max-width: 480px) {
+  .segmented {
+    display: flex;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .segmented::-webkit-scrollbar {
+    display: none;
+  }
+
+  .segmented__item {
+    flex: 0 0 auto;
+    padding: 8px 14px;
+    font-size: 13px;
+  }
 }
 
 .segmented__item.is-active {
@@ -622,6 +642,11 @@
   font-size: 13px;
 }
 
+.notice-filters {
+  max-width: 220px;
+  margin-top: 12px;
+}
+
 .notice-list,
 .exception-list,
 .attach-list {
@@ -895,6 +920,32 @@
   animation: modal-rise 180ms var(--ease-out) both;
 }
 
+.modal__card--wide {
+  width: min(680px, 100%);
+}
+
+.import-result {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+}
+
+.import-errors {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 220px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--vermilion);
+}
+
 .modal__title {
   font-family: var(--font-display);
   font-size: 20px;
@@ -1056,6 +1107,16 @@
   color: var(--green);
 }
 
+.exception-item__status--in_progress {
+  border-color: rgba(37, 99, 235, 0.35);
+  color: #2563eb;
+}
+
+.exception-item__status--resolved {
+  border-color: rgba(4, 120, 87, 0.3);
+  color: var(--green);
+}
+
 .exception-item__body {
   flex: 1;
   min-width: 0;
@@ -1078,6 +1139,123 @@
   gap: 4px;
   flex: none;
   font-size: 12.5px;
+}
+
+.exception-item--stack {
+  display: block;
+}
+
+.exception-item__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.exception-item__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex: none;
+}
+
+.exception-item__resolution {
+  margin-top: 6px;
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+
+.exception-dispose {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 14px 0 0 52px;
+}
+
+.exception-dispose .field {
+  min-width: 200px;
+}
+
+.exception-dispose__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.price-history {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.price-history__item {
+  word-break: break-word;
+}
+
+.tag {
+  flex: none;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 500;
+  vertical-align: middle;
+}
+
+.badge--default {
+  color: #047857;
+  background: rgba(4, 120, 87, 0.1);
+}
+
+.row-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .exception-item__head {
+    flex-wrap: wrap;
+    gap: 8px 12px;
+  }
+
+  .exception-item__body {
+    flex: 1 1 100%;
+    order: 3;
+  }
+
+  .exception-item__actions {
+    flex: 1 1 100%;
+    order: 4;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .exception-dispose {
+    padding-left: 0;
+  }
+
+  .exception-dispose .field {
+    min-width: 100%;
+  }
 }
 
 /* ---------- 账号管理 ---------- */
@@ -1431,6 +1609,41 @@
 
 .audit-detail {
   min-width: 0;
+}
+
+.audit-detail--changes {
+  margin-bottom: 14px;
+}
+
+.audit-changes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.audit-changes__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.audit-changes__field {
+  min-width: 120px;
+  color: var(--muted);
+}
+
+.audit-changes__value {
+  word-break: break-word;
+}
+
+.audit-changes__arrow {
+  color: var(--muted);
 }
 
 .audit-detail__label {

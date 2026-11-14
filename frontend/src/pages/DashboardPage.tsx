@@ -60,14 +60,22 @@ export function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
+  const [filters, setFilters] = useState({ from: '', to: '', ownerId: '' });
+  const [draft, setDraft] = useState({ from: '', to: '', ownerId: '' });
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setError(null);
 
+    const params = new URLSearchParams();
+    if (filters.from) params.set('from', filters.from);
+    if (filters.to) params.set('to', filters.to);
+    if (filters.ownerId) params.set('ownerId', filters.ownerId);
+    const query = params.toString();
+
     Promise.all([
-      apiGet<DashboardData>('/dashboard'),
+      apiGet<DashboardData>(`/dashboard${query ? `?${query}` : ''}`),
       apiGet<NotificationSummary>('/notifications/summary').catch(() => null),
     ])
       .then(([dashboard, summary]) => {
@@ -86,9 +94,11 @@ export function DashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, [reloadToken]);
+  }, [reloadToken, filters]);
 
   const isAdmin = user?.role === 'ADMIN';
+  // 非管理员后端直接返回 null，前端不再靠角色猜测字段是否存在。
+  const profit = data?.profit ?? null;
   const counts = data?.statusCounts ?? {};
   const total = data?.totalOrders ?? 0;
   const inProduction = (counts['IN_PRODUCTION'] ?? 0) + (counts['PENDING_QC'] ?? 0) + (counts['QC_DONE'] ?? 0) + (counts['PACKING'] ?? 0);
@@ -130,6 +140,64 @@ export function DashboardPage() {
           </Link>
         </div>
       </header>
+
+      <form
+        className="audit-filters"
+        role="search"
+        onSubmit={(event) => {
+          event.preventDefault();
+          setFilters({ ...draft });
+        }}
+      >
+        <label className="audit-filters__field">
+          <span>起始日期</span>
+          <input
+            className="input"
+            type="date"
+            value={draft.from}
+            onChange={(event) => setDraft({ ...draft, from: event.target.value })}
+          />
+        </label>
+        <label className="audit-filters__field">
+          <span>结束日期</span>
+          <input
+            className="input"
+            type="date"
+            value={draft.to}
+            onChange={(event) => setDraft({ ...draft, to: event.target.value })}
+          />
+        </label>
+        <label className="audit-filters__field">
+          <span>负责人</span>
+          <select
+            className="input"
+            value={draft.ownerId}
+            onChange={(event) => setDraft({ ...draft, ownerId: event.target.value })}
+          >
+            <option value="">全部</option>
+            {(data?.owners ?? []).map((owner) => (
+              <option key={owner.id} value={owner.id}>
+                {owner.displayName}
+              </option>
+            ))}
+          </select>
+        </label>
+        <div className="audit-filters__actions">
+          <button type="submit" className="btn btn--sm">
+            <span className="btn__label">筛选</span>
+          </button>
+          <button
+            type="button"
+            className="text-btn"
+            onClick={() => {
+              setDraft({ from: '', to: '', ownerId: '' });
+              setFilters({ from: '', to: '', ownerId: '' });
+            }}
+          >
+            清空
+          </button>
+        </div>
+      </form>
 
       {error ? (
         <InlineNotice tone="error">
@@ -243,7 +311,9 @@ export function DashboardPage() {
                           className={`dist-legend__dot dist-legend__dot--${STATUS_META[status].chart}`}
                           aria-hidden
                         />
-                        <span className="dist-legend__label">{STATUS_META[status].label}</span>
+                        <Link className="dist-legend__label" to={`/orders?status=${status}`}>
+                          {STATUS_META[status].label}
+                        </Link>
                         <span className="dist-legend__value mono">{counts[status] ?? 0}</span>
                       </li>
                     ))}
@@ -262,7 +332,7 @@ export function DashboardPage() {
                 </div>
               </div>
 
-              {isAdmin ? (
+              {isAdmin && profit ? (
                 <>
                   <dl className="profit profit--dash">
                     <div className="profit__item">
@@ -270,7 +340,7 @@ export function DashboardPage() {
                       <dd className="mono">
                         <RollingNumber
                           key={`sales-${reloadToken}`}
-                          value={formatMoney(data.profit.sales)}
+                          value={formatMoney(profit.sales)}
                         />
                       </dd>
                     </div>
@@ -279,7 +349,7 @@ export function DashboardPage() {
                       <dd className="mono">
                         <RollingNumber
                           key={`purchase-${reloadToken}`}
-                          value={formatMoney(data.profit.purchaseCost)}
+                          value={formatMoney(profit.purchaseCost)}
                           delay={90}
                         />
                       </dd>
@@ -289,7 +359,7 @@ export function DashboardPage() {
                       <dd className="mono">
                         <RollingNumber
                           key={`production-${reloadToken}`}
-                          value={formatMoney(data.profit.productionCost)}
+                          value={formatMoney(profit.productionCost)}
                           delay={180}
                         />
                       </dd>
@@ -299,10 +369,10 @@ export function DashboardPage() {
                       <dd className="mono">
                         <RollingNumber
                           key={`profit-${reloadToken}`}
-                          value={formatMoney(data.profit.profit)}
+                          value={formatMoney(profit.profit)}
                           delay={270}
                         />
-                        <span className="profit__margin">{data.profit.marginPercent}%</span>
+                        <span className="profit__margin">{profit.marginPercent}%</span>
                       </dd>
                     </div>
                   </dl>
@@ -325,6 +395,80 @@ export function DashboardPage() {
                   <p className="dash-footnote">金额与利润仅管理员可见，服务端已按角色脱敏。</p>
                 </>
               )}
+            </section>
+          </div>
+
+          <section className="panel panel--pad dash-panel">
+            <div className="panel__head">
+              <div>
+                <h2 className="panel__title">生产看板</h2>
+                <p className="panel__meta">按部门汇总当前筛选范围内的任务与完成量</p>
+              </div>
+            </div>
+            {data.productionBoard.length === 0 ? (
+              <p className="detail-card__empty">当前筛选下还没有生产任务。</p>
+            ) : (
+              <div className="progress-stat">
+                {data.productionBoard.map((row) => {
+                  const percent =
+                    row.plannedQty === 0
+                      ? 0
+                      : Math.round((row.completedQty / row.plannedQty) * 100);
+                  return (
+                    <div className="progress-stat__row" key={row.departmentId}>
+                      <span>
+                        {row.departmentName} · {row.tasks} 个任务
+                      </span>
+                      <strong className="mono">
+                        {formatNumber(row.completedQty)} / {formatNumber(row.plannedQty)}（{percent}%）
+                      </strong>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+
+          <div className="dash-grid">
+            <section className="panel panel--pad dash-panel">
+              <div className="panel__head">
+                <div>
+                  <h2 className="panel__title">库存汇总</h2>
+                  <p className="panel__meta">手工台账当前数量，包装与发货不会自动扣减</p>
+                </div>
+              </div>
+              <div className="progress-stat">
+                <div className="progress-stat__row">
+                  <span>配件库存</span>
+                  <strong className="mono">{formatNumber(data.inventory.parts)}</strong>
+                </div>
+                <div className="progress-stat__row">
+                  <span>成品库存</span>
+                  <strong className="mono">{formatNumber(data.inventory.products)}</strong>
+                </div>
+              </div>
+            </section>
+
+            <section className="panel panel--pad dash-panel">
+              <div className="panel__head">
+                <div>
+                  <h2 className="panel__title">发货完成率</h2>
+                  <p className="panel__meta">已发货数量 ÷ 订单应交数量</p>
+                </div>
+              </div>
+              <div className="progress-stat">
+                <div className="progress-stat__row">
+                  <span>已发货 / 应交</span>
+                  <strong className="mono">
+                    {formatNumber(data.shipping.shippedQty)} /{' '}
+                    {formatNumber(data.shipping.orderQty)}
+                  </strong>
+                </div>
+                <div className="progress-stat__row">
+                  <span>完成率</span>
+                  <strong className="mono">{data.shipping.completionPercent}%</strong>
+                </div>
+              </div>
             </section>
           </div>
 

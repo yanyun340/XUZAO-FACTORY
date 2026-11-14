@@ -2,9 +2,9 @@ import type { FastifyInstance, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { authenticate, authContext, requireAdmin } from '../auth/guards.ts';
 import { prisma } from '../db.ts';
-import { Errors } from '../errors.ts';
+import { Errors, isPrismaError } from '../errors.ts';
 import type { Prisma } from '../generated/prisma/client.ts';
-import { DepartmentCategory } from '../generated/prisma/enums.ts';
+import { DepartmentCategory, SupplierType } from '../generated/prisma/enums.ts';
 import { ok } from '../http/respond.ts';
 import { writeAudit } from '../lib/audit.ts';
 import { nextCode } from '../lib/sequence.ts';
@@ -135,13 +135,20 @@ export async function baseDataRoutes(app: FastifyInstance): Promise<void> {
         name: z.string().trim().min(1, '供应商名称不能为空').max(100),
         contact: z.string().trim().max(50).optional(),
         phone: z.string().trim().max(30).optional(),
+        type: z.nativeEnum(SupplierType).default('NORMAL'),
       })
       .parse(request.body);
 
     const supplier = await prisma.$transaction(async (tx) => {
       const code = body.code ?? (await nextCode(tx, 'supplier', 'SUP'));
       const created = await tx.supplier.create({
-        data: { code, name: body.name, contact: body.contact, phone: body.phone },
+        data: {
+          code,
+          name: body.name,
+          contact: body.contact,
+          phone: body.phone,
+          type: body.type,
+        },
       });
       await writeAudit(tx, {
         requestId: request.id,
@@ -149,7 +156,7 @@ export async function baseDataRoutes(app: FastifyInstance): Promise<void> {
         action: 'supplier.create',
         resourceType: 'supplier',
         resourceId: created.id,
-        after: { code: created.code, name: created.name },
+        after: { code: created.code, name: created.name, type: created.type },
       });
       return created;
     });
@@ -366,6 +373,7 @@ export async function baseDataRoutes(app: FastifyInstance): Promise<void> {
       name: z.string().trim().min(1, '供应商名称不能为空').max(100).optional(),
       contact: z.string().trim().max(50).nullable().optional(),
       phone: z.string().trim().max(30).nullable().optional(),
+      type: z.nativeEnum(SupplierType).optional(),
       active: z.boolean().optional(),
     }).parse(request.body);
 
@@ -380,8 +388,20 @@ export async function baseDataRoutes(app: FastifyInstance): Promise<void> {
         action: 'supplier.update',
         resourceType: 'supplier',
         resourceId: id,
-        before: { name: before.name, contact: before.contact, phone: before.phone, active: before.active },
-        after: { name: supplier.name, contact: supplier.contact, phone: supplier.phone, active: supplier.active },
+        before: {
+          name: before.name,
+          contact: before.contact,
+          phone: before.phone,
+          type: before.type,
+          active: before.active,
+        },
+        after: {
+          name: supplier.name,
+          contact: supplier.contact,
+          phone: supplier.phone,
+          type: supplier.type,
+          active: supplier.active,
+        },
       });
       return supplier;
     });
@@ -418,6 +438,200 @@ export async function baseDataRoutes(app: FastifyInstance): Promise<void> {
     return ok(reply, updated);
   });
 
+  // ---------- 配件-供应商（R02F） ----------
+  app.get('/api/v1/parts/:id/suppliers', { preHandler: authenticate }, async (request, reply) => {
+    const { id } = idParam.parse(request.params);
+    const part = await prisma.part.findUnique({ where: { id }, select: { id: true } });
+    if (!part) throw Errors.notFound('配件不存在', 'PART_NOT_FOUND');
+
+    const rows = await prisma.partSupplier.findMany({
+      where: { partId: id },
+      include: { supplier: { select: { code: true, name: true, type: true, active: true } } },
+      orderBy: [{ isDefault: 'desc' }, { createdAt: 'asc' }],
+    });
+
+    return ok(
+      reply,
+      rows.map((row) => ({
+        id: row.id,
+        partId: row.partId,
+        supplierId: row.supplierId,
+        supplierCode: row.supplier.code,
+        supplierName: row.supplier.name,
+        supplierType: row.supplier.type,
+        supplierActive: row.supplier.active,
+        isDefault: row.isDefault,
+        createdAt: row.createdAt.toISOString(),
+      })),
+    );
+  });
+
+  app.post(
+    '/api/v1/parts/:id/suppliers',
+    { preHandler: [authenticate, requireAdmin] },
+    async (request, reply) => {
+      const auth = authContext(request);
+      const { id } = idParam.parse(request.params);
+      const body = z
+        .object({
+          supplierId: z.string().uuid('供应商 ID 不合法'),
+          isDefault: z.boolean().default(false),
+        })
+        .parse(request.body);
+
+      const part = await prisma.part.findUnique({ where: { id }, select: { id: true } });
+      if (!part) throw Errors.notFound('配件不存在', 'PART_NOT_FOUND');
+
+      const supplier = await prisma.supplier.findUnique({ where: { id: body.supplierId } });
+      if (!supplier || !supplier.active) {
+        throw Errors.business('供应商不存在或已停用', 'SUPPLIER_NOT_FOUND');
+      }
+
+      try {
+        const created = await prisma.$transaction(async (tx) => {
+          const existing = await tx.partSupplier.findUnique({
+            where: { partId_supplierId: { partId: id, supplierId: body.supplierId } },
+          });
+          if (existing) {
+            throw Errors.conflict('PART_SUPPLIER_EXISTS', '该供应商已经关联到此配件');
+          }
+          if (body.isDefault) {
+            await tx.partSupplier.updateMany({
+              where: { partId: id, isDefault: true },
+              data: { isDefault: false },
+            });
+          }
+          const row = await tx.partSupplier.create({
+            data: { partId: id, supplierId: body.supplierId, isDefault: body.isDefault },
+            include: { supplier: { select: { code: true, name: true, type: true, active: true } } },
+          });
+          await writeAudit(tx, {
+            requestId: request.id,
+            actorId: auth.user.id,
+            action: 'part.supplier.add',
+            resourceType: 'part',
+            resourceId: id,
+            after: {
+              supplierId: row.supplierId,
+              supplierName: row.supplier.name,
+              isDefault: row.isDefault,
+            },
+          });
+          return row;
+        });
+
+        return ok(
+          reply,
+          {
+            id: created.id,
+            partId: created.partId,
+            supplierId: created.supplierId,
+            supplierCode: created.supplier.code,
+            supplierName: created.supplier.name,
+            supplierType: created.supplier.type,
+            supplierActive: created.supplier.active,
+            isDefault: created.isDefault,
+            createdAt: created.createdAt.toISOString(),
+          },
+          201,
+        );
+      } catch (error) {
+        if (isPrismaError(error, 'P2002')) {
+          throw Errors.conflict('DEFAULT_SUPPLIER_CONFLICT', '该配件已有默认供应商，请重试');
+        }
+        throw error;
+      }
+    },
+  );
+
+  app.patch(
+    '/api/v1/parts/:id/suppliers/:supplierId',
+    { preHandler: [authenticate, requireAdmin] },
+    async (request, reply) => {
+      const auth = authContext(request);
+      const { id } = idParam.parse(request.params);
+      const { supplierId } = z
+        .object({ supplierId: z.string().uuid('供应商 ID 不合法') })
+        .parse(request.params);
+      const body = z.object({ isDefault: z.boolean() }).parse(request.body);
+
+      const before = await prisma.partSupplier.findUnique({
+        where: { partId_supplierId: { partId: id, supplierId } },
+      });
+      if (!before) throw Errors.notFound('配件与供应商没有关联', 'PART_SUPPLIER_NOT_FOUND');
+
+      try {
+        const updated = await prisma.$transaction(async (tx) => {
+          if (body.isDefault) {
+            await tx.partSupplier.updateMany({
+              where: { partId: id, isDefault: true, supplierId: { not: supplierId } },
+              data: { isDefault: false },
+            });
+          }
+          const row = await tx.partSupplier.update({
+            where: { partId_supplierId: { partId: id, supplierId } },
+            data: { isDefault: body.isDefault },
+          });
+          await writeAudit(tx, {
+            requestId: request.id,
+            actorId: auth.user.id,
+            action: 'part.supplier.default',
+            resourceType: 'part',
+            resourceId: id,
+            before: { supplierId, isDefault: before.isDefault },
+            after: { supplierId, isDefault: row.isDefault },
+          });
+          return row;
+        });
+
+        return ok(reply, {
+          partId: updated.partId,
+          supplierId: updated.supplierId,
+          isDefault: updated.isDefault,
+        });
+      } catch (error) {
+        if (isPrismaError(error, 'P2002')) {
+          throw Errors.conflict('DEFAULT_SUPPLIER_CONFLICT', '并发设置默认供应商，请重试');
+        }
+        throw error;
+      }
+    },
+  );
+
+  app.delete(
+    '/api/v1/parts/:id/suppliers/:supplierId',
+    { preHandler: [authenticate, requireAdmin] },
+    async (request, reply) => {
+      const auth = authContext(request);
+      const { id } = idParam.parse(request.params);
+      const { supplierId } = z
+        .object({ supplierId: z.string().uuid('供应商 ID 不合法') })
+        .parse(request.params);
+
+      const before = await prisma.partSupplier.findUnique({
+        where: { partId_supplierId: { partId: id, supplierId } },
+      });
+      if (!before) throw Errors.notFound('配件与供应商没有关联', 'PART_SUPPLIER_NOT_FOUND');
+
+      await prisma.$transaction(async (tx) => {
+        await tx.partSupplier.delete({
+          where: { partId_supplierId: { partId: id, supplierId } },
+        });
+        await writeAudit(tx, {
+          requestId: request.id,
+          actorId: auth.user.id,
+          action: 'part.supplier.remove',
+          resourceType: 'part',
+          resourceId: id,
+          before: { supplierId, isDefault: before.isDefault },
+          after: { removed: true, supplierId },
+        });
+      });
+
+      return ok(reply, { partId: id, supplierId, removed: true });
+    },
+  );
+
   app.patch('/api/v1/departments/:id', { preHandler: [authenticate, requireAdmin] }, async (request, reply) => {
     const auth = authContext(request);
     const { id } = idParam.parse(request.params);
@@ -425,6 +639,7 @@ export async function baseDataRoutes(app: FastifyInstance): Promise<void> {
       name: z.string().trim().min(1, '部门名称不能为空').max(100).optional(),
       category: z.nativeEnum(DepartmentCategory).optional(),
       active: z.boolean().optional(),
+      unitPriceVisible: z.boolean().optional(),
     }).parse(request.body);
 
     const before = await prisma.department.findUnique({ where: { id } });
@@ -446,8 +661,18 @@ export async function baseDataRoutes(app: FastifyInstance): Promise<void> {
         action: 'department.update',
         resourceType: 'department',
         resourceId: id,
-        before: { name: before.name, category: before.category, active: before.active },
-        after: { name: department.name, category: department.category, active: department.active },
+        before: {
+          name: before.name,
+          category: before.category,
+          active: before.active,
+          unitPriceVisible: before.unitPriceVisible,
+        },
+        after: {
+          name: department.name,
+          category: department.category,
+          active: department.active,
+          unitPriceVisible: department.unitPriceVisible,
+        },
       });
       return department;
     });

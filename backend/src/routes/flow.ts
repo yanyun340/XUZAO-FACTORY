@@ -68,7 +68,25 @@ async function loadOrder(tx: Tx, orderId: string) {
 
 async function finish(tx: Tx, orderId: string, role: Parameters<typeof toOrderDetail>[1], userId: string, departmentId: string | null, status = 200) {
   const fresh = await loadOrder(tx, orderId);
-  return { status, data: toOrderDetail(fresh, role, userId, departmentId), resourceId: orderId };
+  // R08F：只对生产角色多查一次部门开关，其他角色不需要。
+  const department =
+    role === 'PRODUCTION' && departmentId
+      ? await tx.department.findUnique({
+          where: { id: departmentId },
+          select: { unitPriceVisible: true },
+        })
+      : null;
+  return {
+    status,
+    data: toOrderDetail(
+      fresh,
+      role,
+      userId,
+      departmentId,
+      department?.unitPriceVisible ?? false,
+    ),
+    resourceId: orderId,
+  };
 }
 
 function statusError(current: string, expected: string) {
@@ -102,6 +120,22 @@ export async function flowRoutes(app: FastifyInstance): Promise<void> {
         if (!supplier || !supplier.active) throw Errors.business('供应商不存在或已停用', 'SUPPLIER_NOT_FOUND');
         const part = await tx.part.findUnique({ where: { id: body.partId } });
         if (!part || !part.active) throw Errors.business('配件不存在或已停用', 'PART_NOT_FOUND');
+
+        // R02F：配件配置了供应商集合时，采购只能从集合里选；没配置则保持原有的任意有效供应商。
+        const allowedSuppliers = await tx.partSupplier.findMany({
+          where: { partId: part.id },
+          select: { supplierId: true },
+        });
+        if (
+          allowedSuppliers.length > 0 &&
+          !allowedSuppliers.some((row) => row.supplierId === supplier.id)
+        ) {
+          throw Errors.business(
+            '该供应商不在配件的供应商集合中',
+            'SUPPLIER_NOT_IN_PART_SET',
+            { partId: part.id, supplierId: supplier.id },
+          );
+        }
 
         const purchase = await tx.purchaseOrder.create({
           data: {
@@ -830,4 +864,77 @@ export async function flowRoutes(app: FastifyInstance): Promise<void> {
     reply.headers(replayHeaders(outcome.replayed));
     return ok(reply, outcome.data, outcome.replayed ? 200 : 201);
   });
+
+  // ---------- R08F：生产计件单价可见开关与历史 ----------
+  app.patch(
+    '/api/v1/productions/:id/price-visibility',
+    { preHandler: [authenticate, requireAdmin] },
+    async (request, reply) => {
+      const auth = authContext(request);
+      const { id } = idParam.parse(request.params);
+      const body = z.object({ visible: z.boolean() }).parse(request.body);
+
+      const outcome = await runIdempotent({
+        actorId: auth.user.id,
+        operation: 'production.price_visibility',
+        key: request.headers['idempotency-key'],
+        body,
+        handler: async (tx) => {
+          const production = await tx.productionOrder.findUnique({ where: { id } });
+          if (!production) {
+            throw Errors.notFound('生产任务不存在', 'PRODUCTION_NOT_FOUND');
+          }
+
+          const updated = await tx.productionOrder.update({
+            where: { id },
+            data: { unitPriceVisible: body.visible },
+          });
+
+          await writeAudit(tx, {
+            requestId: request.id,
+            actorId: auth.user.id,
+            action: 'production.price_visibility',
+            resourceType: 'production',
+            resourceId: id,
+            before: { unitPriceVisible: production.unitPriceVisible },
+            after: { unitPriceVisible: updated.unitPriceVisible },
+          });
+
+          return {
+            status: 200,
+            data: { id: updated.id, unitPriceVisible: updated.unitPriceVisible },
+            resourceId: id,
+          };
+        },
+      });
+
+      reply.headers(replayHeaders(outcome.replayed));
+      return ok(reply, outcome.data);
+    },
+  );
+
+  app.get(
+    '/api/v1/productions/:id/price-visibility-history',
+    { preHandler: [authenticate, requireAdmin] },
+    async (request, reply) => {
+      const { id } = idParam.parse(request.params);
+      const rows = await prisma.auditLog.findMany({
+        where: { action: 'production.price_visibility', resourceId: id },
+        orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+        take: 100,
+        include: { actor: { select: { displayName: true } } },
+      });
+
+      return ok(
+        reply,
+        rows.map((row) => ({
+          id: row.id,
+          actorName: row.actor?.displayName ?? null,
+          before: row.beforeJson,
+          after: row.afterJson,
+          createdAt: row.createdAt.toISOString(),
+        })),
+      );
+    },
+  );
 }

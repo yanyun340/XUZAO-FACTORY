@@ -2,7 +2,7 @@
 
 一单到底的工厂业务协同管理系统：从接单、采购、到货、生产、质检、包装到发货，把一条订单的完整链路放进同一个可追溯的系统里。
 
-版本：`0.1.0`｜更新：2026-11-04｜源码：[github.com/yanyun340/XUZAO-FACTORY](https://github.com/yanyun340/XUZAO-FACTORY)（`main` 分支）
+版本：`0.2.0`｜更新：2026-11-14｜源码：[github.com/yanyun340/XUZAO-FACTORY](https://github.com/yanyun340/XUZAO-FACTORY)（`main` 分支）
 适用：启明之星第三轮考核交付 ｜ 开发者：本人独立完成
 
 ## 1. 用途与功能状态
@@ -14,6 +14,8 @@
 3. **过程可查**：时间线、通知与审计记录每次关键写操作，金额和客户联系方式按角色脱敏。
 
 当前范围与限制以 [docs/feature-status.md](docs/feature-status.md) 为准：M 必做项逐条列出状态，选做的 F 项写明边界，未做项不隐藏。
+
+0.2.0 已完成的 F：R01F、R02F、R08F、R17F、R18F、R20F、R21F、R22F、R23F、R25F、R26F、R27F。R03F/R05F/R10F/R11F/R13F/R16F/R19F/R24F 只完成一部分，状态表里明确写“部分”，不冒充完整。
 
 ## 2. 环境要求
 
@@ -121,6 +123,8 @@ npm run dev -w frontend    # 终端 3：Web http://localhost:5173
 - 前端入口：<http://localhost:5173>
 - API 前缀：`/api/v1`
 - 健康检查：`curl http://127.0.0.1:3001/api/v1/health`，期望 `status: ok`、`database: up`
+- 就绪检查：`curl http://127.0.0.1:3001/api/v1/ready`，数据库/迁移/上传目录三项都 ok 才返回 `ready`
+- 生产模式：`npm run build` 后设置 `NODE_ENV=production COOKIE_SECURE=true APP_ORIGIN=https://your-host`，执行 `npm run start -w backend`；后端会同时托管 `frontend/dist`
 - 停止：在对应终端 `Ctrl+C`。端口被占用时先确认进程归属，不要盲杀 PID。
 - 改端口：后端改 `PORT`，前端改 `frontend/vite.config.ts` 的代理目标，并同步 `APP_ORIGIN`。
 
@@ -130,7 +134,7 @@ npm run dev -w frontend    # 终端 3：Web http://localhost:5173
 | --- | --- | --- | --- |
 | 类型检查 | 根目录 `npm run typecheck` | 无 | 终端输出 |
 | 前端构建 | 根目录 `npm run build -w frontend` | 无 | 终端输出 |
-| 后端测试 | 根目录 `npm test` | 隔离库 `xuzao_test`；会先 `migrate deploy` 再清表 | [tests/reports/2026-11-04-backend-tests.md](tests/reports/2026-11-04-backend-tests.md) |
+| 后端测试 | 根目录 `npm test` | 隔离库 `xuzao_test`；13 文件 / 102 用例；会先 `migrate deploy` 再清表 | [tests/reports/2026-11-14-backend-tests.md](tests/reports/2026-11-14-backend-tests.md) |
 | 备份恢复 | `backend/` 下 `npm run backup` / `npm run restore -- …` | 新隔离库 + 隔离附件目录 | [tests/reports/2026-11-04-backup-restore.md](tests/reports/2026-11-04-backup-restore.md) |
 | 浏览器闭环 | 启动后按角色登录操作 | 合成演示数据 | `.shots/`（过程材料） |
 

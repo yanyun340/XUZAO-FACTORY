@@ -1,10 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ApiError, apiGetPage, apiPost } from '../api/client';
-import type { NotificationItem, PageMeta } from '../api/types';
+import type { NotificationCategory, NotificationItem, PageMeta } from '../api/types';
 import { ChevronLeft, ChevronRight } from '../components/Icons';
 import { EmptyState, InlineNotice, LoadingBlock } from '../components/ui';
-import { eventLabel, formatDateTime } from '../lib/format';
+import {
+  NOTIFICATION_CATEGORY_OPTIONS,
+  eventLabel,
+  formatDateTime,
+  notificationCategoryLabel,
+} from '../lib/format';
 
 const PAGE_SIZE = 20;
 
@@ -13,6 +18,7 @@ export function NotificationsPage() {
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [meta, setMeta] = useState<PageMeta | null>(null);
   const [unreadOnly, setUnreadOnly] = useState(false);
+  const [category, setCategory] = useState<NotificationCategory | ''>('');
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,6 +32,7 @@ export function NotificationsPage() {
 
     const params = new URLSearchParams({ page: String(page), pageSize: String(PAGE_SIZE) });
     if (unreadOnly) params.set('unread', 'true');
+    if (category) params.set('category', category);
 
     apiGetPage<NotificationItem[]>(`/notifications?${params.toString()}`)
       .then((result) => {
@@ -44,7 +51,7 @@ export function NotificationsPage() {
     return () => {
       cancelled = true;
     };
-  }, [page, unreadOnly, reloadToken]);
+  }, [page, unreadOnly, category, reloadToken]);
 
   const markRead = useCallback(async (id: string) => {
     setBusyId(id);
@@ -126,6 +133,27 @@ export function NotificationsPage() {
         </button>
       </div>
 
+      <div className="notice-filters">
+        <label className="field">
+          <span className="field__label">业务分类</span>
+          <select
+            className="input input--select"
+            value={category}
+            onChange={(event) => {
+              setCategory(event.target.value as NotificationCategory | '');
+              setPage(1);
+            }}
+          >
+            <option value="">全部分类</option>
+            {NOTIFICATION_CATEGORY_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
       {error ? (
         <InlineNotice tone="error">
           <span>{error}</span>
@@ -162,7 +190,8 @@ export function NotificationsPage() {
                   </span>
                   <span className="notice-item__body">{item.body}</span>
                   <span className="notice-item__meta mono">
-                    {eventLabel(item.eventType)} · {formatDateTime(item.createdAt)}
+                    {notificationCategoryLabel(item.category)} · {eventLabel(item.eventType)} ·{' '}
+                    {formatDateTime(item.createdAt)}
                   </span>
                 </button>
                 <div className="notice-item__side">

@@ -8,6 +8,7 @@ import type { OrderStatus, Role } from '../generated/prisma/enums.ts';
 export const flowInclude = {
   items: true,
   createdBy: { select: { displayName: true } },
+  owner: { select: { displayName: true } },
   timelineEvents: {
     orderBy: { createdAt: 'asc' },
     include: { actor: { select: { displayName: true } } },
@@ -62,6 +63,7 @@ export type OrderFlowRow = Prisma.OrderGetPayload<{ include: typeof flowInclude 
  */
 export const listFlowInclude = {
   items: true,
+  owner: { select: { displayName: true } },
   purchaseOrders: {
     include: { items: { include: { arrivals: true } } },
   },

@@ -12,7 +12,10 @@ import {
   type OrderListRow,
 } from './flow.ts';
 
-export type OrderWithItems = Order & { items: OrderItem[] };
+export type OrderWithItems = Order & {
+  items: OrderItem[];
+  owner?: { displayName: string } | null;
+};
 
 /** 与前端 STATUS_META 保持一致的中文状态名。 */
 export const STATUS_LABELS: Record<string, string> = {
@@ -56,6 +59,8 @@ export function toOrderSummary(order: OrderWithItems, role: Role) {
     status: order.status,
     remark: order.remark,
     itemCount: order.items.length,
+    ownerId: order.ownerId,
+    ownerName: order.owner?.displayName ?? null,
     productSummary:
       order.items.length === 0
         ? '—'
@@ -281,6 +286,7 @@ export function toOrderDetail(
   role: Role,
   userId: string,
   departmentId: string | null,
+  departmentPriceVisible = false,
 ) {
   const showMoney = canSeeMoney(role);
   const summary = toOrderSummary(order, role);
@@ -337,8 +343,11 @@ export function toOrderDetail(
               completedQty: production.feedbacks.reduce((sum, f) => sum + f.quantity, 0),
               unitPrice: showMoney ? production.unitPrice.toFixed(2) : null,
               unitPriceVisible: production.unitPriceVisible,
+              // R08F：任务级开关，或“本部门 + 部门开关”同时成立时，现场人员才看得到工艺价。
               unitPriceForWorker:
-                !showMoney && production.unitPriceVisible
+                !showMoney &&
+                (production.unitPriceVisible ||
+                  (departmentPriceVisible && production.departmentId === departmentId))
                   ? production.unitPrice.toFixed(2)
                   : null,
               dueDate: production.dueDate ? toDateOnly(production.dueDate) : null,

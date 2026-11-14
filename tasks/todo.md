@@ -1,10 +1,26 @@
 # 待办清单
 
-更新：2026-11-04｜勾选只代表**已完成并验证**，计划中的项保持未勾选。
+更新：2026-11-14｜勾选只代表**已完成并验证**，计划中的项保持未勾选。
 
 ## 进行中
 
 - [ ] 干净目录解压后重跑 `npm install` 与启动（当前只在源码目录验证；作为已知风险保留）
+- [ ] 0.2.0 交付包重新打包与包内清单核对
+
+## 0.2.0 已完成（有验证）
+
+- [x] R02F 配件多供应商、默认供应商唯一、供应商类型、采购集合校验（`part-suppliers.test.ts`）
+- [x] R08F 工艺价部门/任务开关、变更历史、导出/附件权限断言（`permissions.test.ts`）
+- [x] R17F 五类附件层级、软删除、7 天清理任务（`attachments.test.ts`）
+- [x] R18F 四类 Excel 导入：模板、预检、错误行、整批原子、重复提交 409（`imports.test.ts`）
+- [x] R20F 通知业务分类、分类计数（`collab.test.ts`、`jobs.test.ts`）
+- [x] R21F 看板负责人/时间筛选、生产看板、库存/发货指标、状态下钻（`collab.test.ts`）
+- [x] R22F 异常分类、状态迁移、处理人、预计时间、通知与审计（`collab.test.ts`）
+- [x] R23F 审计字段级差异、脱敏、xlsx 导出（`audit.test.ts`）
+- [x] R25F 库存幂等、失败注入回滚、同键并发/跨资源冲突（`inventory.test.ts`）
+- [x] R26F `/ready`、生产静态托管、0.1.0→0.2.0 回退演练（`ops.test.ts`、`tests/reports/2026-11-14-deploy-rollback.md`）
+- [x] 全量回归：12 个测试文件 / 96 个用例通过；`npm run typecheck`、`npm run build` 通过
+- [x] 文档同步：feature-status、traceability、CHANGELOG、demo-script、operations、api-contract、data-dictionary、permissions
 
 ## 已完成（交付）
 

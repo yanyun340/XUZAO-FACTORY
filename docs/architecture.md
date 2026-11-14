@@ -1,6 +1,6 @@
 # 架构说明
 
-版本：0.1.0｜基线：Node 24 + TypeScript（ESM）+ Fastify 5 + Prisma 7 + PostgreSQL 18 + React 19 + Vite 6
+版本：0.2.0｜基线：Node 24 + TypeScript（ESM）+ Fastify 5 + Prisma 7 + PostgreSQL 18 + React 19 + Vite 6
 更新时间：2026-11-04
 
 ## 1. 系统上下文
@@ -30,8 +30,9 @@
 | `backend/src/auth/` | scrypt 密码、会话签发/撤销、角色守卫 | `guards.ts`、`session.ts` |
 | `backend/src/routes/` | HTTP 适配、Zod 校验、事务编排 | 每个文件对应一个业务面 |
 | `backend/src/domain/` | 与 HTTP 无关的订单状态、数量、利润、允许动作计算 | `flow.ts`、`orders.ts` |
-| `backend/src/lib/` | 审计、时间线/通知、幂等、库存原子更新、编号 | `idempotency.ts`、`inventory.ts` |
-| `backend/src/jobs/` | 交期提醒与调度 | `due-reminders.ts`、`scheduler.ts` |
+| `backend/src/lib/` | 审计与差异、时间线/通知分类、幂等、库存原子更新、编号、xlsx 版式 | `idempotency.ts`、`inventory.ts`、`audit-diff.ts`、`export-workbook.ts`、`notification-categories.ts` |
+| `backend/src/jobs/` | 交期提醒、附件清理与调度 | `due-reminders.ts`、`attachment-cleanup.ts`、`scheduler.ts` |
+| `backend/src/routes/imports.ts` | Excel 预检 + 整批原子提交 | `POST /imports/:entity/preflight`、`/commit` |
 | `backend/prisma/` | schema、迁移、合成演示种子 | `schema.prisma`、`seed-demo.ts` |
 | `backend/scripts/` | 逻辑备份/恢复（含附件）、冒烟脚本 | `backup.ts`、`restore.ts` |
 | `frontend/src/pages/` | 页面级功能：登录、看板、订单、库存、基础数据、通知、异常、审计、用户 | `App.tsx` 路由表 |

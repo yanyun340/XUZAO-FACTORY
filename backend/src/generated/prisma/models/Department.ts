@@ -30,6 +30,7 @@ export type DepartmentMinAggregateOutputType = {
   name: string | null
   category: $Enums.DepartmentCategory | null
   active: boolean | null
+  unitPriceVisible: boolean | null
   createdAt: Date | null
 }
 
@@ -39,6 +40,7 @@ export type DepartmentMaxAggregateOutputType = {
   name: string | null
   category: $Enums.DepartmentCategory | null
   active: boolean | null
+  unitPriceVisible: boolean | null
   createdAt: Date | null
 }
 
@@ -48,6 +50,7 @@ export type DepartmentCountAggregateOutputType = {
   name: number
   category: number
   active: number
+  unitPriceVisible: number
   createdAt: number
   _all: number
 }
@@ -59,6 +62,7 @@ export type DepartmentMinAggregateInputType = {
   name?: true
   category?: true
   active?: true
+  unitPriceVisible?: true
   createdAt?: true
 }
 
@@ -68,6 +72,7 @@ export type DepartmentMaxAggregateInputType = {
   name?: true
   category?: true
   active?: true
+  unitPriceVisible?: true
   createdAt?: true
 }
 
@@ -77,6 +82,7 @@ export type DepartmentCountAggregateInputType = {
   name?: true
   category?: true
   active?: true
+  unitPriceVisible?: true
   createdAt?: true
   _all?: true
 }
@@ -159,6 +165,7 @@ export type DepartmentGroupByOutputType = {
   name: string
   category: $Enums.DepartmentCategory
   active: boolean
+  unitPriceVisible: boolean
   createdAt: Date
   _count: DepartmentCountAggregateOutputType | null
   _min: DepartmentMinAggregateOutputType | null
@@ -189,6 +196,7 @@ export type DepartmentWhereInput = {
   name?: Prisma.StringFilter<"Department"> | string
   category?: Prisma.EnumDepartmentCategoryFilter<"Department"> | $Enums.DepartmentCategory
   active?: Prisma.BoolFilter<"Department"> | boolean
+  unitPriceVisible?: Prisma.BoolFilter<"Department"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Department"> | Date | string
   users?: Prisma.AdminUserListRelationFilter
   employees?: Prisma.EmployeeListRelationFilter
@@ -201,6 +209,7 @@ export type DepartmentOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   category?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  unitPriceVisible?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   users?: Prisma.AdminUserOrderByRelationAggregateInput
   employees?: Prisma.EmployeeOrderByRelationAggregateInput
@@ -216,6 +225,7 @@ export type DepartmentWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Department"> | string
   category?: Prisma.EnumDepartmentCategoryFilter<"Department"> | $Enums.DepartmentCategory
   active?: Prisma.BoolFilter<"Department"> | boolean
+  unitPriceVisible?: Prisma.BoolFilter<"Department"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Department"> | Date | string
   users?: Prisma.AdminUserListRelationFilter
   employees?: Prisma.EmployeeListRelationFilter
@@ -228,6 +238,7 @@ export type DepartmentOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   category?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  unitPriceVisible?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.DepartmentCountOrderByAggregateInput
   _max?: Prisma.DepartmentMaxOrderByAggregateInput
@@ -243,6 +254,7 @@ export type DepartmentScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Department"> | string
   category?: Prisma.EnumDepartmentCategoryWithAggregatesFilter<"Department"> | $Enums.DepartmentCategory
   active?: Prisma.BoolWithAggregatesFilter<"Department"> | boolean
+  unitPriceVisible?: Prisma.BoolWithAggregatesFilter<"Department"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Department"> | Date | string
 }
 
@@ -252,6 +264,7 @@ export type DepartmentCreateInput = {
   name: string
   category: $Enums.DepartmentCategory
   active?: boolean
+  unitPriceVisible?: boolean
   createdAt?: Date | string
   users?: Prisma.AdminUserCreateNestedManyWithoutDepartmentInput
   employees?: Prisma.EmployeeCreateNestedManyWithoutDepartmentInput
@@ -264,6 +277,7 @@ export type DepartmentUncheckedCreateInput = {
   name: string
   category: $Enums.DepartmentCategory
   active?: boolean
+  unitPriceVisible?: boolean
   createdAt?: Date | string
   users?: Prisma.AdminUserUncheckedCreateNestedManyWithoutDepartmentInput
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutDepartmentInput
@@ -276,6 +290,7 @@ export type DepartmentUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDepartmentCategoryFieldUpdateOperationsInput | $Enums.DepartmentCategory
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitPriceVisible?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.AdminUserUpdateManyWithoutDepartmentNestedInput
   employees?: Prisma.EmployeeUpdateManyWithoutDepartmentNestedInput
@@ -288,6 +303,7 @@ export type DepartmentUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDepartmentCategoryFieldUpdateOperationsInput | $Enums.DepartmentCategory
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitPriceVisible?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.AdminUserUncheckedUpdateManyWithoutDepartmentNestedInput
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutDepartmentNestedInput
@@ -300,6 +316,7 @@ export type DepartmentCreateManyInput = {
   name: string
   category: $Enums.DepartmentCategory
   active?: boolean
+  unitPriceVisible?: boolean
   createdAt?: Date | string
 }
 
@@ -309,6 +326,7 @@ export type DepartmentUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDepartmentCategoryFieldUpdateOperationsInput | $Enums.DepartmentCategory
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitPriceVisible?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -318,6 +336,7 @@ export type DepartmentUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDepartmentCategoryFieldUpdateOperationsInput | $Enums.DepartmentCategory
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitPriceVisible?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -332,6 +351,7 @@ export type DepartmentCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   category?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  unitPriceVisible?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -341,6 +361,7 @@ export type DepartmentMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   category?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  unitPriceVisible?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -350,6 +371,7 @@ export type DepartmentMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   category?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  unitPriceVisible?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -412,6 +434,7 @@ export type DepartmentCreateWithoutUsersInput = {
   name: string
   category: $Enums.DepartmentCategory
   active?: boolean
+  unitPriceVisible?: boolean
   createdAt?: Date | string
   employees?: Prisma.EmployeeCreateNestedManyWithoutDepartmentInput
   productions?: Prisma.ProductionOrderCreateNestedManyWithoutDepartmentInput
@@ -423,6 +446,7 @@ export type DepartmentUncheckedCreateWithoutUsersInput = {
   name: string
   category: $Enums.DepartmentCategory
   active?: boolean
+  unitPriceVisible?: boolean
   createdAt?: Date | string
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutDepartmentInput
   productions?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutDepartmentInput
@@ -450,6 +474,7 @@ export type DepartmentUpdateWithoutUsersInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDepartmentCategoryFieldUpdateOperationsInput | $Enums.DepartmentCategory
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitPriceVisible?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   employees?: Prisma.EmployeeUpdateManyWithoutDepartmentNestedInput
   productions?: Prisma.ProductionOrderUpdateManyWithoutDepartmentNestedInput
@@ -461,6 +486,7 @@ export type DepartmentUncheckedUpdateWithoutUsersInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDepartmentCategoryFieldUpdateOperationsInput | $Enums.DepartmentCategory
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitPriceVisible?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutDepartmentNestedInput
   productions?: Prisma.ProductionOrderUncheckedUpdateManyWithoutDepartmentNestedInput
@@ -472,6 +498,7 @@ export type DepartmentCreateWithoutEmployeesInput = {
   name: string
   category: $Enums.DepartmentCategory
   active?: boolean
+  unitPriceVisible?: boolean
   createdAt?: Date | string
   users?: Prisma.AdminUserCreateNestedManyWithoutDepartmentInput
   productions?: Prisma.ProductionOrderCreateNestedManyWithoutDepartmentInput
@@ -483,6 +510,7 @@ export type DepartmentUncheckedCreateWithoutEmployeesInput = {
   name: string
   category: $Enums.DepartmentCategory
   active?: boolean
+  unitPriceVisible?: boolean
   createdAt?: Date | string
   users?: Prisma.AdminUserUncheckedCreateNestedManyWithoutDepartmentInput
   productions?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutDepartmentInput
@@ -510,6 +538,7 @@ export type DepartmentUpdateWithoutEmployeesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDepartmentCategoryFieldUpdateOperationsInput | $Enums.DepartmentCategory
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitPriceVisible?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.AdminUserUpdateManyWithoutDepartmentNestedInput
   productions?: Prisma.ProductionOrderUpdateManyWithoutDepartmentNestedInput
@@ -521,6 +550,7 @@ export type DepartmentUncheckedUpdateWithoutEmployeesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDepartmentCategoryFieldUpdateOperationsInput | $Enums.DepartmentCategory
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitPriceVisible?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.AdminUserUncheckedUpdateManyWithoutDepartmentNestedInput
   productions?: Prisma.ProductionOrderUncheckedUpdateManyWithoutDepartmentNestedInput
@@ -532,6 +562,7 @@ export type DepartmentCreateWithoutProductionsInput = {
   name: string
   category: $Enums.DepartmentCategory
   active?: boolean
+  unitPriceVisible?: boolean
   createdAt?: Date | string
   users?: Prisma.AdminUserCreateNestedManyWithoutDepartmentInput
   employees?: Prisma.EmployeeCreateNestedManyWithoutDepartmentInput
@@ -543,6 +574,7 @@ export type DepartmentUncheckedCreateWithoutProductionsInput = {
   name: string
   category: $Enums.DepartmentCategory
   active?: boolean
+  unitPriceVisible?: boolean
   createdAt?: Date | string
   users?: Prisma.AdminUserUncheckedCreateNestedManyWithoutDepartmentInput
   employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutDepartmentInput
@@ -570,6 +602,7 @@ export type DepartmentUpdateWithoutProductionsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDepartmentCategoryFieldUpdateOperationsInput | $Enums.DepartmentCategory
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitPriceVisible?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.AdminUserUpdateManyWithoutDepartmentNestedInput
   employees?: Prisma.EmployeeUpdateManyWithoutDepartmentNestedInput
@@ -581,6 +614,7 @@ export type DepartmentUncheckedUpdateWithoutProductionsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDepartmentCategoryFieldUpdateOperationsInput | $Enums.DepartmentCategory
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitPriceVisible?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.AdminUserUncheckedUpdateManyWithoutDepartmentNestedInput
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutDepartmentNestedInput
@@ -641,6 +675,7 @@ export type DepartmentSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   name?: boolean
   category?: boolean
   active?: boolean
+  unitPriceVisible?: boolean
   createdAt?: boolean
   users?: boolean | Prisma.Department$usersArgs<ExtArgs>
   employees?: boolean | Prisma.Department$employeesArgs<ExtArgs>
@@ -654,6 +689,7 @@ export type DepartmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   name?: boolean
   category?: boolean
   active?: boolean
+  unitPriceVisible?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["department"]>
 
@@ -663,6 +699,7 @@ export type DepartmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   name?: boolean
   category?: boolean
   active?: boolean
+  unitPriceVisible?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["department"]>
 
@@ -672,10 +709,11 @@ export type DepartmentSelectScalar = {
   name?: boolean
   category?: boolean
   active?: boolean
+  unitPriceVisible?: boolean
   createdAt?: boolean
 }
 
-export type DepartmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "category" | "active" | "createdAt", ExtArgs["result"]["department"]>
+export type DepartmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "category" | "active" | "unitPriceVisible" | "createdAt", ExtArgs["result"]["department"]>
 export type DepartmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | Prisma.Department$usersArgs<ExtArgs>
   employees?: boolean | Prisma.Department$employeesArgs<ExtArgs>
@@ -698,6 +736,10 @@ export type $DepartmentPayload<ExtArgs extends runtime.Types.Extensions.Internal
     name: string
     category: $Enums.DepartmentCategory
     active: boolean
+    /**
+     * * 部门级工艺价可见开关（R08F）；任务级开关仍可单独覆盖。
+     */
+    unitPriceVisible: boolean
     createdAt: Date
   }, ExtArgs["result"]["department"]>
   composites: {}
@@ -1130,6 +1172,7 @@ export interface DepartmentFieldRefs {
   readonly name: Prisma.FieldRef<"Department", 'String'>
   readonly category: Prisma.FieldRef<"Department", 'DepartmentCategory'>
   readonly active: Prisma.FieldRef<"Department", 'Boolean'>
+  readonly unitPriceVisible: Prisma.FieldRef<"Department", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Department", 'DateTime'>
 }
     

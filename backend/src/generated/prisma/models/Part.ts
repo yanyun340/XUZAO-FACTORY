@@ -191,6 +191,7 @@ export type PartWhereInput = {
   active?: Prisma.BoolFilter<"Part"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Part"> | Date | string
   purchaseItems?: Prisma.PurchaseItemListRelationFilter
+  suppliers?: Prisma.PartSupplierListRelationFilter
   inventory?: Prisma.XOR<Prisma.PartInventoryNullableScalarRelationFilter, Prisma.PartInventoryWhereInput> | null
   logs?: Prisma.InventoryLogListRelationFilter
 }
@@ -203,6 +204,7 @@ export type PartOrderByWithRelationInput = {
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   purchaseItems?: Prisma.PurchaseItemOrderByRelationAggregateInput
+  suppliers?: Prisma.PartSupplierOrderByRelationAggregateInput
   inventory?: Prisma.PartInventoryOrderByWithRelationInput
   logs?: Prisma.InventoryLogOrderByRelationAggregateInput
 }
@@ -218,6 +220,7 @@ export type PartWhereUniqueInput = Prisma.AtLeast<{
   active?: Prisma.BoolFilter<"Part"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Part"> | Date | string
   purchaseItems?: Prisma.PurchaseItemListRelationFilter
+  suppliers?: Prisma.PartSupplierListRelationFilter
   inventory?: Prisma.XOR<Prisma.PartInventoryNullableScalarRelationFilter, Prisma.PartInventoryWhereInput> | null
   logs?: Prisma.InventoryLogListRelationFilter
 }, "id" | "code">
@@ -254,6 +257,7 @@ export type PartCreateInput = {
   active?: boolean
   createdAt?: Date | string
   purchaseItems?: Prisma.PurchaseItemCreateNestedManyWithoutPartInput
+  suppliers?: Prisma.PartSupplierCreateNestedManyWithoutPartInput
   inventory?: Prisma.PartInventoryCreateNestedOneWithoutPartInput
   logs?: Prisma.InventoryLogCreateNestedManyWithoutPartInput
 }
@@ -266,6 +270,7 @@ export type PartUncheckedCreateInput = {
   active?: boolean
   createdAt?: Date | string
   purchaseItems?: Prisma.PurchaseItemUncheckedCreateNestedManyWithoutPartInput
+  suppliers?: Prisma.PartSupplierUncheckedCreateNestedManyWithoutPartInput
   inventory?: Prisma.PartInventoryUncheckedCreateNestedOneWithoutPartInput
   logs?: Prisma.InventoryLogUncheckedCreateNestedManyWithoutPartInput
 }
@@ -278,6 +283,7 @@ export type PartUpdateInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   purchaseItems?: Prisma.PurchaseItemUpdateManyWithoutPartNestedInput
+  suppliers?: Prisma.PartSupplierUpdateManyWithoutPartNestedInput
   inventory?: Prisma.PartInventoryUpdateOneWithoutPartNestedInput
   logs?: Prisma.InventoryLogUpdateManyWithoutPartNestedInput
 }
@@ -290,6 +296,7 @@ export type PartUncheckedUpdateInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   purchaseItems?: Prisma.PurchaseItemUncheckedUpdateManyWithoutPartNestedInput
+  suppliers?: Prisma.PartSupplierUncheckedUpdateManyWithoutPartNestedInput
   inventory?: Prisma.PartInventoryUncheckedUpdateOneWithoutPartNestedInput
   logs?: Prisma.InventoryLogUncheckedUpdateManyWithoutPartNestedInput
 }
@@ -321,6 +328,11 @@ export type PartUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type PartScalarRelationFilter = {
+  is?: Prisma.PartWhereInput
+  isNot?: Prisma.PartWhereInput
+}
+
 export type PartCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
@@ -348,14 +360,23 @@ export type PartMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
 }
 
-export type PartScalarRelationFilter = {
-  is?: Prisma.PartWhereInput
-  isNot?: Prisma.PartWhereInput
-}
-
 export type PartNullableScalarRelationFilter = {
   is?: Prisma.PartWhereInput | null
   isNot?: Prisma.PartWhereInput | null
+}
+
+export type PartCreateNestedOneWithoutSuppliersInput = {
+  create?: Prisma.XOR<Prisma.PartCreateWithoutSuppliersInput, Prisma.PartUncheckedCreateWithoutSuppliersInput>
+  connectOrCreate?: Prisma.PartCreateOrConnectWithoutSuppliersInput
+  connect?: Prisma.PartWhereUniqueInput
+}
+
+export type PartUpdateOneRequiredWithoutSuppliersNestedInput = {
+  create?: Prisma.XOR<Prisma.PartCreateWithoutSuppliersInput, Prisma.PartUncheckedCreateWithoutSuppliersInput>
+  connectOrCreate?: Prisma.PartCreateOrConnectWithoutSuppliersInput
+  upsert?: Prisma.PartUpsertWithoutSuppliersInput
+  connect?: Prisma.PartWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PartUpdateToOneWithWhereWithoutSuppliersInput, Prisma.PartUpdateWithoutSuppliersInput>, Prisma.PartUncheckedUpdateWithoutSuppliersInput>
 }
 
 export type PartCreateNestedOneWithoutPurchaseItemsInput = {
@@ -402,6 +423,70 @@ export type PartUpdateOneWithoutLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PartUpdateToOneWithWhereWithoutLogsInput, Prisma.PartUpdateWithoutLogsInput>, Prisma.PartUncheckedUpdateWithoutLogsInput>
 }
 
+export type PartCreateWithoutSuppliersInput = {
+  id?: string
+  code: string
+  name: string
+  spec: string
+  active?: boolean
+  createdAt?: Date | string
+  purchaseItems?: Prisma.PurchaseItemCreateNestedManyWithoutPartInput
+  inventory?: Prisma.PartInventoryCreateNestedOneWithoutPartInput
+  logs?: Prisma.InventoryLogCreateNestedManyWithoutPartInput
+}
+
+export type PartUncheckedCreateWithoutSuppliersInput = {
+  id?: string
+  code: string
+  name: string
+  spec: string
+  active?: boolean
+  createdAt?: Date | string
+  purchaseItems?: Prisma.PurchaseItemUncheckedCreateNestedManyWithoutPartInput
+  inventory?: Prisma.PartInventoryUncheckedCreateNestedOneWithoutPartInput
+  logs?: Prisma.InventoryLogUncheckedCreateNestedManyWithoutPartInput
+}
+
+export type PartCreateOrConnectWithoutSuppliersInput = {
+  where: Prisma.PartWhereUniqueInput
+  create: Prisma.XOR<Prisma.PartCreateWithoutSuppliersInput, Prisma.PartUncheckedCreateWithoutSuppliersInput>
+}
+
+export type PartUpsertWithoutSuppliersInput = {
+  update: Prisma.XOR<Prisma.PartUpdateWithoutSuppliersInput, Prisma.PartUncheckedUpdateWithoutSuppliersInput>
+  create: Prisma.XOR<Prisma.PartCreateWithoutSuppliersInput, Prisma.PartUncheckedCreateWithoutSuppliersInput>
+  where?: Prisma.PartWhereInput
+}
+
+export type PartUpdateToOneWithWhereWithoutSuppliersInput = {
+  where?: Prisma.PartWhereInput
+  data: Prisma.XOR<Prisma.PartUpdateWithoutSuppliersInput, Prisma.PartUncheckedUpdateWithoutSuppliersInput>
+}
+
+export type PartUpdateWithoutSuppliersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  spec?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseItems?: Prisma.PurchaseItemUpdateManyWithoutPartNestedInput
+  inventory?: Prisma.PartInventoryUpdateOneWithoutPartNestedInput
+  logs?: Prisma.InventoryLogUpdateManyWithoutPartNestedInput
+}
+
+export type PartUncheckedUpdateWithoutSuppliersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  spec?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseItems?: Prisma.PurchaseItemUncheckedUpdateManyWithoutPartNestedInput
+  inventory?: Prisma.PartInventoryUncheckedUpdateOneWithoutPartNestedInput
+  logs?: Prisma.InventoryLogUncheckedUpdateManyWithoutPartNestedInput
+}
+
 export type PartCreateWithoutPurchaseItemsInput = {
   id?: string
   code: string
@@ -409,6 +494,7 @@ export type PartCreateWithoutPurchaseItemsInput = {
   spec: string
   active?: boolean
   createdAt?: Date | string
+  suppliers?: Prisma.PartSupplierCreateNestedManyWithoutPartInput
   inventory?: Prisma.PartInventoryCreateNestedOneWithoutPartInput
   logs?: Prisma.InventoryLogCreateNestedManyWithoutPartInput
 }
@@ -420,6 +506,7 @@ export type PartUncheckedCreateWithoutPurchaseItemsInput = {
   spec: string
   active?: boolean
   createdAt?: Date | string
+  suppliers?: Prisma.PartSupplierUncheckedCreateNestedManyWithoutPartInput
   inventory?: Prisma.PartInventoryUncheckedCreateNestedOneWithoutPartInput
   logs?: Prisma.InventoryLogUncheckedCreateNestedManyWithoutPartInput
 }
@@ -447,6 +534,7 @@ export type PartUpdateWithoutPurchaseItemsInput = {
   spec?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suppliers?: Prisma.PartSupplierUpdateManyWithoutPartNestedInput
   inventory?: Prisma.PartInventoryUpdateOneWithoutPartNestedInput
   logs?: Prisma.InventoryLogUpdateManyWithoutPartNestedInput
 }
@@ -458,6 +546,7 @@ export type PartUncheckedUpdateWithoutPurchaseItemsInput = {
   spec?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suppliers?: Prisma.PartSupplierUncheckedUpdateManyWithoutPartNestedInput
   inventory?: Prisma.PartInventoryUncheckedUpdateOneWithoutPartNestedInput
   logs?: Prisma.InventoryLogUncheckedUpdateManyWithoutPartNestedInput
 }
@@ -470,6 +559,7 @@ export type PartCreateWithoutInventoryInput = {
   active?: boolean
   createdAt?: Date | string
   purchaseItems?: Prisma.PurchaseItemCreateNestedManyWithoutPartInput
+  suppliers?: Prisma.PartSupplierCreateNestedManyWithoutPartInput
   logs?: Prisma.InventoryLogCreateNestedManyWithoutPartInput
 }
 
@@ -481,6 +571,7 @@ export type PartUncheckedCreateWithoutInventoryInput = {
   active?: boolean
   createdAt?: Date | string
   purchaseItems?: Prisma.PurchaseItemUncheckedCreateNestedManyWithoutPartInput
+  suppliers?: Prisma.PartSupplierUncheckedCreateNestedManyWithoutPartInput
   logs?: Prisma.InventoryLogUncheckedCreateNestedManyWithoutPartInput
 }
 
@@ -508,6 +599,7 @@ export type PartUpdateWithoutInventoryInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   purchaseItems?: Prisma.PurchaseItemUpdateManyWithoutPartNestedInput
+  suppliers?: Prisma.PartSupplierUpdateManyWithoutPartNestedInput
   logs?: Prisma.InventoryLogUpdateManyWithoutPartNestedInput
 }
 
@@ -519,6 +611,7 @@ export type PartUncheckedUpdateWithoutInventoryInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   purchaseItems?: Prisma.PurchaseItemUncheckedUpdateManyWithoutPartNestedInput
+  suppliers?: Prisma.PartSupplierUncheckedUpdateManyWithoutPartNestedInput
   logs?: Prisma.InventoryLogUncheckedUpdateManyWithoutPartNestedInput
 }
 
@@ -530,6 +623,7 @@ export type PartCreateWithoutLogsInput = {
   active?: boolean
   createdAt?: Date | string
   purchaseItems?: Prisma.PurchaseItemCreateNestedManyWithoutPartInput
+  suppliers?: Prisma.PartSupplierCreateNestedManyWithoutPartInput
   inventory?: Prisma.PartInventoryCreateNestedOneWithoutPartInput
 }
 
@@ -541,6 +635,7 @@ export type PartUncheckedCreateWithoutLogsInput = {
   active?: boolean
   createdAt?: Date | string
   purchaseItems?: Prisma.PurchaseItemUncheckedCreateNestedManyWithoutPartInput
+  suppliers?: Prisma.PartSupplierUncheckedCreateNestedManyWithoutPartInput
   inventory?: Prisma.PartInventoryUncheckedCreateNestedOneWithoutPartInput
 }
 
@@ -568,6 +663,7 @@ export type PartUpdateWithoutLogsInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   purchaseItems?: Prisma.PurchaseItemUpdateManyWithoutPartNestedInput
+  suppliers?: Prisma.PartSupplierUpdateManyWithoutPartNestedInput
   inventory?: Prisma.PartInventoryUpdateOneWithoutPartNestedInput
 }
 
@@ -579,6 +675,7 @@ export type PartUncheckedUpdateWithoutLogsInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   purchaseItems?: Prisma.PurchaseItemUncheckedUpdateManyWithoutPartNestedInput
+  suppliers?: Prisma.PartSupplierUncheckedUpdateManyWithoutPartNestedInput
   inventory?: Prisma.PartInventoryUncheckedUpdateOneWithoutPartNestedInput
 }
 
@@ -589,11 +686,13 @@ export type PartUncheckedUpdateWithoutLogsInput = {
 
 export type PartCountOutputType = {
   purchaseItems: number
+  suppliers: number
   logs: number
 }
 
 export type PartCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   purchaseItems?: boolean | PartCountOutputTypeCountPurchaseItemsArgs
+  suppliers?: boolean | PartCountOutputTypeCountSuppliersArgs
   logs?: boolean | PartCountOutputTypeCountLogsArgs
 }
 
@@ -617,6 +716,13 @@ export type PartCountOutputTypeCountPurchaseItemsArgs<ExtArgs extends runtime.Ty
 /**
  * PartCountOutputType without action
  */
+export type PartCountOutputTypeCountSuppliersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PartSupplierWhereInput
+}
+
+/**
+ * PartCountOutputType without action
+ */
 export type PartCountOutputTypeCountLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.InventoryLogWhereInput
 }
@@ -630,6 +736,7 @@ export type PartSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   active?: boolean
   createdAt?: boolean
   purchaseItems?: boolean | Prisma.Part$purchaseItemsArgs<ExtArgs>
+  suppliers?: boolean | Prisma.Part$suppliersArgs<ExtArgs>
   inventory?: boolean | Prisma.Part$inventoryArgs<ExtArgs>
   logs?: boolean | Prisma.Part$logsArgs<ExtArgs>
   _count?: boolean | Prisma.PartCountOutputTypeDefaultArgs<ExtArgs>
@@ -665,6 +772,7 @@ export type PartSelectScalar = {
 export type PartOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "spec" | "active" | "createdAt", ExtArgs["result"]["part"]>
 export type PartInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   purchaseItems?: boolean | Prisma.Part$purchaseItemsArgs<ExtArgs>
+  suppliers?: boolean | Prisma.Part$suppliersArgs<ExtArgs>
   inventory?: boolean | Prisma.Part$inventoryArgs<ExtArgs>
   logs?: boolean | Prisma.Part$logsArgs<ExtArgs>
   _count?: boolean | Prisma.PartCountOutputTypeDefaultArgs<ExtArgs>
@@ -676,6 +784,7 @@ export type $PartPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name: "Part"
   objects: {
     purchaseItems: Prisma.$PurchaseItemPayload<ExtArgs>[]
+    suppliers: Prisma.$PartSupplierPayload<ExtArgs>[]
     inventory: Prisma.$PartInventoryPayload<ExtArgs> | null
     logs: Prisma.$InventoryLogPayload<ExtArgs>[]
   }
@@ -1081,6 +1190,7 @@ readonly fields: PartFieldRefs;
 export interface Prisma__PartClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   purchaseItems<T extends Prisma.Part$purchaseItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Part$purchaseItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PurchaseItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  suppliers<T extends Prisma.Part$suppliersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Part$suppliersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PartSupplierPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   inventory<T extends Prisma.Part$inventoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Part$inventoryArgs<ExtArgs>>): Prisma.Prisma__PartInventoryClient<runtime.Types.Result.GetResult<Prisma.$PartInventoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   logs<T extends Prisma.Part$logsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Part$logsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1532,6 +1642,30 @@ export type Part$purchaseItemsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.PurchaseItemScalarFieldEnum | Prisma.PurchaseItemScalarFieldEnum[]
+}
+
+/**
+ * Part.suppliers
+ */
+export type Part$suppliersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PartSupplier
+   */
+  select?: Prisma.PartSupplierSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PartSupplier
+   */
+  omit?: Prisma.PartSupplierOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PartSupplierInclude<ExtArgs> | null
+  where?: Prisma.PartSupplierWhereInput
+  orderBy?: Prisma.PartSupplierOrderByWithRelationInput | Prisma.PartSupplierOrderByWithRelationInput[]
+  cursor?: Prisma.PartSupplierWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PartSupplierScalarFieldEnum | Prisma.PartSupplierScalarFieldEnum[]
 }
 
 /**

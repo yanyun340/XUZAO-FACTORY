@@ -17,6 +17,8 @@ export interface Department {
   category: 'PRODUCTION' | 'LOGISTICS' | 'QC' | 'PACKING';
   /** 用户 DTO 里的部门是精简结构，只有部门接口会带启用状态。 */
   active?: boolean;
+  /** R08F：部门级工艺价可见开关。 */
+  unitPriceVisible?: boolean;
 }
 
 export interface User {
@@ -38,13 +40,28 @@ export interface Customer {
   createdAt: string;
 }
 
+export type SupplierType = 'NORMAL' | 'ELECTROPLATING';
+
 export interface Supplier {
   id: string;
   code: string;
   name: string;
   contact: string | null;
   phone: string | null;
+  type: SupplierType;
   active: boolean;
+  createdAt: string;
+}
+
+export interface PartSupplier {
+  id: string;
+  partId: string;
+  supplierId: string;
+  supplierCode: string;
+  supplierName: string;
+  supplierType: SupplierType;
+  supplierActive: boolean;
+  isDefault: boolean;
   createdAt: string;
 }
 
@@ -83,6 +100,8 @@ export interface OrderSummary {
   totalQuantity: number;
   totalAmount: string | null;
   moneyVisible: boolean;
+  ownerId: string | null;
+  ownerName: string | null;
   createdAt: string;
   updatedAt: string;
   completedAt: string | null;
@@ -264,9 +283,21 @@ export interface CreateOrderInput {
   items: OrderItemInput[];
 }
 
+export type NotificationCategory =
+  | 'SYSTEM'
+  | 'ORDER'
+  | 'PRODUCTION'
+  | 'QC'
+  | 'PACKING'
+  | 'SHIPPING'
+  | 'INVENTORY'
+  | 'EXCEPTION'
+  | 'DUE_DATE';
+
 export interface NotificationItem {
   id: string;
   eventType: string;
+  category: NotificationCategory;
   title: string;
   body: string;
   orderId: string | null;
@@ -277,11 +308,23 @@ export interface NotificationItem {
 export interface NotificationSummary {
   unread: number;
   total: number;
+  byCategory: Record<NotificationCategory, { total: number; unread: number }>;
 }
 
 export interface DashboardData {
+  filters: { from: string | null; to: string | null; ownerId: string | null };
+  owners: Array<{ id: string; displayName: string }>;
   statusCounts: Record<string, number>;
   totalOrders: number;
+  productionBoard: Array<{
+    departmentId: string;
+    departmentName: string;
+    tasks: number;
+    plannedQty: number;
+    completedQty: number;
+  }>;
+  inventory: { parts: number; products: number };
+  shipping: { orderQty: number; shippedQty: number; completionPercent: number };
   /** 近 7 天 vs 前 7 天的真实流量，用于 KPI 变化率芯片；前 7 天为 0 时变化率不可比。 */
   inflow: {
     createdRecent7d: number;
@@ -292,13 +335,14 @@ export interface DashboardData {
     completedDeltaPercent: number | null;
   };
   production: { tasks: number; completedFeedback: number };
+  /** 字段级权限：非管理员为 null，连金额字段都不返回。 */
   profit: {
     sales: string;
     purchaseCost: string;
     productionCost: string;
     profit: string;
     marginPercent: string;
-  };
+  } | null;
   recentOrders: OrderSummary[];
 }
 
@@ -337,22 +381,35 @@ export interface InventoryLogItem {
 
 export interface AttachmentItem {
   id: string;
+  ownerType?: string;
+  ownerId?: string;
   fileName: string;
   mimeType: string;
   size: number;
   createdAt: string;
+  uploadedById?: string;
   uploadedByName: string | null;
 }
+
+export type ExceptionCategory = 'QUALITY' | 'MATERIAL' | 'EQUIPMENT' | 'SCHEDULE' | 'OTHER';
+export type ExceptionStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
 
 export interface ExceptionItem {
   id: string;
   orderId: string | null;
   orderNo: string | null;
   productionOrderId: string | null;
+  category: ExceptionCategory;
   description: string;
-  status: string;
+  status: ExceptionStatus;
+  handlerId: string | null;
+  handlerName: string | null;
+  expectedAt: string | null;
+  resolvedAt: string | null;
+  resolution: string | null;
   reporterName: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface LoginResult {
@@ -364,6 +421,12 @@ export interface MeResult {
   user: User;
   expiresAt: string;
 }
+export interface AuditChange {
+  field: string;
+  before: unknown;
+  after: unknown;
+}
+
 export interface AuditLogItem {
   id: string;
   requestId: string;
@@ -375,6 +438,7 @@ export interface AuditLogItem {
   actorUsername: string | null;
   before: unknown;
   after: unknown;
+  changes: AuditChange[];
   createdAt: string;
 }
 

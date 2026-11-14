@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
-import { ApiError, apiGet, apiGetPage } from '../api/client';
+import { ApiError, apiDownload, apiGet, apiGetPage } from '../api/client';
 import type { AuditFacets, AuditLogItem, PageMeta } from '../api/types';
 import { DataTable } from '../components/DataTable';
 import { SearchIcon } from '../components/Icons';
@@ -57,6 +57,7 @@ export function AuditLogPage() {
   const [facets, setFacets] = useState<AuditFacets | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -119,6 +120,39 @@ export function AuditLogPage() {
     setPage(1);
   }, []);
 
+  // 导出沿用当前已应用的筛选条件，而不是只导出当前页。
+  const exportXlsx = useCallback(async () => {
+    setExporting(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams();
+      if (filters.keyword) params.set('keyword', filters.keyword);
+      if (filters.action) params.set('action', filters.action);
+      if (filters.resourceType) params.set('resourceType', filters.resourceType);
+      if (filters.actorId) params.set('actorId', filters.actorId);
+      const from = toIsoStart(filters.from);
+      const to = toIsoEnd(filters.to);
+      if (from) params.set('from', from);
+      if (to) params.set('to', to);
+
+      const { blob, fileName } = await apiDownload(
+        `/audit-logs/export.xlsx?${params.toString()}`,
+      );
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = fileName;
+      document.body.append(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    } catch (caught) {
+      setError(caught instanceof ApiError ? caught.message : '导出失败，请稍后重试');
+    } finally {
+      setExporting(false);
+    }
+  }, [filters]);
+
   const activeCount =
     (filters.keyword ? 1 : 0) +
     (filters.action ? 1 : 0) +
@@ -136,6 +170,16 @@ export function AuditLogPage() {
           <p className="page-lede">
             每一次写操作都在业务事务内留下一条记录：谁、在什么时间、对哪个对象做了什么，改前改后的内容一并保存。
           </p>
+        </div>
+        <div className="page-head__action">
+          <button
+            type="button"
+            className="btn btn--secondary"
+            onClick={() => void exportXlsx()}
+            disabled={exporting}
+          >
+            <span className="btn__label">{exporting ? '正在导出…' : '导出 xlsx'}</span>
+          </button>
         </div>
       </header>
 
@@ -274,6 +318,27 @@ export function AuditLogPage() {
               render: (item) =>
                 expanded === item.id ? (
                   <>
+                    {item.changes.length > 0 ? (
+                      <div className="audit-detail audit-detail--changes">
+                        <p className="audit-detail__label">变化字段</p>
+                        <ul className="audit-changes">
+                          {item.changes.map((change) => (
+                            <li className="audit-changes__item" key={change.field}>
+                              <span className="audit-changes__field mono">{change.field}</span>
+                              <span className="audit-changes__value mono">
+                                {preview(change.before)}
+                              </span>
+                              <span className="audit-changes__arrow" aria-hidden>
+                                →
+                              </span>
+                              <span className="audit-changes__value mono">
+                                {preview(change.after)}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
                     <div className="audit-detail">
                       <p className="audit-detail__label">改前</p>
                       <pre className="audit-detail__json">{preview(item.before)}</pre>

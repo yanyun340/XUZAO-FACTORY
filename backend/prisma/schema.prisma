@@ -52,6 +52,33 @@ enum QCDecisionType {
   SCRAP
 }
 
+/** 供应商类型（R02F）：普通采购供应商 / 电镀厂商。 */
+enum SupplierType {
+  NORMAL
+  ELECTROPLATING
+}
+
+/** Excel 导入支持的实体（R18F）。 */
+enum ImportEntity {
+  CUSTOMER
+  SUPPLIER
+  PART
+  EMPLOYEE
+}
+
+/** 通知业务分类（R20F）：现场按业务域筛选，而不是只能看“未读”。 */
+enum NotificationCategory {
+  SYSTEM
+  ORDER
+  PRODUCTION
+  QC
+  PACKING
+  SHIPPING
+  INVENTORY
+  EXCEPTION
+  DUE_DATE
+}
+
 // ---------- 身份与组织 ----------
 
 model AdminUser {
@@ -69,6 +96,7 @@ model AdminUser {
 
   sessions           Session[]
   ordersCreated      Order[]              @relation("OrderCreatedBy")
+  ordersOwned        Order[]              @relation("OrderOwner")
   purchasesCreated   PurchaseOrder[]      @relation("PurchaseCreatedBy")
   arrivals           ArrivalRecord[]      @relation("ArrivalOperator")
   productionsCreated ProductionOrder[]    @relation("ProductionCreatedBy")
@@ -82,6 +110,8 @@ model AdminUser {
   notifications      Notification[]
   auditLogs          AuditLog[]
   exceptions         TabletException[]    @relation("ExceptionReporter")
+  handledExceptions  TabletException[]    @relation("ExceptionHandler")
+  importBatches      ImportBatch[]
   timelineEvents     TimelineEvent[]
 
   @@map("admin_users")
@@ -106,6 +136,8 @@ model Department {
   name      String
   category  DepartmentCategory
   active    Boolean            @default(true)
+  /** 部门级工艺价可见开关（R08F）；任务级开关仍可单独覆盖。 */
+  unitPriceVisible Boolean      @default(false)
   createdAt DateTime           @default(now())
 
   users       AdminUser[]
@@ -147,17 +179,35 @@ model Customer {
 }
 
 model Supplier {
-  id        String   @id @default(uuid()) @db.Uuid
-  code      String   @unique
+  id        String       @id @default(uuid()) @db.Uuid
+  code      String       @unique
   name      String
   contact   String?
   phone     String?
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
+  /** R02F：普通采购供应商或电镀厂商。 */
+  type      SupplierType @default(NORMAL)
+  active    Boolean      @default(true)
+  createdAt DateTime     @default(now())
 
   purchaseOrders PurchaseOrder[]
+  partSuppliers  PartSupplier[]
 
   @@map("suppliers")
+}
+
+/** 配件-供应商关系（R02F）；同一配件至多一个默认供应商。 */
+model PartSupplier {
+  id         String   @id @default(uuid()) @db.Uuid
+  partId     String   @db.Uuid
+  part       Part     @relation(fields: [partId], references: [id])
+  supplierId String   @db.Uuid
+  supplier   Supplier @relation(fields: [supplierId], references: [id])
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@unique([partId, supplierId])
+  @@index([partId, isDefault])
+  @@map("part_suppliers")
 }
 
 model Part {
@@ -169,6 +219,7 @@ model Part {
   createdAt DateTime @default(now())
 
   purchaseItems PurchaseItem[]
+  suppliers     PartSupplier[]
   inventory     PartInventory?
   logs          InventoryLog[]
 
@@ -189,6 +240,9 @@ model Order {
   status          OrderStatus @default(PENDING_PURCHASE)
   createdById     String      @db.Uuid
   createdBy       AdminUser   @relation("OrderCreatedBy", fields: [createdById], references: [id])
+  /** 业务负责人（R21F 筛选维度）；历史订单回填为创建人。 */
+  ownerId         String?     @db.Uuid
+  owner           AdminUser?  @relation("OrderOwner", fields: [ownerId], references: [id])
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
   completedAt     DateTime?
@@ -204,6 +258,7 @@ model Order {
 
   @@index([status, createdAt])
   @@index([createdAt, id])
+  @@index([ownerId, createdAt])
   @@map("orders")
 }
 
@@ -441,20 +496,22 @@ model Attachment {
 }
 
 model Notification {
-  id           String     @id @default(uuid()) @db.Uuid
+  id           String                @id @default(uuid()) @db.Uuid
   eventType    String
+  category     NotificationCategory  @default(SYSTEM)
   title        String
   body         String
-  recipientId  String     @db.Uuid
-  recipient    AdminUser  @relation(fields: [recipientId], references: [id])
-  orderId      String?    @db.Uuid
-  order        Order?     @relation(fields: [orderId], references: [id])
-  businessDate DateTime?  @db.Date
+  recipientId  String                @db.Uuid
+  recipient    AdminUser             @relation(fields: [recipientId], references: [id])
+  orderId      String?               @db.Uuid
+  order        Order?                @relation(fields: [orderId], references: [id])
+  businessDate DateTime?             @db.Date
   readAt       DateTime?
-  dedupeKey    String     @unique
-  createdAt    DateTime   @default(now())
+  dedupeKey    String                @unique
+  createdAt    DateTime              @default(now())
 
   @@index([recipientId, readAt])
+  @@index([recipientId, category, readAt])
   @@map("notifications")
 }
 
@@ -484,11 +541,39 @@ model TabletException {
   productionOrder   ProductionOrder? @relation(fields: [productionOrderId], references: [id])
   reporterId        String           @db.Uuid
   reporter          AdminUser        @relation("ExceptionReporter", fields: [reporterId], references: [id])
+  category          String           @default("OTHER")
   description       String
+  /** OPEN → IN_PROGRESS → RESOLVED → CLOSED；允许从 OPEN/IN_PROGRESS 直接关闭。 */
   status            String           @default("OPEN")
+  handlerId         String?          @db.Uuid
+  handler           AdminUser?       @relation("ExceptionHandler", fields: [handlerId], references: [id])
+  expectedAt        DateTime?
+  resolvedAt        DateTime?
+  resolution        String?
   createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @default(now()) @updatedAt
 
+  @@index([status, createdAt])
+  @@index([handlerId])
   @@map("tablet_exceptions")
+}
+
+model ImportBatch {
+  id          String       @id @default(uuid()) @db.Uuid
+  entity      ImportEntity
+  status      String       @default("PREFLIGHTED")
+  fileName    String
+  rowCount    Int
+  errorCount  Int          @default(0)
+  errors      Json?
+  rows        Json?
+  createdById String       @db.Uuid
+  createdBy   AdminUser    @relation(fields: [createdById], references: [id])
+  createdAt   DateTime     @default(now())
+  committedAt DateTime?
+
+  @@index([entity, createdAt])
+  @@map("import_batches")
 }
 
 model TimelineEvent {

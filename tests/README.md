@@ -31,11 +31,18 @@ npx vitest                            # watch
 | `auth.test.ts` | 13 | 未登录 401、错误密码、Cookie、登出、角色边界、账号创建/改角色/重置密码/停用/撤销会话、自我保护、审计 |
 | `basedata.test.ts` | 7 | 客户改名不回溯快照、停用供应商/员工后的限制、编码重复 409、空 PATCH、现场角色只读、审计 |
 | `flow.test.ts` | 7 | 创建订单、采购幂等重放、完整主链、越级拒绝、时间线与审计、普通角色读审计 403 |
-| `inventory.test.ts` | 8 | 入库/扣减/流水、负数拒绝、参数校验、现场角色 403、20 并发扣减、同规格唯一、8 并发首次建档、成品非负 |
-| `jobs.test.ts` | 3 | 7 天提醒与当日去重、管理员手动补跑、未读筛选与全部已读 |
-| `domain.test.ts` | 13 | 数量公式、Decimal 利润、毛利率除零、允许动作的角色/状态/部门闸门 |
+| `inventory.test.ts` | 13 | 入库/扣减/流水、负数拒绝、并发扣减、首次建档并发、幂等重放、同键异体、跨资源冲突、失败回滚 |
+| `jobs.test.ts` | 3 | 7 天提醒与当日去重、管理员手动补跑、未读筛选与全部已读、分类计数 |
+| `domain.test.ts` | 26 | 数量公式、Decimal 利润、毛利率除零、允许动作的角色/状态/部门闸门、阶段投影 |
+| `collab.test.ts` | 9 | 看板脱敏/负责人筛选、通知分类、异常处置闭环 |
+| `audit.test.ts` | 4 | 字段级差异、敏感字段脱敏、审计 xlsx 导出、现场角色 403 |
+| `permissions.test.ts` | 2 | 任务级/部门级工艺价、跨部门边界、导出与附件鉴权 |
+| `attachments.test.ts` | 4 | 多层级附件、软删除、清理、非法 ownerType |
+| `ops.test.ts` | 3 | `/health`、`/ready`、未知接口 JSON 404 |
+| `imports.test.ts` | 5 | 模板、预检不写库、错误行、整批原子、重复提交 409 |
+| `part-suppliers.test.ts` | 6 | 多供应商、默认唯一/并发切换、采购集合校验、停用与移除边界 |
 
-合计：6 个文件、51 个用例。
+合计：13 个文件、102 个用例。最近一次执行结果见 `reports/2026-11-14-backend-tests.md`。
 
 ## 3. 测试辅助
 
@@ -82,7 +89,9 @@ npx vitest                            # watch
 - 必须包含：命令、环境、开始时间、耗时、通过/失败数、关键输出、未执行项。
 - 只记录**实际执行**的结果；失败保留原始错误，不删用例、不放宽断言。
 - 当前报告：
-  - [2026-11-04-backend-tests.md](reports/2026-11-04-backend-tests.md)
+  - [2026-11-14-backend-tests.md](reports/2026-11-14-backend-tests.md)（0.2.0，96 用例）
+  - [2026-11-14-deploy-rollback.md](reports/2026-11-14-deploy-rollback.md)（就绪与回退演练）
+  - [2026-11-04-backend-tests.md](reports/2026-11-04-backend-tests.md)（0.1.0 历史记录）
   - [2026-11-04-backup-restore.md](reports/2026-11-04-backup-restore.md)
 
 ## 7. 前端构建
@@ -93,4 +102,4 @@ npx vitest                            # watch
 npm run build -w frontend   # tsc --noEmit && vite build
 ```
 
-构建结果记录在 `2026-11-04-backend-tests.md` 的“前端构建”一节，避免重复维护两份数字。
+构建结果记录在 `2026-11-14-backend-tests.md` 的“复现说明”一节；0.2.0 的 `tsc --noEmit` 与 Vite 构建均通过。

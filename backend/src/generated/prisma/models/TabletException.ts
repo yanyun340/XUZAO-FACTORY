@@ -29,9 +29,15 @@ export type TabletExceptionMinAggregateOutputType = {
   orderId: string | null
   productionOrderId: string | null
   reporterId: string | null
+  category: string | null
   description: string | null
   status: string | null
+  handlerId: string | null
+  expectedAt: Date | null
+  resolvedAt: Date | null
+  resolution: string | null
   createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type TabletExceptionMaxAggregateOutputType = {
@@ -39,9 +45,15 @@ export type TabletExceptionMaxAggregateOutputType = {
   orderId: string | null
   productionOrderId: string | null
   reporterId: string | null
+  category: string | null
   description: string | null
   status: string | null
+  handlerId: string | null
+  expectedAt: Date | null
+  resolvedAt: Date | null
+  resolution: string | null
   createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type TabletExceptionCountAggregateOutputType = {
@@ -49,9 +61,15 @@ export type TabletExceptionCountAggregateOutputType = {
   orderId: number
   productionOrderId: number
   reporterId: number
+  category: number
   description: number
   status: number
+  handlerId: number
+  expectedAt: number
+  resolvedAt: number
+  resolution: number
   createdAt: number
+  updatedAt: number
   _all: number
 }
 
@@ -61,9 +79,15 @@ export type TabletExceptionMinAggregateInputType = {
   orderId?: true
   productionOrderId?: true
   reporterId?: true
+  category?: true
   description?: true
   status?: true
+  handlerId?: true
+  expectedAt?: true
+  resolvedAt?: true
+  resolution?: true
   createdAt?: true
+  updatedAt?: true
 }
 
 export type TabletExceptionMaxAggregateInputType = {
@@ -71,9 +95,15 @@ export type TabletExceptionMaxAggregateInputType = {
   orderId?: true
   productionOrderId?: true
   reporterId?: true
+  category?: true
   description?: true
   status?: true
+  handlerId?: true
+  expectedAt?: true
+  resolvedAt?: true
+  resolution?: true
   createdAt?: true
+  updatedAt?: true
 }
 
 export type TabletExceptionCountAggregateInputType = {
@@ -81,9 +111,15 @@ export type TabletExceptionCountAggregateInputType = {
   orderId?: true
   productionOrderId?: true
   reporterId?: true
+  category?: true
   description?: true
   status?: true
+  handlerId?: true
+  expectedAt?: true
+  resolvedAt?: true
+  resolution?: true
   createdAt?: true
+  updatedAt?: true
   _all?: true
 }
 
@@ -164,9 +200,15 @@ export type TabletExceptionGroupByOutputType = {
   orderId: string | null
   productionOrderId: string | null
   reporterId: string
+  category: string
   description: string
   status: string
+  handlerId: string | null
+  expectedAt: Date | null
+  resolvedAt: Date | null
+  resolution: string | null
   createdAt: Date
+  updatedAt: Date
   _count: TabletExceptionCountAggregateOutputType | null
   _min: TabletExceptionMinAggregateOutputType | null
   _max: TabletExceptionMaxAggregateOutputType | null
@@ -195,12 +237,19 @@ export type TabletExceptionWhereInput = {
   orderId?: Prisma.UuidNullableFilter<"TabletException"> | string | null
   productionOrderId?: Prisma.UuidNullableFilter<"TabletException"> | string | null
   reporterId?: Prisma.UuidFilter<"TabletException"> | string
+  category?: Prisma.StringFilter<"TabletException"> | string
   description?: Prisma.StringFilter<"TabletException"> | string
   status?: Prisma.StringFilter<"TabletException"> | string
+  handlerId?: Prisma.UuidNullableFilter<"TabletException"> | string | null
+  expectedAt?: Prisma.DateTimeNullableFilter<"TabletException"> | Date | string | null
+  resolvedAt?: Prisma.DateTimeNullableFilter<"TabletException"> | Date | string | null
+  resolution?: Prisma.StringNullableFilter<"TabletException"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TabletException"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"TabletException"> | Date | string
   order?: Prisma.XOR<Prisma.OrderNullableScalarRelationFilter, Prisma.OrderWhereInput> | null
   productionOrder?: Prisma.XOR<Prisma.ProductionOrderNullableScalarRelationFilter, Prisma.ProductionOrderWhereInput> | null
   reporter?: Prisma.XOR<Prisma.AdminUserScalarRelationFilter, Prisma.AdminUserWhereInput>
+  handler?: Prisma.XOR<Prisma.AdminUserNullableScalarRelationFilter, Prisma.AdminUserWhereInput> | null
 }
 
 export type TabletExceptionOrderByWithRelationInput = {
@@ -208,12 +257,19 @@ export type TabletExceptionOrderByWithRelationInput = {
   orderId?: Prisma.SortOrderInput | Prisma.SortOrder
   productionOrderId?: Prisma.SortOrderInput | Prisma.SortOrder
   reporterId?: Prisma.SortOrder
+  category?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  handlerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  expectedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  resolvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  resolution?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   order?: Prisma.OrderOrderByWithRelationInput
   productionOrder?: Prisma.ProductionOrderOrderByWithRelationInput
   reporter?: Prisma.AdminUserOrderByWithRelationInput
+  handler?: Prisma.AdminUserOrderByWithRelationInput
 }
 
 export type TabletExceptionWhereUniqueInput = Prisma.AtLeast<{
@@ -224,12 +280,19 @@ export type TabletExceptionWhereUniqueInput = Prisma.AtLeast<{
   orderId?: Prisma.UuidNullableFilter<"TabletException"> | string | null
   productionOrderId?: Prisma.UuidNullableFilter<"TabletException"> | string | null
   reporterId?: Prisma.UuidFilter<"TabletException"> | string
+  category?: Prisma.StringFilter<"TabletException"> | string
   description?: Prisma.StringFilter<"TabletException"> | string
   status?: Prisma.StringFilter<"TabletException"> | string
+  handlerId?: Prisma.UuidNullableFilter<"TabletException"> | string | null
+  expectedAt?: Prisma.DateTimeNullableFilter<"TabletException"> | Date | string | null
+  resolvedAt?: Prisma.DateTimeNullableFilter<"TabletException"> | Date | string | null
+  resolution?: Prisma.StringNullableFilter<"TabletException"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TabletException"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"TabletException"> | Date | string
   order?: Prisma.XOR<Prisma.OrderNullableScalarRelationFilter, Prisma.OrderWhereInput> | null
   productionOrder?: Prisma.XOR<Prisma.ProductionOrderNullableScalarRelationFilter, Prisma.ProductionOrderWhereInput> | null
   reporter?: Prisma.XOR<Prisma.AdminUserScalarRelationFilter, Prisma.AdminUserWhereInput>
+  handler?: Prisma.XOR<Prisma.AdminUserNullableScalarRelationFilter, Prisma.AdminUserWhereInput> | null
 }, "id">
 
 export type TabletExceptionOrderByWithAggregationInput = {
@@ -237,9 +300,15 @@ export type TabletExceptionOrderByWithAggregationInput = {
   orderId?: Prisma.SortOrderInput | Prisma.SortOrder
   productionOrderId?: Prisma.SortOrderInput | Prisma.SortOrder
   reporterId?: Prisma.SortOrder
+  category?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  handlerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  expectedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  resolvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  resolution?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   _count?: Prisma.TabletExceptionCountOrderByAggregateInput
   _max?: Prisma.TabletExceptionMaxOrderByAggregateInput
   _min?: Prisma.TabletExceptionMinOrderByAggregateInput
@@ -253,19 +322,31 @@ export type TabletExceptionScalarWhereWithAggregatesInput = {
   orderId?: Prisma.UuidNullableWithAggregatesFilter<"TabletException"> | string | null
   productionOrderId?: Prisma.UuidNullableWithAggregatesFilter<"TabletException"> | string | null
   reporterId?: Prisma.UuidWithAggregatesFilter<"TabletException"> | string
+  category?: Prisma.StringWithAggregatesFilter<"TabletException"> | string
   description?: Prisma.StringWithAggregatesFilter<"TabletException"> | string
   status?: Prisma.StringWithAggregatesFilter<"TabletException"> | string
+  handlerId?: Prisma.UuidNullableWithAggregatesFilter<"TabletException"> | string | null
+  expectedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TabletException"> | Date | string | null
+  resolvedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TabletException"> | Date | string | null
+  resolution?: Prisma.StringNullableWithAggregatesFilter<"TabletException"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TabletException"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"TabletException"> | Date | string
 }
 
 export type TabletExceptionCreateInput = {
   id?: string
+  category?: string
   description: string
   status?: string
+  expectedAt?: Date | string | null
+  resolvedAt?: Date | string | null
+  resolution?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   order?: Prisma.OrderCreateNestedOneWithoutExceptionsInput
   productionOrder?: Prisma.ProductionOrderCreateNestedOneWithoutExceptionsInput
   reporter: Prisma.AdminUserCreateNestedOneWithoutExceptionsInput
+  handler?: Prisma.AdminUserCreateNestedOneWithoutHandledExceptionsInput
 }
 
 export type TabletExceptionUncheckedCreateInput = {
@@ -273,19 +354,31 @@ export type TabletExceptionUncheckedCreateInput = {
   orderId?: string | null
   productionOrderId?: string | null
   reporterId: string
+  category?: string
   description: string
   status?: string
+  handlerId?: string | null
+  expectedAt?: Date | string | null
+  resolvedAt?: Date | string | null
+  resolution?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type TabletExceptionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  expectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   order?: Prisma.OrderUpdateOneWithoutExceptionsNestedInput
   productionOrder?: Prisma.ProductionOrderUpdateOneWithoutExceptionsNestedInput
   reporter?: Prisma.AdminUserUpdateOneRequiredWithoutExceptionsNestedInput
+  handler?: Prisma.AdminUserUpdateOneWithoutHandledExceptionsNestedInput
 }
 
 export type TabletExceptionUncheckedUpdateInput = {
@@ -293,9 +386,15 @@ export type TabletExceptionUncheckedUpdateInput = {
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   productionOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reporterId?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  handlerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TabletExceptionCreateManyInput = {
@@ -303,16 +402,27 @@ export type TabletExceptionCreateManyInput = {
   orderId?: string | null
   productionOrderId?: string | null
   reporterId: string
+  category?: string
   description: string
   status?: string
+  handlerId?: string | null
+  expectedAt?: Date | string | null
+  resolvedAt?: Date | string | null
+  resolution?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type TabletExceptionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  expectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TabletExceptionUncheckedUpdateManyInput = {
@@ -320,9 +430,15 @@ export type TabletExceptionUncheckedUpdateManyInput = {
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   productionOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reporterId?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  handlerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TabletExceptionListRelationFilter = {
@@ -340,9 +456,15 @@ export type TabletExceptionCountOrderByAggregateInput = {
   orderId?: Prisma.SortOrder
   productionOrderId?: Prisma.SortOrder
   reporterId?: Prisma.SortOrder
+  category?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  handlerId?: Prisma.SortOrder
+  expectedAt?: Prisma.SortOrder
+  resolvedAt?: Prisma.SortOrder
+  resolution?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type TabletExceptionMaxOrderByAggregateInput = {
@@ -350,9 +472,15 @@ export type TabletExceptionMaxOrderByAggregateInput = {
   orderId?: Prisma.SortOrder
   productionOrderId?: Prisma.SortOrder
   reporterId?: Prisma.SortOrder
+  category?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  handlerId?: Prisma.SortOrder
+  expectedAt?: Prisma.SortOrder
+  resolvedAt?: Prisma.SortOrder
+  resolution?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type TabletExceptionMinOrderByAggregateInput = {
@@ -360,9 +488,15 @@ export type TabletExceptionMinOrderByAggregateInput = {
   orderId?: Prisma.SortOrder
   productionOrderId?: Prisma.SortOrder
   reporterId?: Prisma.SortOrder
+  category?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  handlerId?: Prisma.SortOrder
+  expectedAt?: Prisma.SortOrder
+  resolvedAt?: Prisma.SortOrder
+  resolution?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type TabletExceptionCreateNestedManyWithoutReporterInput = {
@@ -372,10 +506,24 @@ export type TabletExceptionCreateNestedManyWithoutReporterInput = {
   connect?: Prisma.TabletExceptionWhereUniqueInput | Prisma.TabletExceptionWhereUniqueInput[]
 }
 
+export type TabletExceptionCreateNestedManyWithoutHandlerInput = {
+  create?: Prisma.XOR<Prisma.TabletExceptionCreateWithoutHandlerInput, Prisma.TabletExceptionUncheckedCreateWithoutHandlerInput> | Prisma.TabletExceptionCreateWithoutHandlerInput[] | Prisma.TabletExceptionUncheckedCreateWithoutHandlerInput[]
+  connectOrCreate?: Prisma.TabletExceptionCreateOrConnectWithoutHandlerInput | Prisma.TabletExceptionCreateOrConnectWithoutHandlerInput[]
+  createMany?: Prisma.TabletExceptionCreateManyHandlerInputEnvelope
+  connect?: Prisma.TabletExceptionWhereUniqueInput | Prisma.TabletExceptionWhereUniqueInput[]
+}
+
 export type TabletExceptionUncheckedCreateNestedManyWithoutReporterInput = {
   create?: Prisma.XOR<Prisma.TabletExceptionCreateWithoutReporterInput, Prisma.TabletExceptionUncheckedCreateWithoutReporterInput> | Prisma.TabletExceptionCreateWithoutReporterInput[] | Prisma.TabletExceptionUncheckedCreateWithoutReporterInput[]
   connectOrCreate?: Prisma.TabletExceptionCreateOrConnectWithoutReporterInput | Prisma.TabletExceptionCreateOrConnectWithoutReporterInput[]
   createMany?: Prisma.TabletExceptionCreateManyReporterInputEnvelope
+  connect?: Prisma.TabletExceptionWhereUniqueInput | Prisma.TabletExceptionWhereUniqueInput[]
+}
+
+export type TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput = {
+  create?: Prisma.XOR<Prisma.TabletExceptionCreateWithoutHandlerInput, Prisma.TabletExceptionUncheckedCreateWithoutHandlerInput> | Prisma.TabletExceptionCreateWithoutHandlerInput[] | Prisma.TabletExceptionUncheckedCreateWithoutHandlerInput[]
+  connectOrCreate?: Prisma.TabletExceptionCreateOrConnectWithoutHandlerInput | Prisma.TabletExceptionCreateOrConnectWithoutHandlerInput[]
+  createMany?: Prisma.TabletExceptionCreateManyHandlerInputEnvelope
   connect?: Prisma.TabletExceptionWhereUniqueInput | Prisma.TabletExceptionWhereUniqueInput[]
 }
 
@@ -393,6 +541,20 @@ export type TabletExceptionUpdateManyWithoutReporterNestedInput = {
   deleteMany?: Prisma.TabletExceptionScalarWhereInput | Prisma.TabletExceptionScalarWhereInput[]
 }
 
+export type TabletExceptionUpdateManyWithoutHandlerNestedInput = {
+  create?: Prisma.XOR<Prisma.TabletExceptionCreateWithoutHandlerInput, Prisma.TabletExceptionUncheckedCreateWithoutHandlerInput> | Prisma.TabletExceptionCreateWithoutHandlerInput[] | Prisma.TabletExceptionUncheckedCreateWithoutHandlerInput[]
+  connectOrCreate?: Prisma.TabletExceptionCreateOrConnectWithoutHandlerInput | Prisma.TabletExceptionCreateOrConnectWithoutHandlerInput[]
+  upsert?: Prisma.TabletExceptionUpsertWithWhereUniqueWithoutHandlerInput | Prisma.TabletExceptionUpsertWithWhereUniqueWithoutHandlerInput[]
+  createMany?: Prisma.TabletExceptionCreateManyHandlerInputEnvelope
+  set?: Prisma.TabletExceptionWhereUniqueInput | Prisma.TabletExceptionWhereUniqueInput[]
+  disconnect?: Prisma.TabletExceptionWhereUniqueInput | Prisma.TabletExceptionWhereUniqueInput[]
+  delete?: Prisma.TabletExceptionWhereUniqueInput | Prisma.TabletExceptionWhereUniqueInput[]
+  connect?: Prisma.TabletExceptionWhereUniqueInput | Prisma.TabletExceptionWhereUniqueInput[]
+  update?: Prisma.TabletExceptionUpdateWithWhereUniqueWithoutHandlerInput | Prisma.TabletExceptionUpdateWithWhereUniqueWithoutHandlerInput[]
+  updateMany?: Prisma.TabletExceptionUpdateManyWithWhereWithoutHandlerInput | Prisma.TabletExceptionUpdateManyWithWhereWithoutHandlerInput[]
+  deleteMany?: Prisma.TabletExceptionScalarWhereInput | Prisma.TabletExceptionScalarWhereInput[]
+}
+
 export type TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput = {
   create?: Prisma.XOR<Prisma.TabletExceptionCreateWithoutReporterInput, Prisma.TabletExceptionUncheckedCreateWithoutReporterInput> | Prisma.TabletExceptionCreateWithoutReporterInput[] | Prisma.TabletExceptionUncheckedCreateWithoutReporterInput[]
   connectOrCreate?: Prisma.TabletExceptionCreateOrConnectWithoutReporterInput | Prisma.TabletExceptionCreateOrConnectWithoutReporterInput[]
@@ -404,6 +566,20 @@ export type TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput = {
   connect?: Prisma.TabletExceptionWhereUniqueInput | Prisma.TabletExceptionWhereUniqueInput[]
   update?: Prisma.TabletExceptionUpdateWithWhereUniqueWithoutReporterInput | Prisma.TabletExceptionUpdateWithWhereUniqueWithoutReporterInput[]
   updateMany?: Prisma.TabletExceptionUpdateManyWithWhereWithoutReporterInput | Prisma.TabletExceptionUpdateManyWithWhereWithoutReporterInput[]
+  deleteMany?: Prisma.TabletExceptionScalarWhereInput | Prisma.TabletExceptionScalarWhereInput[]
+}
+
+export type TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput = {
+  create?: Prisma.XOR<Prisma.TabletExceptionCreateWithoutHandlerInput, Prisma.TabletExceptionUncheckedCreateWithoutHandlerInput> | Prisma.TabletExceptionCreateWithoutHandlerInput[] | Prisma.TabletExceptionUncheckedCreateWithoutHandlerInput[]
+  connectOrCreate?: Prisma.TabletExceptionCreateOrConnectWithoutHandlerInput | Prisma.TabletExceptionCreateOrConnectWithoutHandlerInput[]
+  upsert?: Prisma.TabletExceptionUpsertWithWhereUniqueWithoutHandlerInput | Prisma.TabletExceptionUpsertWithWhereUniqueWithoutHandlerInput[]
+  createMany?: Prisma.TabletExceptionCreateManyHandlerInputEnvelope
+  set?: Prisma.TabletExceptionWhereUniqueInput | Prisma.TabletExceptionWhereUniqueInput[]
+  disconnect?: Prisma.TabletExceptionWhereUniqueInput | Prisma.TabletExceptionWhereUniqueInput[]
+  delete?: Prisma.TabletExceptionWhereUniqueInput | Prisma.TabletExceptionWhereUniqueInput[]
+  connect?: Prisma.TabletExceptionWhereUniqueInput | Prisma.TabletExceptionWhereUniqueInput[]
+  update?: Prisma.TabletExceptionUpdateWithWhereUniqueWithoutHandlerInput | Prisma.TabletExceptionUpdateWithWhereUniqueWithoutHandlerInput[]
+  updateMany?: Prisma.TabletExceptionUpdateManyWithWhereWithoutHandlerInput | Prisma.TabletExceptionUpdateManyWithWhereWithoutHandlerInput[]
   deleteMany?: Prisma.TabletExceptionScalarWhereInput | Prisma.TabletExceptionScalarWhereInput[]
 }
 
@@ -493,20 +669,32 @@ export type TabletExceptionUncheckedUpdateManyWithoutProductionOrderNestedInput 
 
 export type TabletExceptionCreateWithoutReporterInput = {
   id?: string
+  category?: string
   description: string
   status?: string
+  expectedAt?: Date | string | null
+  resolvedAt?: Date | string | null
+  resolution?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   order?: Prisma.OrderCreateNestedOneWithoutExceptionsInput
   productionOrder?: Prisma.ProductionOrderCreateNestedOneWithoutExceptionsInput
+  handler?: Prisma.AdminUserCreateNestedOneWithoutHandledExceptionsInput
 }
 
 export type TabletExceptionUncheckedCreateWithoutReporterInput = {
   id?: string
   orderId?: string | null
   productionOrderId?: string | null
+  category?: string
   description: string
   status?: string
+  handlerId?: string | null
+  expectedAt?: Date | string | null
+  resolvedAt?: Date | string | null
+  resolution?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type TabletExceptionCreateOrConnectWithoutReporterInput = {
@@ -516,6 +704,46 @@ export type TabletExceptionCreateOrConnectWithoutReporterInput = {
 
 export type TabletExceptionCreateManyReporterInputEnvelope = {
   data: Prisma.TabletExceptionCreateManyReporterInput | Prisma.TabletExceptionCreateManyReporterInput[]
+  skipDuplicates?: boolean
+}
+
+export type TabletExceptionCreateWithoutHandlerInput = {
+  id?: string
+  category?: string
+  description: string
+  status?: string
+  expectedAt?: Date | string | null
+  resolvedAt?: Date | string | null
+  resolution?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  order?: Prisma.OrderCreateNestedOneWithoutExceptionsInput
+  productionOrder?: Prisma.ProductionOrderCreateNestedOneWithoutExceptionsInput
+  reporter: Prisma.AdminUserCreateNestedOneWithoutExceptionsInput
+}
+
+export type TabletExceptionUncheckedCreateWithoutHandlerInput = {
+  id?: string
+  orderId?: string | null
+  productionOrderId?: string | null
+  reporterId: string
+  category?: string
+  description: string
+  status?: string
+  expectedAt?: Date | string | null
+  resolvedAt?: Date | string | null
+  resolution?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TabletExceptionCreateOrConnectWithoutHandlerInput = {
+  where: Prisma.TabletExceptionWhereUniqueInput
+  create: Prisma.XOR<Prisma.TabletExceptionCreateWithoutHandlerInput, Prisma.TabletExceptionUncheckedCreateWithoutHandlerInput>
+}
+
+export type TabletExceptionCreateManyHandlerInputEnvelope = {
+  data: Prisma.TabletExceptionCreateManyHandlerInput | Prisma.TabletExceptionCreateManyHandlerInput[]
   skipDuplicates?: boolean
 }
 
@@ -543,27 +771,61 @@ export type TabletExceptionScalarWhereInput = {
   orderId?: Prisma.UuidNullableFilter<"TabletException"> | string | null
   productionOrderId?: Prisma.UuidNullableFilter<"TabletException"> | string | null
   reporterId?: Prisma.UuidFilter<"TabletException"> | string
+  category?: Prisma.StringFilter<"TabletException"> | string
   description?: Prisma.StringFilter<"TabletException"> | string
   status?: Prisma.StringFilter<"TabletException"> | string
+  handlerId?: Prisma.UuidNullableFilter<"TabletException"> | string | null
+  expectedAt?: Prisma.DateTimeNullableFilter<"TabletException"> | Date | string | null
+  resolvedAt?: Prisma.DateTimeNullableFilter<"TabletException"> | Date | string | null
+  resolution?: Prisma.StringNullableFilter<"TabletException"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TabletException"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"TabletException"> | Date | string
+}
+
+export type TabletExceptionUpsertWithWhereUniqueWithoutHandlerInput = {
+  where: Prisma.TabletExceptionWhereUniqueInput
+  update: Prisma.XOR<Prisma.TabletExceptionUpdateWithoutHandlerInput, Prisma.TabletExceptionUncheckedUpdateWithoutHandlerInput>
+  create: Prisma.XOR<Prisma.TabletExceptionCreateWithoutHandlerInput, Prisma.TabletExceptionUncheckedCreateWithoutHandlerInput>
+}
+
+export type TabletExceptionUpdateWithWhereUniqueWithoutHandlerInput = {
+  where: Prisma.TabletExceptionWhereUniqueInput
+  data: Prisma.XOR<Prisma.TabletExceptionUpdateWithoutHandlerInput, Prisma.TabletExceptionUncheckedUpdateWithoutHandlerInput>
+}
+
+export type TabletExceptionUpdateManyWithWhereWithoutHandlerInput = {
+  where: Prisma.TabletExceptionScalarWhereInput
+  data: Prisma.XOR<Prisma.TabletExceptionUpdateManyMutationInput, Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerInput>
 }
 
 export type TabletExceptionCreateWithoutOrderInput = {
   id?: string
+  category?: string
   description: string
   status?: string
+  expectedAt?: Date | string | null
+  resolvedAt?: Date | string | null
+  resolution?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   productionOrder?: Prisma.ProductionOrderCreateNestedOneWithoutExceptionsInput
   reporter: Prisma.AdminUserCreateNestedOneWithoutExceptionsInput
+  handler?: Prisma.AdminUserCreateNestedOneWithoutHandledExceptionsInput
 }
 
 export type TabletExceptionUncheckedCreateWithoutOrderInput = {
   id?: string
   productionOrderId?: string | null
   reporterId: string
+  category?: string
   description: string
   status?: string
+  handlerId?: string | null
+  expectedAt?: Date | string | null
+  resolvedAt?: Date | string | null
+  resolution?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type TabletExceptionCreateOrConnectWithoutOrderInput = {
@@ -594,20 +856,32 @@ export type TabletExceptionUpdateManyWithWhereWithoutOrderInput = {
 
 export type TabletExceptionCreateWithoutProductionOrderInput = {
   id?: string
+  category?: string
   description: string
   status?: string
+  expectedAt?: Date | string | null
+  resolvedAt?: Date | string | null
+  resolution?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   order?: Prisma.OrderCreateNestedOneWithoutExceptionsInput
   reporter: Prisma.AdminUserCreateNestedOneWithoutExceptionsInput
+  handler?: Prisma.AdminUserCreateNestedOneWithoutHandledExceptionsInput
 }
 
 export type TabletExceptionUncheckedCreateWithoutProductionOrderInput = {
   id?: string
   orderId?: string | null
   reporterId: string
+  category?: string
   description: string
   status?: string
+  handlerId?: string | null
+  expectedAt?: Date | string | null
+  resolvedAt?: Date | string | null
+  resolution?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type TabletExceptionCreateOrConnectWithoutProductionOrderInput = {
@@ -640,108 +914,240 @@ export type TabletExceptionCreateManyReporterInput = {
   id?: string
   orderId?: string | null
   productionOrderId?: string | null
+  category?: string
   description: string
   status?: string
+  handlerId?: string | null
+  expectedAt?: Date | string | null
+  resolvedAt?: Date | string | null
+  resolution?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TabletExceptionCreateManyHandlerInput = {
+  id?: string
+  orderId?: string | null
+  productionOrderId?: string | null
+  reporterId: string
+  category?: string
+  description: string
+  status?: string
+  expectedAt?: Date | string | null
+  resolvedAt?: Date | string | null
+  resolution?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type TabletExceptionUpdateWithoutReporterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  expectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   order?: Prisma.OrderUpdateOneWithoutExceptionsNestedInput
   productionOrder?: Prisma.ProductionOrderUpdateOneWithoutExceptionsNestedInput
+  handler?: Prisma.AdminUserUpdateOneWithoutHandledExceptionsNestedInput
 }
 
 export type TabletExceptionUncheckedUpdateWithoutReporterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   productionOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  handlerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TabletExceptionUncheckedUpdateManyWithoutReporterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   productionOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  handlerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TabletExceptionUpdateWithoutHandlerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  expectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  order?: Prisma.OrderUpdateOneWithoutExceptionsNestedInput
+  productionOrder?: Prisma.ProductionOrderUpdateOneWithoutExceptionsNestedInput
+  reporter?: Prisma.AdminUserUpdateOneRequiredWithoutExceptionsNestedInput
+}
+
+export type TabletExceptionUncheckedUpdateWithoutHandlerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productionOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reporterId?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  expectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TabletExceptionUncheckedUpdateManyWithoutHandlerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productionOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reporterId?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  expectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TabletExceptionCreateManyOrderInput = {
   id?: string
   productionOrderId?: string | null
   reporterId: string
+  category?: string
   description: string
   status?: string
+  handlerId?: string | null
+  expectedAt?: Date | string | null
+  resolvedAt?: Date | string | null
+  resolution?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type TabletExceptionUpdateWithoutOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  expectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   productionOrder?: Prisma.ProductionOrderUpdateOneWithoutExceptionsNestedInput
   reporter?: Prisma.AdminUserUpdateOneRequiredWithoutExceptionsNestedInput
+  handler?: Prisma.AdminUserUpdateOneWithoutHandledExceptionsNestedInput
 }
 
 export type TabletExceptionUncheckedUpdateWithoutOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   productionOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reporterId?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  handlerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TabletExceptionUncheckedUpdateManyWithoutOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   productionOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reporterId?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  handlerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TabletExceptionCreateManyProductionOrderInput = {
   id?: string
   orderId?: string | null
   reporterId: string
+  category?: string
   description: string
   status?: string
+  handlerId?: string | null
+  expectedAt?: Date | string | null
+  resolvedAt?: Date | string | null
+  resolution?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type TabletExceptionUpdateWithoutProductionOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  expectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   order?: Prisma.OrderUpdateOneWithoutExceptionsNestedInput
   reporter?: Prisma.AdminUserUpdateOneRequiredWithoutExceptionsNestedInput
+  handler?: Prisma.AdminUserUpdateOneWithoutHandledExceptionsNestedInput
 }
 
 export type TabletExceptionUncheckedUpdateWithoutProductionOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reporterId?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  handlerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TabletExceptionUncheckedUpdateManyWithoutProductionOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reporterId?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  handlerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resolution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -751,12 +1157,19 @@ export type TabletExceptionSelect<ExtArgs extends runtime.Types.Extensions.Inter
   orderId?: boolean
   productionOrderId?: boolean
   reporterId?: boolean
+  category?: boolean
   description?: boolean
   status?: boolean
+  handlerId?: boolean
+  expectedAt?: boolean
+  resolvedAt?: boolean
+  resolution?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   order?: boolean | Prisma.TabletException$orderArgs<ExtArgs>
   productionOrder?: boolean | Prisma.TabletException$productionOrderArgs<ExtArgs>
   reporter?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  handler?: boolean | Prisma.TabletException$handlerArgs<ExtArgs>
 }, ExtArgs["result"]["tabletException"]>
 
 export type TabletExceptionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -764,12 +1177,19 @@ export type TabletExceptionSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   orderId?: boolean
   productionOrderId?: boolean
   reporterId?: boolean
+  category?: boolean
   description?: boolean
   status?: boolean
+  handlerId?: boolean
+  expectedAt?: boolean
+  resolvedAt?: boolean
+  resolution?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   order?: boolean | Prisma.TabletException$orderArgs<ExtArgs>
   productionOrder?: boolean | Prisma.TabletException$productionOrderArgs<ExtArgs>
   reporter?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  handler?: boolean | Prisma.TabletException$handlerArgs<ExtArgs>
 }, ExtArgs["result"]["tabletException"]>
 
 export type TabletExceptionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -777,12 +1197,19 @@ export type TabletExceptionSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   orderId?: boolean
   productionOrderId?: boolean
   reporterId?: boolean
+  category?: boolean
   description?: boolean
   status?: boolean
+  handlerId?: boolean
+  expectedAt?: boolean
+  resolvedAt?: boolean
+  resolution?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   order?: boolean | Prisma.TabletException$orderArgs<ExtArgs>
   productionOrder?: boolean | Prisma.TabletException$productionOrderArgs<ExtArgs>
   reporter?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  handler?: boolean | Prisma.TabletException$handlerArgs<ExtArgs>
 }, ExtArgs["result"]["tabletException"]>
 
 export type TabletExceptionSelectScalar = {
@@ -790,26 +1217,35 @@ export type TabletExceptionSelectScalar = {
   orderId?: boolean
   productionOrderId?: boolean
   reporterId?: boolean
+  category?: boolean
   description?: boolean
   status?: boolean
+  handlerId?: boolean
+  expectedAt?: boolean
+  resolvedAt?: boolean
+  resolution?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
 }
 
-export type TabletExceptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderId" | "productionOrderId" | "reporterId" | "description" | "status" | "createdAt", ExtArgs["result"]["tabletException"]>
+export type TabletExceptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderId" | "productionOrderId" | "reporterId" | "category" | "description" | "status" | "handlerId" | "expectedAt" | "resolvedAt" | "resolution" | "createdAt" | "updatedAt", ExtArgs["result"]["tabletException"]>
 export type TabletExceptionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.TabletException$orderArgs<ExtArgs>
   productionOrder?: boolean | Prisma.TabletException$productionOrderArgs<ExtArgs>
   reporter?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  handler?: boolean | Prisma.TabletException$handlerArgs<ExtArgs>
 }
 export type TabletExceptionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.TabletException$orderArgs<ExtArgs>
   productionOrder?: boolean | Prisma.TabletException$productionOrderArgs<ExtArgs>
   reporter?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  handler?: boolean | Prisma.TabletException$handlerArgs<ExtArgs>
 }
 export type TabletExceptionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.TabletException$orderArgs<ExtArgs>
   productionOrder?: boolean | Prisma.TabletException$productionOrderArgs<ExtArgs>
   reporter?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  handler?: boolean | Prisma.TabletException$handlerArgs<ExtArgs>
 }
 
 export type $TabletExceptionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -818,15 +1254,25 @@ export type $TabletExceptionPayload<ExtArgs extends runtime.Types.Extensions.Int
     order: Prisma.$OrderPayload<ExtArgs> | null
     productionOrder: Prisma.$ProductionOrderPayload<ExtArgs> | null
     reporter: Prisma.$AdminUserPayload<ExtArgs>
+    handler: Prisma.$AdminUserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     orderId: string | null
     productionOrderId: string | null
     reporterId: string
+    category: string
     description: string
+    /**
+     * * OPEN → IN_PROGRESS → RESOLVED → CLOSED；允许从 OPEN/IN_PROGRESS 直接关闭。
+     */
     status: string
+    handlerId: string | null
+    expectedAt: Date | null
+    resolvedAt: Date | null
+    resolution: string | null
     createdAt: Date
+    updatedAt: Date
   }, ExtArgs["result"]["tabletException"]>
   composites: {}
 }
@@ -1224,6 +1670,7 @@ export interface Prisma__TabletExceptionClient<T, Null = never, ExtArgs extends 
   order<T extends Prisma.TabletException$orderArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TabletException$orderArgs<ExtArgs>>): Prisma.Prisma__OrderClient<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   productionOrder<T extends Prisma.TabletException$productionOrderArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TabletException$productionOrderArgs<ExtArgs>>): Prisma.Prisma__ProductionOrderClient<runtime.Types.Result.GetResult<Prisma.$ProductionOrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   reporter<T extends Prisma.AdminUserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUserDefaultArgs<ExtArgs>>): Prisma.Prisma__AdminUserClient<runtime.Types.Result.GetResult<Prisma.$AdminUserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  handler<T extends Prisma.TabletException$handlerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TabletException$handlerArgs<ExtArgs>>): Prisma.Prisma__AdminUserClient<runtime.Types.Result.GetResult<Prisma.$AdminUserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1257,9 +1704,15 @@ export interface TabletExceptionFieldRefs {
   readonly orderId: Prisma.FieldRef<"TabletException", 'String'>
   readonly productionOrderId: Prisma.FieldRef<"TabletException", 'String'>
   readonly reporterId: Prisma.FieldRef<"TabletException", 'String'>
+  readonly category: Prisma.FieldRef<"TabletException", 'String'>
   readonly description: Prisma.FieldRef<"TabletException", 'String'>
   readonly status: Prisma.FieldRef<"TabletException", 'String'>
+  readonly handlerId: Prisma.FieldRef<"TabletException", 'String'>
+  readonly expectedAt: Prisma.FieldRef<"TabletException", 'DateTime'>
+  readonly resolvedAt: Prisma.FieldRef<"TabletException", 'DateTime'>
+  readonly resolution: Prisma.FieldRef<"TabletException", 'String'>
   readonly createdAt: Prisma.FieldRef<"TabletException", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"TabletException", 'DateTime'>
 }
     
 
@@ -1696,6 +2149,25 @@ export type TabletException$productionOrderArgs<ExtArgs extends runtime.Types.Ex
    */
   include?: Prisma.ProductionOrderInclude<ExtArgs> | null
   where?: Prisma.ProductionOrderWhereInput
+}
+
+/**
+ * TabletException.handler
+ */
+export type TabletException$handlerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AdminUser
+   */
+  select?: Prisma.AdminUserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AdminUser
+   */
+  omit?: Prisma.AdminUserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdminUserInclude<ExtArgs> | null
+  where?: Prisma.AdminUserWhereInput
 }
 
 /**

@@ -766,11 +766,19 @@
   color: rgba(255, 255, 255, 0.72);
 }
 
+.tab-caption-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 16px 2px;
+}
+
 .tab-caption {
   display: flex;
   gap: 10px;
   align-items: baseline;
-  margin: 16px 2px;
+  margin: 0;
   font-size: 10.5px;
   color: var(--muted);
 }

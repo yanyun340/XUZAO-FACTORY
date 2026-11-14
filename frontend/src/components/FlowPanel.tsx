@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import { ApiError, apiGetPage, apiPost } from '../api/client';
+import { ApiError, apiGet, apiGetPage, apiPatch, apiPost } from '../api/client';
 import type {
   Department,
   OrderAction,
   OrderDetail,
   Part,
+  PartSupplier,
+  ProductionFlow,
   Supplier,
 } from '../api/types';
-import { ACTION_LABEL, formatMoney } from '../lib/format';
+import { ACTION_LABEL, formatDateTime, formatMoney } from '../lib/format';
 import { ArrowRight, CheckIcon } from './Icons';
 import { Button, Field, InlineNotice } from './ui';
 
@@ -55,8 +57,46 @@ function PurchaseForm({ ctx }: { ctx: Ctx }) {
   const parts = useStock<Part>('/parts?active=true&pageSize=200');
   const [supplierId, setSupplierId] = useState('');
   const [partId, setPartId] = useState('');
+  const [partSuppliers, setPartSuppliers] = useState<PartSupplier[]>([]);
   const [quantity, setQuantity] = useState(String(ctx.order.flow.quantities.orderQty || 1));
   const [unitPrice, setUnitPrice] = useState('');
+
+  // R02F：配件配置了供应商集合后，下拉只显示集合内供应商，并预选默认供应商。
+  useEffect(() => {
+    if (!partId) {
+      setPartSuppliers([]);
+      return;
+    }
+    let cancelled = false;
+    apiGet<PartSupplier[]>(`/parts/${partId}/suppliers`)
+      .then((rows) => {
+        if (cancelled) return;
+        setPartSuppliers(rows);
+        if (rows.length > 0) {
+          const preferred = rows.find((row) => row.isDefault) ?? rows[0]!;
+          setSupplierId((current) =>
+            rows.some((row) => row.supplierId === current) ? current : preferred.supplierId,
+          );
+        } else {
+          setSupplierId((current) =>
+            suppliers.some((supplier) => supplier.id === current) ? current : '',
+          );
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setPartSuppliers([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [partId, suppliers]);
+
+  const visibleSuppliers =
+    partSuppliers.length > 0
+      ? suppliers.filter((supplier) =>
+          partSuppliers.some((row) => row.supplierId === supplier.id),
+        )
+      : suppliers;
 
   const qty = toInt(quantity);
   const priceOk = /^(0|[1-9]\d{0,9})(\.\d{1,2})?$/.test(unitPrice.trim());
@@ -71,21 +111,6 @@ function PurchaseForm({ ctx }: { ctx: Ctx }) {
 
   return (
     <div className="flow-form">
-      <Field label="供应商" htmlFor="flow-supplier" required>
-        <select
-          id="flow-supplier"
-          className="select"
-          value={supplierId}
-          onChange={(event) => setSupplierId(event.target.value)}
-        >
-          <option value="">选择供应商</option>
-          {suppliers.map((supplier) => (
-            <option key={supplier.id} value={supplier.id}>
-              {supplier.name}
-            </option>
-          ))}
-        </select>
-      </Field>
       <Field label="配件" htmlFor="flow-part" required>
         <select
           id="flow-part"
@@ -97,6 +122,30 @@ function PurchaseForm({ ctx }: { ctx: Ctx }) {
           {parts.map((part) => (
             <option key={part.id} value={part.id}>
               {part.name} · {part.spec}
+            </option>
+          ))}
+        </select>
+      </Field>
+      <Field
+        label="供应商"
+        htmlFor="flow-supplier"
+        required
+        hint={
+          partSuppliers.length > 0
+            ? `该配件已配置 ${partSuppliers.length} 家供应商`
+            : undefined
+        }
+      >
+        <select
+          id="flow-supplier"
+          className="select"
+          value={supplierId}
+          onChange={(event) => setSupplierId(event.target.value)}
+        >
+          <option value="">选择供应商</option>
+          {visibleSuppliers.map((supplier) => (
+            <option key={supplier.id} value={supplier.id}>
+              {supplier.name}
             </option>
           ))}
         </select>
@@ -679,5 +728,93 @@ export function FlowLedger({ order }: { order: OrderDetail }) {
         </p>
       </div>
     </section>
+  );
+}
+/* ---------- R08F：生产计件单价可见开关 ---------- */
+interface PriceHistoryEntry {
+  id: string;
+  actorName: string | null;
+  after: unknown;
+  createdAt: string;
+}
+
+export function PriceVisibilityControl({
+  production,
+  onVisibleChange,
+}: {
+  production: ProductionFlow;
+  onVisibleChange: (visible: boolean) => void;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [history, setHistory] = useState<PriceHistoryEntry[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+
+  const loadHistory = async () => {
+    try {
+      setHistory(await apiGet<PriceHistoryEntry[]>(`/productions/${production.id}/price-visibility-history`));
+    } catch (caught) {
+      setError(caught instanceof ApiError ? caught.message : '历史记录加载失败');
+    }
+  };
+
+  const toggle = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const result = await apiPatch<{ unitPriceVisible: boolean }>(
+        `/productions/${production.id}/price-visibility`,
+        { visible: !production.unitPriceVisible },
+      );
+      onVisibleChange(result.unitPriceVisible);
+      if (showHistory) await loadHistory();
+    } catch (caught) {
+      setError(caught instanceof ApiError ? caught.message : '开关更新失败');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="bezelt">
+      <div className="detail-card detail-card--tight">
+        <p className="eyebrow">PRICE SCOPE</p>
+        <h2 className="next-step__owner">工艺单价可见性</h2>
+        <p className="next-step__text">
+          任务级开关：{production.unitPriceVisible ? '现场人员可见' : '仅管理员可见'}。
+          部门级开关在「基础数据 → 部门」配置，只对同部门任务生效。
+        </p>
+        {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
+        <div className="exception-dispose__actions">
+          <Button loading={busy} onClick={() => void toggle()}>
+            {production.unitPriceVisible ? '关闭任务级可见' : '开启任务级可见'}
+          </Button>
+          <button
+            type="button"
+            className="text-btn"
+            onClick={() => {
+              setShowHistory((value) => !value);
+              if (!showHistory) void loadHistory();
+            }}
+          >
+            {showHistory ? '收起变更历史' : '查看变更历史'}
+          </button>
+        </div>
+        {showHistory ? (
+          history.length === 0 ? (
+            <p className="next-step__hint">还没有开关变更记录。</p>
+          ) : (
+            <ul className="price-history">
+              {history.map((entry) => (
+                <li key={entry.id} className="price-history__item mono">
+                  {formatDateTime(entry.createdAt)} · {entry.actorName ?? '系统'} ·{' '}
+                  {JSON.stringify(entry.after)}
+                </li>
+              ))}
+            </ul>
+          )
+        ) : null}
+      </div>
+    </div>
   );
 }

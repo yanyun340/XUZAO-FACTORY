@@ -57,6 +57,7 @@ export const ModelName = {
   Employee: 'Employee',
   Customer: 'Customer',
   Supplier: 'Supplier',
+  PartSupplier: 'PartSupplier',
   Part: 'Part',
   Order: 'Order',
   OrderItem: 'OrderItem',
@@ -76,6 +77,7 @@ export const ModelName = {
   Notification: 'Notification',
   AuditLog: 'AuditLog',
   TabletException: 'TabletException',
+  ImportBatch: 'ImportBatch',
   TimelineEvent: 'TimelineEvent',
   IdempotencyRequest: 'IdempotencyRequest',
   SequenceCounter: 'SequenceCounter'
@@ -131,6 +133,7 @@ export const DepartmentScalarFieldEnum = {
   name: 'name',
   category: 'category',
   active: 'active',
+  unitPriceVisible: 'unitPriceVisible',
   createdAt: 'createdAt'
 } as const
 
@@ -168,11 +171,23 @@ export const SupplierScalarFieldEnum = {
   name: 'name',
   contact: 'contact',
   phone: 'phone',
+  type: 'type',
   active: 'active',
   createdAt: 'createdAt'
 } as const
 
 export type SupplierScalarFieldEnum = (typeof SupplierScalarFieldEnum)[keyof typeof SupplierScalarFieldEnum]
+
+
+export const PartSupplierScalarFieldEnum = {
+  id: 'id',
+  partId: 'partId',
+  supplierId: 'supplierId',
+  isDefault: 'isDefault',
+  createdAt: 'createdAt'
+} as const
+
+export type PartSupplierScalarFieldEnum = (typeof PartSupplierScalarFieldEnum)[keyof typeof PartSupplierScalarFieldEnum]
 
 
 export const PartScalarFieldEnum = {
@@ -197,6 +212,7 @@ export const OrderScalarFieldEnum = {
   remark: 'remark',
   status: 'status',
   createdById: 'createdById',
+  ownerId: 'ownerId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   completedAt: 'completedAt'
@@ -393,6 +409,7 @@ export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof
 export const NotificationScalarFieldEnum = {
   id: 'id',
   eventType: 'eventType',
+  category: 'category',
   title: 'title',
   body: 'body',
   recipientId: 'recipientId',
@@ -427,12 +444,35 @@ export const TabletExceptionScalarFieldEnum = {
   orderId: 'orderId',
   productionOrderId: 'productionOrderId',
   reporterId: 'reporterId',
+  category: 'category',
   description: 'description',
   status: 'status',
-  createdAt: 'createdAt'
+  handlerId: 'handlerId',
+  expectedAt: 'expectedAt',
+  resolvedAt: 'resolvedAt',
+  resolution: 'resolution',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type TabletExceptionScalarFieldEnum = (typeof TabletExceptionScalarFieldEnum)[keyof typeof TabletExceptionScalarFieldEnum]
+
+
+export const ImportBatchScalarFieldEnum = {
+  id: 'id',
+  entity: 'entity',
+  status: 'status',
+  fileName: 'fileName',
+  rowCount: 'rowCount',
+  errorCount: 'errorCount',
+  errors: 'errors',
+  rows: 'rows',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  committedAt: 'committedAt'
+} as const
+
+export type ImportBatchScalarFieldEnum = (typeof ImportBatchScalarFieldEnum)[keyof typeof ImportBatchScalarFieldEnum]
 
 
 export const TimelineEventScalarFieldEnum = {

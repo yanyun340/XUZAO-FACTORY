@@ -1,6 +1,6 @@
 # API 契约
 
-版本：0.1.0｜Base URL：`/api/v1`
+版本：0.2.0｜Base URL：`/api/v1`
 更新时间：2026-11-04
 实现：`backend/src/routes/*.ts`；前端封装：`frontend/src/api/client.ts`
 
@@ -42,7 +42,8 @@
 - 作用域：`(actorId, operation, key)`，有效期 24 小时。
 - 同键不同请求体：409 `IDEMPOTENCY_KEY_REUSED`；首次仍在处理：409 `REQUEST_IN_PROGRESS`。
 - 已完成的请求重放：返回首次响应，HTTP 200，并带 `Idempotent-Replayed: true`。
-- 适用接口：`POST /orders` 与全部订单流转接口（采购、到货、生产下发/反馈、质检下发/录入/决策、包装下发/登记、发货触发/登记）。
+- 适用接口：`POST /orders`、全部订单流转接口、全部库存写接口（配件调整、成品建档、成品调整）以及生产单价开关。
+- 库存写接口的请求哈希包含资源 ID：同一个键打到另一条库存行会被判为“同键异体”并返回 409。
 
 ### 1.4 分页与时间
 
@@ -65,9 +66,14 @@
 | 409 | `ORDER_STATUS_CONFLICT` | 当前状态不允许该动作 |
 | 409 | `PURCHASE_ALREADY_EXISTS` / `PRODUCTION_ALREADY_DISPATCHED` / `FEEDBACK_ALREADY_RECORDED` / `QC_ALREADY_DISPATCHED` / `QC_ALREADY_RECORDED` / `QC_ALREADY_DECIDED` | 重复动作 |
 | 409 | `INSUFFICIENT_STOCK` | 库存扣减会变负 |
+| 409 | `IDEMPOTENCY_KEY_REUSED` / `REQUEST_IN_PROGRESS` | 同键异体 / 同键处理中 |
+| 409 | `EXCEPTION_STATUS_CONFLICT` / `IMPORT_ALREADY_COMMITTED` | 非法状态迁移 / 重复导入 |
 | 422 | 业务码，如 `ARRIVAL_EXCEEDS_REMAINING`、`QC_QTY_MISMATCH`、`PACKING_EXCEEDS_REMAINING`、`SHIPMENT_EXCEEDS_LIMIT` | 业务规则拒绝 |
+| 422 | `IMPORT_HAS_ERRORS` / `IMPORT_DEPARTMENT_INVALID` | 预检有错误行 / 部门无效 |
+| 422 | `SUPPLIER_NOT_IN_PART_SET` | 配件配置了供应商集合，但采购选了集合外供应商 |
 | 422 | `SUPPLIER_NOT_FOUND` / `PART_NOT_FOUND` / `CUSTOMER_NOT_FOUND` / `DEPARTMENT_NOT_FOUND` / `EMPLOYEE_NOT_FOUND` | 引用了不存在或已停用的主数据 |
-| 503 | `DATABASE_UNAVAILABLE` | 数据库不可用 |
+| 404 | `OWNER_NOT_FOUND` / `IMPORT_BATCH_NOT_FOUND` / `EXCEPTION_NOT_FOUND` | 附件层级、导入批次、异常记录不存在 |
+| 503 | `DATABASE_UNAVAILABLE` / `NOT_READY` | 数据库不可用 / 就绪检查未通过 |
 
 ## 2. 认证与账号
 
@@ -91,14 +97,18 @@
 | 方法/路径 | 请求体 | 成功 | 说明 |
 | --- | --- | --- | --- |
 | `GET /customers`、`GET /suppliers` | — | 200 分页 | 含 `active`、`createdAt` |
-| `POST /customers`、`POST /suppliers` | `{code?, name, contact?, phone?}` | 201 | 编码留空自动生成 `CUS-xxxx`/`SUP-xxxx` |
-| `PATCH /customers/:id`、`PATCH /suppliers/:id` | 至少一个：`{code?,name,contact?,phone?,active?}`（名字/编码规则同上） | 200 | 只改主数据；订单/采购快照不变 |
+| `POST /customers`、`POST /suppliers` | `{code?, name, contact?, phone?, type?}`；`type ∈ NORMAL/ELECTROPLATING`，默认 NORMAL | 201 | 编码留空自动生成 `CUS-xxxx`/`SUP-xxxx` |
+| `PATCH /customers/:id`、`PATCH /suppliers/:id` | 至少一个：`{code?,name,contact?,phone?,type?,active?}`（名字/编码规则同上） | 200 | 只改主数据；订单/采购快照不变 |
 | `GET /parts` | — | 200 分页 | |
 | `POST /parts` | `{code?, name, spec}` | 201 | 同时创建库存台账（数量 0） |
 | `PATCH /parts/:id` | `{code?,name,spec?,active?}` | 200 | 规格、名称可改；历史采购快照不变 |
+| `GET /parts/:id/suppliers` | — | 200 供应商集合（含 `isDefault/supplierType`） | 404 `PART_NOT_FOUND` |
+| `POST /parts/:id/suppliers` | `{supplierId, isDefault?}` | 201 关联；设置默认会清掉同配件其他默认 | 422 `SUPPLIER_NOT_FOUND`；409 `PART_SUPPLIER_EXISTS` / `DEFAULT_SUPPLIER_CONFLICT` |
+| `PATCH /parts/:id/suppliers/:supplierId` | `{isDefault}` | 200 关联 | 404 `PART_SUPPLIER_NOT_FOUND`；409 并发默认冲突 |
+| `DELETE /parts/:id/suppliers/:supplierId` | — | 200 `{removed:true}`；写审计 | 404 `PART_SUPPLIER_NOT_FOUND` |
 | `GET /departments` | — | 200 全量（不分页） | 含 `active` |
 | `POST /departments` | `{code?, name, category}` | 201 | category ∈ PRODUCTION/LOGISTICS/QC/PACKING |
-| `PATCH /departments/:id` | `{code?,name?,category?,active?}` | 200 | 已有生产任务时改类别/停用 → 409 `DEPARTMENT_IN_USE` |
+| `PATCH /departments/:id` | `{code?,name?,category?,active?,unitPriceVisible?}` | 200 | 已有生产任务时改类别/停用 → 409 `DEPARTMENT_IN_USE`；`unitPriceVisible` 为部门级工艺价开关 |
 | `GET /employees` | `keyword, departmentId?, active?, page,pageSize` | 200 分页 | |
 | `POST /employees` | `{code?, name, departmentId}` | 201 | 部门必须存在 |
 | `PATCH /employees/:id` | `{code?,name?,departmentId?,active?}` | 200 | 已有生产任务时改部门/停用 → 409 `EMPLOYEE_IN_USE` |
@@ -109,9 +119,9 @@
 
 | 方法/路径 | 角色 | 请求 | 成功 | 拒绝 |
 | --- | --- | --- | --- | --- |
-| `GET /orders` | 登录 | `status,keyword,customerId,page,pageSize` | 200 分页订单摘要 | 400 参数不合法 |
+| `GET /orders` | 登录 | `status,keyword,customerId,ownerId,page,pageSize` | 200 分页订单摘要（含 `ownerId/ownerName`） | 400 参数不合法 |
 | `GET /orders/:id` | 登录 | — | 200 订单详情（含 `flow`、`timeline`、`allowedActions`） | 404 `ORDER_NOT_FOUND` |
-| `POST /orders` | ADMIN | `{customerId, customerContact?, dueDate, remark?, items:[{productName,spec,quantity,unitPrice}]}` | 201 订单详情 | 422 客户停用；400 校验 |
+| `POST /orders` | ADMIN | `{customerId, customerContact?, dueDate, remark?, ownerId?, items:[{productName,spec,quantity,unitPrice}]}` | 201 订单详情；`ownerId` 缺省为创建人 | 422 客户停用；400 校验 |
 | `GET /orders/export.xlsx` | ADMIN | `status,keyword,customerId` | 200 xlsx 附件（≤10000 行） | 403 |
 
 订单详情结构：`summary + createdByName + items + flow + timeline`。`flow` 包含 `quantities`、`purchase`、`production`、`qc`、`packing`、`shipping`、`profit`（非管理员为 null）。`allowedActions` 由后端按角色/状态/数量计算，前端不得自行推断。
@@ -131,6 +141,8 @@
 | `POST /orders/:id/packing-records` | PACKING | `{quantity}` | PACKING | 写包装记录，累计 ≤ 放行量 | `PACKING_EXCEEDS_REMAINING` |
 | `POST /orders/:id/shipping-trigger` | ADMIN | 空对象 | PACKING 且已包装 >0 | 状态→SHIPPING | `NO_PACKED_QTY` |
 | `POST /orders/:id/shipment-records` | LOGISTICS | `{quantity}` | SHIPPING | 写发货记录；累计 ≥ 订单量→COMPLETED | `SHIPMENT_EXCEEDS_LIMIT`（上限 `min(可发货剩余, 应交剩余)`） |
+| `PATCH /productions/:id/price-visibility` | ADMIN | `{visible: boolean}` | 生产任务存在 | 200 `{id,unitPriceVisible}`；写审计 | 404 `PRODUCTION_NOT_FOUND` |
+| `GET /productions/:id/price-visibility-history` | ADMIN | — | 200 开关变更历史（来自审计） | 404 |
 
 所有流转接口返回最新订单详情；新建类动作初始返回 201，重放返回 200。
 
@@ -151,14 +163,15 @@
 
 | 方法/路径 | 角色 | 请求 | 成功 |
 | --- | --- | --- | --- |
-| `GET /notifications` | 登录 | `unread=true|false,page,pageSize` | 200 分页；`meta.unread` 为未读总数 |
-| `GET /notifications/summary` | 登录 | — | 200 `{unread,total}` |
+| `GET /notifications` | 登录 | `unread=true|false,category=ORDER|PRODUCTION|QC|PACKING|SHIPPING|INVENTORY|EXCEPTION|DUE_DATE|SYSTEM,page,pageSize` | 200 分页；含 `category`；`meta.unread` 为当前筛选未读数 |
+| `GET /notifications/summary` | 登录 | — | 200 `{unread,total,byCategory}` |
 | `POST /notifications/:id/read` | 登录（本人） | — | 200 `{id,readAt}`；重复标记幂等 |
 | `POST /notifications/read-all` | 登录 | — | 200 `{updated}` |
-| `GET /dashboard` | 登录 | — | 200 `{statusCounts,totalOrders,production,profit,recentOrders}`；金额按角色脱敏 |
+| `GET /dashboard` | 登录 | `from=YYYY-MM-DD,to=YYYY-MM-DD,ownerId` | 200 `{filters,owners,statusCounts,totalOrders,production,productionBoard,inventory,shipping,profit,recentOrders}`；非管理员 `profit=null` |
 | `POST /jobs/due-reminders` | ADMIN | — | 200 `{businessDate,orders,recipients,created}`；同日重复执行为 `created:0` |
-| `POST /exceptions` | 登录 | `{orderId?|productionOrderId?, description}`（至少一个关联，4–500 字） | 201 异常 |
-| `GET /exceptions` | ADMIN | `page,pageSize` | 200 分页异常 |
+| `POST /exceptions` | 登录 | `{orderId?|productionOrderId?, category?, description}`（至少一个关联，4–500 字） | 201 异常；同时通知管理员 |
+| `GET /exceptions` | ADMIN | `status,category,handlerId,keyword,page,pageSize` | 200 分页异常 |
+| `PATCH /exceptions/:id` | ADMIN | `{status?,handlerId?,expectedAt?,resolution?}` 至少一项 | 200 更新后的异常；非法状态迁移 409；RESOLVED 缺说明 400 |
 
 ## 7. 附件
 
@@ -166,7 +179,13 @@
 | --- | --- | --- | --- | --- |
 | `POST /orders/:id/attachments` | 登录 | multipart，单文件字段 | 201 `{id,fileName,mimeType,size,createdAt,uploadedByName}` | 415/400 类型不允许、空文件、>5MB；403 Origin 不符 |
 | `GET /orders/:id/attachments` | 登录 | — | 200 附件列表（软删除除外） | 404 订单不存在 |
+| `POST /:ownerType/:ownerId/attachments` | 登录 | multipart；`ownerType ∈ order/purchase/production/qc/shipment` | 201 附件 | 404 `OWNER_NOT_FOUND`、400 类型/大小 |
+| `GET /:ownerType/:ownerId/attachments` | 登录 | — | 200 附件列表（软删除除外） | 404 `OWNER_NOT_FOUND` |
 | `GET /attachments/:id/download` | 登录 | — | 200 文件流，`Content-Disposition` 保留中文名 | 404 `ATTACHMENT_NOT_FOUND` |
+| `DELETE /attachments/:id` | 上传者或 ADMIN | — | 200 `{id,deleted:true}`，写 `deletedAt` 与审计 | 403 非上传者且非管理员 |
+| `GET /imports/:entity/template.xlsx` | ADMIN | `entity ∈ customer/supplier/part/employee` | 200 xlsx 模板 | 403 |
+| `POST /imports/:entity/preflight` | ADMIN | multipart xlsx，≤2MB、≤500 行 | 201 `{batchId,rowCount,errorCount,errors}`；不写业务表 | 400 表头/类型/空文件 |
+| `POST /imports/:entity/commit` | ADMIN | `{batchId}` | 200 `{batchId,entity,committed}`；单事务整批写入 | 422 `IMPORT_HAS_ERRORS`；409 `IMPORT_ALREADY_COMMITTED` |
 
 允许的 MIME：PDF、PNG、JPEG、WEBP、TXT、CSV、XLSX、DOCX；上限 5MB。
 
@@ -174,7 +193,8 @@
 
 | 方法/路径 | 角色 | 请求 | 成功 |
 | --- | --- | --- | --- |
-| `GET /audit-logs` | ADMIN | `action,resourceType,resourceId,actorId,keyword,from,to,page,pageSize` | 200 分页；含 `before/after` |
+| `GET /audit-logs` | ADMIN | `action,resourceType,resourceId,actorId,keyword,from,to,page,pageSize` | 200 分页；含脱敏后的 `before/after` 与 `changes` |
+| `GET /audit-logs/export.xlsx` | ADMIN | 同列表筛选条件 | 200 xlsx（≤10000 行），敏感字段 `***` | 403 |
 | `GET /audit-logs/facets` | ADMIN | — | 200 `{actions,resourceTypes,actors}` |
 
 现场角色访问返回 403；审计没有修改/删除接口。
@@ -184,6 +204,7 @@
 | 方法/路径 | 认证 | 成功 | 失败 |
 | --- | --- | --- | --- |
 | `GET /health` | 无 | 200 `{status:'ok',database:'up',time,requestId}` | 503 `DATABASE_UNAVAILABLE` |
+| `GET /ready` | 无 | 200 `{status:'ready',checks:[{name,ok,detail?}]}`；检查 database/migrations/uploads | 503 `NOT_READY` |
 
 ## 10. 前端调用与测试对应
 

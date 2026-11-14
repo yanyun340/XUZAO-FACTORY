@@ -1,6 +1,6 @@
 # 数据字典与迁移
 
-版本：0.1.0｜对应：`backend/prisma/schema.prisma` 与迁移 `20261104112845_init`
+版本：0.2.0｜对应：`backend/prisma/schema.prisma` 与迁移 `20261104112845_init`
 更新时间：2026-11-04
 
 ## 1. 全局约定
@@ -49,6 +49,7 @@
 | `code` | string | 部门编码 | UNIQUE |
 | `name` | string | 名称 | |
 | `category` | enum `DepartmentCategory` | PRODUCTION/LOGISTICS/QC/PACKING | 生产下发必须为 PRODUCTION |
+| `unitPriceVisible` | bool，false | 部门级工艺价可见开关（R08F） | 只对同部门的生产任务生效；任务级开关仍可单独覆盖 |
 | `active` | bool，true | 启用状态 | 停用后不能作为新任务目标 |
 
 ### `employees` 员工
@@ -70,6 +71,7 @@
 | `name` | string | 名称 | 必填 |
 | `contact` | string? | 联系人 | 客户联系人对现场角色隐藏 |
 | `phone` | string? | 电话 | |
+| `type` | enum `SupplierType`，NORMAL | 普通供应商 / 电镀厂商（R02F） | 仅类型标记，电镀业务链路仍是未选做 |
 | `active` | bool，true | 启用状态 | 停用后不能用于新订单/新采购，历史记录不受影响 |
 
 ### `parts` 配件
@@ -80,6 +82,15 @@
 | `name` | string | 名称 | |
 | `spec` | string | 规格 | |
 | `active` | bool，true | 启用状态 | 停用后不能新建采购 |
+
+### `part_suppliers` 配件-供应商（R02F）
+
+| 字段 | 类型 / 默认 | 含义 | 约束 |
+| --- | --- | --- | --- |
+| `partId` + `supplierId` | uuid | 多对多关联 | UNIQUE |
+| `isDefault` | bool，false | 默认供应商 | 每个配件至多一个；由部分唯一索引 `part_suppliers_one_default_per_part` 兜底 |
+
+采购规则：配件一旦配置了供应商集合，采购只能从集合中选；没有配置时保持原有“任意有效供应商”行为。采购单保存 `supplierName` 快照，改默认供应商不影响历史采购。
 
 ## 4. 订单主链
 
@@ -95,6 +106,7 @@
 | `remark` | string? | 备注 ≤500 字 | |
 | `status` | enum `OrderStatus`，PENDING_PURCHASE | 当前状态 | 索引 `(status, createdAt)` |
 | `createdById` | uuid | 创建人 | FK |
+| `ownerId` | uuid? | 业务负责人（R21F 筛选维度） | FK；历史订单回填为创建人；索引 `(ownerId, createdAt)` |
 | `createdAt` / `updatedAt` | datetime | 时间 | 索引 `(createdAt, id)` |
 | `completedAt` | datetime? | 完成时间 | 发货累计足量时写入 |
 
@@ -176,18 +188,19 @@ M 交付按“单产品”验收，但表结构允许一单多条明细；当前
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
-| `ownerType` / `ownerId` | string / uuid | 当前只有 `order` |
+| `ownerType` / `ownerId` | string / uuid | `order`、`purchase`、`production`、`qc`、`shipment`；上传/列表时校验资源存在 |
 | `fileName` | string | 展示名，去除控制字符，≤200 |
 | `storageKey` | string | UNIQUE，服务端 UUID + 白名单扩展名 |
 | `mimeType` / `size` | string / int | 白名单类型；≤5MB |
 | `uploadedById` | uuid | 上传人 |
-| `deletedAt` | datetime? | 软删除预留；当前下载会拒绝已删除 |
+| `deletedAt` | datetime? | 软删除时间；已删除的列表与下载都不可见；超过 7 天由清理任务删除文件与元数据 |
 
 ### `notifications` 通知
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
 | `eventType` | string | 业务事件类型，如 `ORDER_CREATED`、`DUE_DATE_REMINDER` |
+| `category` | enum `NotificationCategory`，SYSTEM | ORDER/PRODUCTION/QC/PACKING/SHIPPING/INVENTORY/EXCEPTION/DUE_DATE/SYSTEM；写入时确定，查询按此过滤 |
 | `title` / `body` | string | 直接展示的中文文案 |
 | `recipientId` | uuid | 收件人；业务事件默认发给启用中的管理员 |
 | `orderId` | uuid? | 关联订单 |
@@ -215,8 +228,12 @@ M 交付按“单产品”验收，但表结构允许一单多条明细；当前
 | --- | --- | --- |
 | `orderId` / `productionOrderId` | uuid? | 至少关联一个 |
 | `reporterId` | uuid | 上报人（认证身份） |
+| `category` | string，OTHER | QUALITY/MATERIAL/EQUIPMENT/SCHEDULE/OTHER |
 | `description` | string | 4–500 字 |
-| `status` | string，OPEN | 当前只有上报与查询，处置流程为 F 未实现 |
+| `status` | string，OPEN | OPEN → IN_PROGRESS → RESOLVED → CLOSED；允许 OPEN/IN_PROGRESS 直接 CLOSED |
+| `handlerId` / `expectedAt` | uuid? / datetime? | 处理人与预计完成时间 |
+| `resolvedAt` / `resolution` | datetime? / string? | 标记解决时写入；解决必须有说明 |
+| `updatedAt` | datetime | 每次处置更新时间 |
 
 ### `timeline_events` 时间线
 
@@ -238,6 +255,16 @@ M 交付按“单产品”验收，但表结构允许一单多条明细；当前
 | `resourceId` | string? | 创建出的资源 ID |
 | `expiresAt` | datetime | 24 小时 |
 
+### `import_batches` Excel 导入批次
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `entity` | enum `ImportEntity` | CUSTOMER / SUPPLIER / PART / EMPLOYEE |
+| `status` | string，PREFLIGHTED | COMMITTED 后不能再提交；重复提交返回 409 |
+| `fileName` / `rowCount` / `errorCount` | string / int / int | 上传文件与预检统计 |
+| `errors` / `rows` | json? | 行级错误与规范化后的行；提交成功后清空 `rows` |
+| `createdById` / `createdAt` / `committedAt` | uuid / datetime / datetime? | 操作者与时间 |
+
 ### `sequence_counters` 编号计数器
 
 | 字段 | 类型 | 说明 |
@@ -250,7 +277,7 @@ M 交付按“单产品”验收，但表结构允许一单多条明细；当前
 - 订单 → 明细/采购/生产/包装/发货/时间线/通知/异常均为一对多；删除订单会因外键失败而拒绝，系统不提供删除接口。
 - 基础数据停用不级联；历史订单、采购引用的是快照字段，因此改名或停用不会破坏历史。
 - 会话随用户存在；用户停用不删除，只撤销会话。
-- 附件删除为软删除预留；当前没有删除接口。
+- 附件删除为软删除：超过 7 天后清理任务删除物理文件与元数据行，审计保留 `attachment.delete` 记录。
 
 ## 8. 迁移与初始化
 

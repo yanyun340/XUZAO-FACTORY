@@ -1,5 +1,8 @@
 import { randomUUID } from 'node:crypto';
+import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import cookie from '@fastify/cookie';
+import fastifyStatic from '@fastify/static';
 import Fastify, { type FastifyInstance } from 'fastify';
 import { ZodError } from 'zod';
 import { config } from './config.ts';
@@ -13,6 +16,7 @@ import { collabRoutes } from './routes/collab.ts';
 import { exportRoutes } from './routes/export.ts';
 import { flowRoutes } from './routes/flow.ts';
 import { healthRoutes } from './routes/health.ts';
+import { importRoutes } from './routes/imports.ts';
 import { inventoryRoutes } from './routes/inventory.ts';
 import { orderRoutes } from './routes/orders.ts';
 import { taskRoutes } from './routes/tasks.ts';
@@ -36,6 +40,9 @@ function isAllowedOrigin(origin: string | undefined): boolean {
     return false;
   }
 }
+
+/** 生产模式下由后端托管 Vite 构建产物，单端口即可部署。 */
+const FRONTEND_DIST = fileURLToPath(new URL('../../frontend/dist', import.meta.url));
 
 const FIELD_LABELS: Record<string, string> = {
   username: '用户名',
@@ -149,9 +156,26 @@ export function buildApp(): FastifyInstance {
     return fail(reply, 500, 'INTERNAL_ERROR', '服务器内部错误');
   });
 
+  const serveFrontend = config.isProduction && existsSync(FRONTEND_DIST);
+
   app.setNotFoundHandler((request, reply) => {
+    if (
+      serveFrontend &&
+      request.method === 'GET' &&
+      !request.url.startsWith('/api/')
+    ) {
+      return reply.sendFile('index.html');
+    }
     return fail(reply, 404, 'ROUTE_NOT_FOUND', `接口不存在：${request.method} ${request.url}`);
   });
+
+  if (serveFrontend) {
+    app.register(fastifyStatic, {
+      root: FRONTEND_DIST,
+      wildcard: false,
+      index: ['index.html'],
+    });
+  }
 
   app.register(healthRoutes);
   app.register(authRoutes);
@@ -162,6 +186,7 @@ export function buildApp(): FastifyInstance {
   app.register(baseDataRoutes);
   app.register(collabRoutes);
   app.register(inventoryRoutes);
+  app.register(importRoutes);
   app.register(attachmentRoutes);
   app.register(auditRoutes);
   app.register(userRoutes);
