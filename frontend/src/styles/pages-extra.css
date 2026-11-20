@@ -410,6 +410,28 @@
   margin-top: 20px;
 }
 
+/* 手机两列时每格只有 ~130px，而 dd 里是 nowrap 的滚动数字，
+   ¥1,253,553.00 会直接顶到卡片外；窄屏落成一列 */
+@media (max-width: 480px) {
+  .profit--dash {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 毛利后面的百分比芯片：数字一长就被挤成两行、第二行靠左；
+   改成 flex 并给芯片 margin-left: auto，换行时也贴在右边 */
+.profit--dash .profit__item--total dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 8px;
+}
+
+.profit--dash .profit__item--total .profit__margin {
+  margin-left: auto;
+}
+
 .profit--dash dt {
   font-size: 11px;
   font-weight: 500;
@@ -550,6 +572,18 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 16px;
+}
+
+/* 与利润汇总并排时会被 grid 拉到同高，图例把多出来的高度均摊掉，
+   否则卡片底部空 68–94px */
+.dash-panel:has(.dist-legend) {
+  display: flex;
+  flex-direction: column;
+}
+
+.dash-panel:has(.dist-legend) .dist-legend {
+  flex: 1;
+  align-content: space-between;
 }
 
 .qbar {
@@ -1491,7 +1525,8 @@
 }
 
 .audit-filters__field .input {
-  min-width: 140px;
+  /* 140px 时原生日历控件的「年 / 月 / 日」三段各只剩约 20px，点起来容易错段 */
+  min-width: 156px;
   height: 40px;
   padding: 0 12px;
   font-size: 14px;

@@ -514,3 +514,25 @@
     min-width: 520px;
   }
 }
+
+/*
+ * ≤430px：3 列网格要把 10 个导航入口铺成 4 行，导航块 235px 占掉首屏三成。
+ * 改 5 列 2 行（隐藏装饰性序号），标签仍完整不截断，高度降到约 150px。
+ */
+@media (max-width: 430px) {
+  .rail__nav {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 2px;
+  }
+
+  .rail__link {
+    justify-content: center;
+    gap: 0;
+    padding: 8px 2px;
+    font-size: 11.5px;
+  }
+
+  .rail__index {
+    display: none;
+  }
+}
