@@ -365,7 +365,7 @@ body:has(.landing) {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: clamp(28px, 6vh, 88px) clamp(20px, 4vw, 48px) clamp(24px, 4.4vh, 52px);
+  padding: clamp(24px, 5vh, 76px) clamp(20px, 4vw, 48px) clamp(20px, 3.6vh, 40px);
   animation: riseIn 220ms var(--ease-out) backwards;
 }
 
@@ -462,7 +462,8 @@ body:has(.landing) {
   position: relative;
   z-index: 1;
   flex: none;
-  min-height: clamp(300px, 40dvh, 440px);
+  /* 40dvh 时 nav + hero + stage 合计超出视口，页面凭空多出一条竖滚动条 */
+  min-height: clamp(260px, 34dvh, 400px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -479,11 +480,12 @@ body:has(.landing) {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.6) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.6) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
   background-size: 52px 52px;
-  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 42%, #000 100%);
-  mask-image: linear-gradient(180deg, transparent 0%, #000 42%, #000 100%);
+  /* 渐变段拉长到 55%：第一根横线进入视野时只有很淡的一层，不会读成一条硬边 */
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 55%, #000 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 55%, #000 100%);
   pointer-events: none;
 }
 
@@ -500,9 +502,9 @@ body:has(.landing) {
 
 .landing__demo-label {
   margin-bottom: 4px;
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 500;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--k-muted);
 }
@@ -519,10 +521,12 @@ body:has(.landing) {
   position: relative;
   z-index: 1;
   margin: 0;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.02em;
-  color: rgba(15, 23, 42, 0.68);
+  /* 下面就是白色网格线，文字需要压过网格才读得清 */
+  color: #334155;
   text-align: center;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 /* ---------- 登录弹层：点击后才出现 ---------- */
@@ -611,18 +615,19 @@ body:has(.landing) {
 .login-modal__meta {
   margin-top: auto;
   padding-top: 28px;
-  font-size: 9.5px;
-  letter-spacing: 0.22em;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
   color: var(--k-muted);
 }
 
 .login-modal__watermark {
   position: absolute;
-  right: -34px;
-  bottom: 0;
-  width: 240px;
-  height: 240px;
-  color: rgba(99, 102, 241, 0.055);
+  right: -30px;
+  /* 原本贴住卡片底边，正好被左下 88px 的大圆角切掉一截；留出底距让裁切落在圆角外侧 */
+  bottom: 26px;
+  width: 250px;
+  height: 250px;
+  color: rgba(99, 102, 241, 0.07);
   pointer-events: none;
 }
 
@@ -635,13 +640,14 @@ body:has(.landing) {
 
 .login-modal__close {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  top: 10px;
+  right: 10px;
   z-index: 2;
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  /* 32px 的可点区在触屏上偏窄，44px 是常用下限 */
+  width: 44px;
+  height: 44px;
   padding: 0;
   border: 0;
   border-radius: 999px;
@@ -833,15 +839,21 @@ body:has(.login-modal[open]) {
   margin-bottom: 10px;
 }
 
+/* 5 个账号用自动折行的 flex 会剩下一个孤零零的第二行；改成等宽网格，末项补齐整行 */
 .login__demo-chips {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
   gap: 6px;
+}
+
+.login__demo-chips > :last-child:nth-child(odd) {
+  grid-column: span 2;
 }
 
 .chip {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   padding: 5px 10px;
   border: 1px solid var(--line);
