@@ -12,6 +12,7 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { setTimeout as sleep } from 'node:timers/promises';
 import { Client } from 'pg';
 
 const PORT = Number(process.env.XUZAO_PG_PORT ?? 55432);
@@ -79,6 +80,47 @@ function initialiseIfNeeded() {
   }
 }
 
+/**
+ * 探测端口上是否已有本栈的 PostgreSQL 在跑。
+ *
+ * 为什么需要：pg_ctl 是分离式启动，dev 终端被直接关闭时 node 进程全死，
+ * 但 postgres.exe 会作为孤儿进程继续占用 55432 和 pg.log。此时再次
+ * `pg_ctl start` 会报 "another server might be running" + 日志文件
+ * Permission denied 并以非零退出，把 concurrently 拉起的 api/web 一起带走。
+ * 因此启动前先尝试连接；能连上就复用现有实例。
+ */
+async function probeReady() {
+  const client = new Client({
+    host: '127.0.0.1',
+    port: PORT,
+    user: USER,
+    password: PASSWORD,
+    database: 'postgres',
+    connectionTimeoutMillis: 2000,
+  });
+  try {
+    await client.connect();
+    await client.query('SELECT 1');
+    await client.end();
+    return true;
+  } catch {
+    try { await client.end(); } catch { /* 已断开 */ }
+    return false;
+  }
+}
+
+/** 等数据库真正可查询（crash recovery 期间连接会报 57P03）。 */
+async function waitReady(timeoutMs = 60000) {
+  const deadline = Date.now() + timeoutMs;
+  for (;;) {
+    if (await probeReady()) return;
+    if (Date.now() >= deadline) {
+      throw new Error(`PostgreSQL 在 ${timeoutMs / 1000}s 内未就绪（端口 ${PORT}）`);
+    }
+    await sleep(1000);
+  }
+}
+
 function startServer() {
   console.log(`[db] 启动 PostgreSQL：127.0.0.1:${PORT}`);
   run('pg_ctl.exe', [
@@ -129,9 +171,15 @@ function stopServer() {
 }
 
 try {
-  ensureBinaries();
-  initialiseIfNeeded();
-  startServer();
+  if (await probeReady()) {
+    console.log(`[db] 检测到 127.0.0.1:${PORT} 已有 PostgreSQL 实例，直接复用`);
+  } else {
+    ensureBinaries();
+    initialiseIfNeeded();
+    startServer();
+    // pg_ctl -w 只等到 postmaster 起来；crash recovery 期间仍可能拒绝查询。
+    await waitReady();
+  }
   await ensureDatabases();
   console.log('[db] PostgreSQL 已就绪');
   console.log('[db] 按 Ctrl+C 停止');
@@ -155,5 +203,11 @@ function shutdown() {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
-// 保持进程存活，让 Postgres 服务持续运行
+// 保持进程存活，让 Postgres 服务持续运行。
+// 只挂一个未决议的 Promise 不够：Node 的事件循环没有活跃句柄时会认为
+// 顶层 await 永不落定，直接以 exit code 13 退出（unsettled top-level await），
+// 进而触发 concurrently -k 杀掉 api/web。必须留一个活跃句柄（长间隔 timer）。
+const keepAlive = setInterval(() => {}, 60 * 60 * 1000);
+process.on('exit', () => clearInterval(keepAlive));
+
 await new Promise(() => {});
