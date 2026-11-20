@@ -43,7 +43,27 @@
   border-radius: 999px;
   font-size: 14px;
   color: var(--muted);
+  white-space: nowrap;
   transition: color 150ms var(--ease-out), background-color 150ms var(--ease-out);
+}
+
+@media (max-width: 480px) {
+  .segmented {
+    display: flex;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .segmented::-webkit-scrollbar {
+    display: none;
+  }
+
+  .segmented__item {
+    flex: 0 0 auto;
+    padding: 8px 14px;
+    font-size: 13px;
+  }
 }
 
 .segmented__item.is-active {
@@ -227,9 +247,11 @@
   margin-bottom: 24px;
 }
 
-/* 图表容器：内边距 16px，固定最低高度避免加载后容器抖动 */
+/* 图表容器：内边距 16px。
+   原先的 min-height: 280px 是用来防加载抖动的，但 loading 时整块换成
+   LoadingBlock，面板根本不在 DOM 里，不存在抖动；它只会让内容少的面板
+   底下一大片空白（生产看板空 131px，库存汇总/发货完成率各空 70px）。 */
 .dash-panel {
-  min-height: 280px;
   padding: 16px;
 }
 
@@ -388,6 +410,28 @@
   margin-top: 20px;
 }
 
+/* 手机两列时每格只有 ~130px，而 dd 里是 nowrap 的滚动数字，
+   ¥1,253,553.00 会直接顶到卡片外；窄屏落成一列 */
+@media (max-width: 480px) {
+  .profit--dash {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 毛利后面的百分比芯片：数字一长就被挤成两行、第二行靠左；
+   改成 flex 并给芯片 margin-left: auto，换行时也贴在右边 */
+.profit--dash .profit__item--total dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 8px;
+}
+
+.profit--dash .profit__item--total .profit__margin {
+  margin-left: auto;
+}
+
 .profit--dash dt {
   font-size: 11px;
   font-weight: 500;
@@ -517,6 +561,53 @@
   font-family: var(--font-display);
 }
 
+/* 部门完成度：文字一行 + 进度条一行，与状态分布条同色族 */
+.progress-stat__row--stacked {
+  display: block;
+  padding-bottom: 14px;
+}
+
+.progress-stat__line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* 与利润汇总并排时会被 grid 拉到同高，图例把多出来的高度均摊掉，
+   否则卡片底部空 68–94px */
+.dash-panel:has(.dist-legend) {
+  display: flex;
+  flex-direction: column;
+}
+
+.dash-panel:has(.dist-legend) .dist-legend {
+  flex: 1;
+  align-content: space-between;
+}
+
+.qbar {
+  height: 6px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: var(--paper-deep);
+  overflow: hidden;
+}
+
+.qbar__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--pine);
+  transition: width 240ms var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qbar__fill {
+    transition: none;
+  }
+}
+
 .dash-list {
   display: grid;
 }
@@ -620,6 +711,11 @@
 .dash-list__amount {
   text-align: right;
   font-size: 13px;
+}
+
+.notice-filters {
+  max-width: 220px;
+  margin-top: 12px;
 }
 
 .notice-list,
@@ -895,6 +991,32 @@
   animation: modal-rise 180ms var(--ease-out) both;
 }
 
+.modal__card--wide {
+  width: min(680px, 100%);
+}
+
+.import-result {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+}
+
+.import-errors {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 220px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--vermilion);
+}
+
 .modal__title {
   font-family: var(--font-display);
   font-size: 20px;
@@ -1056,6 +1178,16 @@
   color: var(--green);
 }
 
+.exception-item__status--in_progress {
+  border-color: rgba(37, 99, 235, 0.35);
+  color: #2563eb;
+}
+
+.exception-item__status--resolved {
+  border-color: rgba(4, 120, 87, 0.3);
+  color: var(--green);
+}
+
 .exception-item__body {
   flex: 1;
   min-width: 0;
@@ -1078,6 +1210,123 @@
   gap: 4px;
   flex: none;
   font-size: 12.5px;
+}
+
+.exception-item--stack {
+  display: block;
+}
+
+.exception-item__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.exception-item__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex: none;
+}
+
+.exception-item__resolution {
+  margin-top: 6px;
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+
+.exception-dispose {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 14px 0 0 52px;
+}
+
+.exception-dispose .field {
+  min-width: 200px;
+}
+
+.exception-dispose__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.price-history {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.price-history__item {
+  word-break: break-word;
+}
+
+.tag {
+  flex: none;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 500;
+  vertical-align: middle;
+}
+
+.badge--default {
+  color: #047857;
+  background: rgba(4, 120, 87, 0.1);
+}
+
+.row-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .exception-item__head {
+    flex-wrap: wrap;
+    gap: 8px 12px;
+  }
+
+  .exception-item__body {
+    flex: 1 1 100%;
+    order: 3;
+  }
+
+  .exception-item__actions {
+    flex: 1 1 100%;
+    order: 4;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .exception-dispose {
+    padding-left: 0;
+  }
+
+  .exception-dispose .field {
+    min-width: 100%;
+  }
 }
 
 /* ---------- 账号管理 ---------- */
@@ -1276,7 +1525,8 @@
 }
 
 .audit-filters__field .input {
-  min-width: 140px;
+  /* 140px 时原生日历控件的「年 / 月 / 日」三段各只剩约 20px，点起来容易错段 */
+  min-width: 156px;
   height: 40px;
   padding: 0 12px;
   font-size: 14px;
@@ -1431,6 +1681,41 @@
 
 .audit-detail {
   min-width: 0;
+}
+
+.audit-detail--changes {
+  margin-bottom: 14px;
+}
+
+.audit-changes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.audit-changes__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.audit-changes__field {
+  min-width: 120px;
+  color: var(--muted);
+}
+
+.audit-changes__value {
+  word-break: break-word;
+}
+
+.audit-changes__arrow {
+  color: var(--muted);
 }
 
 .audit-detail__label {

@@ -3,9 +3,9 @@ import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { ApiError, apiGet } from '../api/client';
 import type { OrderAction, OrderDetail } from '../api/types';
 import { useAuth } from '../auth/AuthContext';
-import { AttachmentPanel } from '../components/AttachmentPanel';
+import { AttachmentScopes } from '../components/AttachmentPanel';
 import { DataTable } from '../components/DataTable';
-import { FlowLedger, FlowPanel } from '../components/FlowPanel';
+import { FlowLedger, FlowPanel, PriceVisibilityControl } from '../components/FlowPanel';
 import { ReportException } from '../components/ReportException';
 import { ArrowLeft, CheckIcon } from '../components/Icons';
 import {
@@ -295,6 +295,24 @@ export function OrderDetailPage() {
         </div>
 
         <aside className="detail-grid__aside">
+          {user?.role === 'ADMIN' && order.flow.production ? (
+            <PriceVisibilityControl
+              production={order.flow.production}
+              onVisibleChange={(visible) =>
+                setOrder((current) =>
+                  current && current.flow.production
+                    ? {
+                        ...current,
+                        flow: {
+                          ...current.flow,
+                          production: { ...current.flow.production, unitPriceVisible: visible },
+                        },
+                      }
+                    : current,
+                )
+              }
+            />
+          ) : null}
           {hasAction ? (
             <FlowPanel order={order} onUpdated={setOrder} focusAction={focusAction} />
           ) : (
@@ -349,7 +367,7 @@ export function OrderDetailPage() {
             </div>
           ) : null}
 
-          <AttachmentPanel orderId={order.id} />
+          <AttachmentScopes order={order} />
 
           <ReportException orderId={order.id} />
 

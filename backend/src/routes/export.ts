@@ -1,9 +1,9 @@
-import ExcelJS from 'exceljs';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { authenticate, requireAdmin } from '../auth/guards.ts';
 import { prisma } from '../db.ts';
 import { OrderStatus } from '../generated/prisma/enums.ts';
+import { buildWorkbook, sendXlsx, type XlsxColumn } from '../lib/export-workbook.ts';
 import { shanghaiDateKey } from '../lib/time.ts';
 import { STATUS_LABELS } from '../domain/orders.ts';
 
@@ -15,17 +15,17 @@ const exportQuery = z.object({
 
 const MAX_ROWS = 10_000;
 
-const HEADER = [
-  '订单号',
-  '客户',
-  '联系人',
-  '交期',
-  '状态',
-  '产品明细',
-  '总数量',
-  '订单金额',
-  '创建时间',
-  '完成时间',
+const COLUMNS: XlsxColumn[] = [
+  { header: '订单号', width: 20 },
+  { header: '客户', width: 22 },
+  { header: '联系人', width: 14 },
+  { header: '交期', width: 12 },
+  { header: '状态', width: 10 },
+  { header: '产品明细', width: 40 },
+  { header: '总数量', width: 10 },
+  { header: '订单金额', width: 14, numFmt: '#,##0.00' },
+  { header: '创建时间', width: 18 },
+  { header: '完成时间', width: 18 },
 ];
 
 function dateKey(date: Date): string {
@@ -79,40 +79,14 @@ export async function exportRoutes(app: FastifyInstance): Promise<void> {
         take: MAX_ROWS,
       });
 
-      const workbook = new ExcelJS.Workbook();
-      workbook.creator = '序造 XuZao';
-      workbook.created = new Date();
-
-      const sheet = workbook.addWorksheet('订单列表', {
-        views: [{ state: 'frozen', ySplit: 1 }],
-      });
-
-      sheet.columns = [
-        { width: 20 },
-        { width: 22 },
-        { width: 14 },
-        { width: 12 },
-        { width: 10 },
-        { width: 40 },
-        { width: 10 },
-        { width: 14 },
-        { width: 18 },
-        { width: 18 },
-      ];
-
-      const header = sheet.addRow(HEADER);
-      header.font = { bold: true };
-      header.alignment = { vertical: 'middle' };
-      header.height = 22;
-
-      for (const order of orders) {
+      const rows = orders.map((order) => {
         const totalQuantity = order.items.reduce((sum, item) => sum + item.quantity, 0);
         const totalAmount = order.items.reduce(
           (sum, item) => sum + Number(item.unitPrice) * item.quantity,
           0,
         );
 
-        const row = sheet.addRow([
+        return [
           order.orderNo,
           order.customerName,
           order.customerContact ?? '',
@@ -123,27 +97,11 @@ export async function exportRoutes(app: FastifyInstance): Promise<void> {
           totalAmount,
           timestamp(order.createdAt),
           order.completedAt ? timestamp(order.completedAt) : '',
-        ]);
+        ];
+      });
 
-        row.getCell(8).numFmt = '#,##0.00';
-      }
-
-      if (orders.length > 0) {
-        sheet.autoFilter = { from: 'A1', to: `J${orders.length + 1}` };
-      }
-
-      const buffer = await workbook.xlsx.writeBuffer();
-      const fileName = `xuzao-orders-${shanghaiDateKey()}.xlsx`;
-
-      reply.header(
-        'Content-Type',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      );
-      reply.header(
-        'Content-Disposition',
-        `attachment; filename="${fileName}"; filename*=UTF-8''${encodeURIComponent(fileName)}`,
-      );
-      return reply.send(Buffer.from(buffer));
+      const workbook = buildWorkbook({ sheetName: '订单列表', columns: COLUMNS, rows });
+      return sendXlsx(reply, workbook, `xuzao-orders-${shanghaiDateKey()}.xlsx`);
     },
   );
 }

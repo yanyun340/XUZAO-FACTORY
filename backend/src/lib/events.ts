@@ -1,4 +1,6 @@
 import type { Prisma } from '../generated/prisma/client.ts';
+import type { NotificationCategory } from '../generated/prisma/enums.ts';
+import { categoryForEventType } from './notification-categories.ts';
 
 type Tx = Prisma.TransactionClient;
 
@@ -8,7 +10,7 @@ export interface RecordEventInput {
   actorId: string;
   payload?: Prisma.InputJsonValue;
   /** 管理员通知文案；不传则只写时间线，不通知。 */
-  notify?: { title: string; body: string };
+  notify?: { title: string; body: string; category?: NotificationCategory };
 }
 
 /**
@@ -36,6 +38,7 @@ export async function recordEvent(tx: Tx, input: RecordEventInput): Promise<void
     await tx.notification.create({
       data: {
         eventType: input.type,
+        category: input.notify.category ?? categoryForEventType(input.type),
         title: input.notify.title,
         body: input.notify.body,
         recipientId: admin.id,

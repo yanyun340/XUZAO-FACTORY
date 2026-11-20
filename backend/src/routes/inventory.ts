@@ -7,6 +7,7 @@ import type { Prisma } from '../generated/prisma/client.ts';
 import { InventoryKind } from '../generated/prisma/enums.ts';
 import { ok } from '../http/respond.ts';
 import { writeAudit } from '../lib/audit.ts';
+import { replayHeaders, runIdempotent } from '../lib/idempotency.ts';
 import {
   adjustPartStock,
   adjustProductStock,
@@ -97,27 +98,35 @@ export async function inventoryRoutes(app: FastifyInstance): Promise<void> {
       const { id } = idParam.parse(request.params);
       const body = adjustSchema.parse(request.body);
 
-      const result = await prisma.$transaction(async (tx) => {
-        const adjusted = await adjustPartStock(tx, id, {
-          delta: body.delta,
-          reason: body.reason,
-          operatorId: auth.user.id,
-        });
+      // 把资源 ID 一起放进请求哈希：同一个键打到另一个库存行会被判为不同意图。
+      const outcome = await runIdempotent({
+        actorId: auth.user.id,
+        operation: 'inventory.part.adjust',
+        key: request.headers['idempotency-key'],
+        body: { id, ...body },
+        handler: async (tx) => {
+          const adjusted = await adjustPartStock(tx, id, {
+            delta: body.delta,
+            reason: body.reason,
+            operatorId: auth.user.id,
+          });
 
-        await writeAudit(tx, {
-          requestId: request.id,
-          actorId: auth.user.id,
-          action: 'inventory.part.adjust',
-          resourceType: 'part_inventory',
-          resourceId: id,
-          before: { quantity: adjusted.before },
-          after: { quantity: adjusted.after, delta: body.delta, reason: body.reason },
-        });
+          await writeAudit(tx, {
+            requestId: request.id,
+            actorId: auth.user.id,
+            action: 'inventory.part.adjust',
+            resourceType: 'part_inventory',
+            resourceId: id,
+            before: { quantity: adjusted.before },
+            after: { quantity: adjusted.after, delta: body.delta, reason: body.reason },
+          });
 
-        return adjusted;
+          return { status: 200, data: adjusted, resourceId: id };
+        },
       });
 
-      return ok(reply, result);
+      reply.headers(replayHeaders(outcome.replayed));
+      return ok(reply, outcome.data);
     },
   );
 
@@ -176,7 +185,12 @@ export async function inventoryRoutes(app: FastifyInstance): Promise<void> {
       const productKey = productKeyOf(body);
 
       try {
-        const created = await prisma.$transaction(async (tx) => {
+        const outcome = await runIdempotent({
+          actorId: auth.user.id,
+          operation: 'inventory.product.create',
+          key: request.headers['idempotency-key'],
+          body,
+          handler: async (tx) => {
           const duplicate = await tx.productInventory.findUnique({ where: { productKey } });
           if (duplicate) {
             throw Errors.conflict('PRODUCT_ALREADY_EXISTS', '该产品（同名同规格）已存在', {
@@ -216,10 +230,12 @@ export async function inventoryRoutes(app: FastifyInstance): Promise<void> {
             after: { productName: product.productName, spec: product.spec, quantity: product.quantity },
           });
 
-          return product;
+            return { status: 201, data: product, resourceId: product.id };
+          },
         });
 
-        return ok(reply, created, 201);
+        reply.headers(replayHeaders(outcome.replayed));
+        return ok(reply, outcome.data, outcome.replayed ? 200 : 201);
       } catch (error) {
         // 两个请求同时通过上面的存在性检查时，唯一键会拦住后到的一个。
         // 这里把它翻译成同一种业务冲突码，客户端不用区分"先查后建"与"并发撞键"。
@@ -242,27 +258,34 @@ export async function inventoryRoutes(app: FastifyInstance): Promise<void> {
       const { id } = idParam.parse(request.params);
       const body = adjustSchema.parse(request.body);
 
-      const result = await prisma.$transaction(async (tx) => {
-        const adjusted = await adjustProductStock(tx, id, {
-          delta: body.delta,
-          reason: body.reason,
-          operatorId: auth.user.id,
-        });
+      const outcome = await runIdempotent({
+        actorId: auth.user.id,
+        operation: 'inventory.product.adjust',
+        key: request.headers['idempotency-key'],
+        body: { id, ...body },
+        handler: async (tx) => {
+          const adjusted = await adjustProductStock(tx, id, {
+            delta: body.delta,
+            reason: body.reason,
+            operatorId: auth.user.id,
+          });
 
-        await writeAudit(tx, {
-          requestId: request.id,
-          actorId: auth.user.id,
-          action: 'inventory.product.adjust',
-          resourceType: 'product_inventory',
-          resourceId: id,
-          before: { quantity: adjusted.before },
-          after: { quantity: adjusted.after, delta: body.delta, reason: body.reason },
-        });
+          await writeAudit(tx, {
+            requestId: request.id,
+            actorId: auth.user.id,
+            action: 'inventory.product.adjust',
+            resourceType: 'product_inventory',
+            resourceId: id,
+            before: { quantity: adjusted.before },
+            after: { quantity: adjusted.after, delta: body.delta, reason: body.reason },
+          });
 
-        return adjusted;
+          return { status: 200, data: adjusted, resourceId: id };
+        },
       });
 
-      return ok(reply, result);
+      reply.headers(replayHeaders(outcome.replayed));
+      return ok(reply, outcome.data);
     },
   );
 

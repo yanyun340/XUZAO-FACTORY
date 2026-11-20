@@ -100,6 +100,59 @@ export function eventLabel(type: string): string {
   return EVENT_LABEL[type] ?? type;
 }
 
+/** 通知业务分类（R20F），与后端 NotificationCategory 一一对应。 */
+export const NOTIFICATION_CATEGORY_LABEL: Record<string, string> = {
+  SYSTEM: '系统',
+  ORDER: '订单',
+  PRODUCTION: '生产',
+  QC: '质检',
+  PACKING: '包装',
+  SHIPPING: '发货',
+  INVENTORY: '库存',
+  EXCEPTION: '异常',
+  DUE_DATE: '交期',
+};
+
+export const NOTIFICATION_CATEGORY_OPTIONS = Object.entries(NOTIFICATION_CATEGORY_LABEL).map(
+  ([value, label]) => ({ value, label }),
+);
+
+export function notificationCategoryLabel(category: string): string {
+  return NOTIFICATION_CATEGORY_LABEL[category] ?? category;
+}
+
+export const SUPPLIER_TYPE_LABEL: Record<string, string> = {
+  NORMAL: '普通供应商',
+  ELECTROPLATING: '电镀厂商',
+};
+
+export const SUPPLIER_TYPE_OPTIONS = Object.entries(SUPPLIER_TYPE_LABEL).map(
+  ([value, label]) => ({ value, label }),
+);
+
+export const EXCEPTION_CATEGORY_LABEL: Record<string, string> = {
+  QUALITY: '质量',
+  MATERIAL: '物料',
+  EQUIPMENT: '设备',
+  SCHEDULE: '排期',
+  OTHER: '其他',
+};
+
+export const EXCEPTION_STATUS_LABEL: Record<string, string> = {
+  OPEN: '待处理',
+  IN_PROGRESS: '处理中',
+  RESOLVED: '已解决',
+  CLOSED: '已关闭',
+};
+
+export function exceptionCategoryLabel(category: string): string {
+  return EXCEPTION_CATEGORY_LABEL[category] ?? category;
+}
+
+export function exceptionStatusLabel(status: string): string {
+  return EXCEPTION_STATUS_LABEL[status] ?? status;
+}
+
 /** 审计动作的中文名，审计日志页使用；未登记的动作回退成原始 code。 */
 export const AUDIT_ACTION_LABEL: Record<string, string> = {
   'auth.login': '登录',

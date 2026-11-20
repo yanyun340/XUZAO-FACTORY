@@ -1,7 +1,7 @@
 # 运行与运维手册
 
-版本：0.1.0｜更新：2026-11-04
-适用：本地开发、验收演示、干净环境启动、备份恢复演练
+版本：0.2.0｜更新：2026-11-14
+适用：本地开发、验收演示、干净环境启动、备份恢复与回退演练
 
 ## 1. 前置条件
 
@@ -49,15 +49,32 @@ npm run dev -w frontend         # Vite :5173
 
 密码不写入仓库、文档或截图。
 
-## 3. 健康检查
+## 3. 健康检查与就绪
 
 ```bash
 curl -s http://127.0.0.1:3001/api/v1/health
-# {"data":{"status":"ok","database":"up","time":"...","requestId":"..."},"meta":{...}}
+# 存活探针：{"data":{"status":"ok","database":"up",...},"meta":{...}}
+
+curl -s http://127.0.0.1:3001/api/v1/ready
+# 就绪探针：数据库 / 迁移 / 上传目录三项都 ok 才返回 200
 ```
 
-- 数据库不可用时返回 503 `DATABASE_UNAVAILABLE`，进程不退出。
+- `/health` 只证明进程活着、数据库能 ping 通；数据库不可用时返回 503 `DATABASE_UNAVAILABLE`，进程不退出。
+- `/ready` 额外检查 `_prisma_migrations` 无 pending/failed、`UPLOAD_DIR` 可写；失败返回 503 `NOT_READY`，`details.checks` 指出具体组件。
+- 负载均衡/反向代理应使用 `/ready` 决定是否摘流，使用 `/health` 决定是否重启。
 - `requestId` 可用于在服务端日志与审计中定位同一次请求。
+
+### 3.1 生产模式启动
+
+```bash
+npm run build
+NODE_ENV=production \
+COOKIE_SECURE=true \
+APP_ORIGIN=https://your-host \
+npm run start -w backend
+```
+
+生产模式下 API 同时托管 `frontend/dist`：非 `/api/` 的 GET 请求回落 `index.html`（SPA 路由），`/api/` 未命中仍返回 JSON 404。缺少 `DATABASE_URL`、非法 `APP_ORIGIN` 等配置会在启动或首个请求明确失败，不会静默带病运行。
 
 ## 4. 数据库操作
 
@@ -74,7 +91,7 @@ curl -s http://127.0.0.1:3001/api/v1/health
 ## 5. 测试
 
 ```bash
-npm test             # backend Vitest，6 个文件
+npm test             # backend Vitest，13 个文件 / 102 个用例
 ```
 
 - 测试库来自 `TEST_DATABASE_URL`，`config.ts` 强制库名包含 `test`；未配置、指向开发库或库名不含 `test` 都会直接失败。
@@ -82,7 +99,7 @@ npm test             # backend Vitest，6 个文件
 - `fileParallelism: false`，避免多个文件同时清库。
 - 前端：`npm run build -w frontend` 会执行 `tsc --noEmit` 与 Vite 构建。
 
-最近一次执行结果见 `tests/reports/2026-11-04-backend-tests.md`。
+最近一次执行结果见 `tests/reports/2026-11-14-backend-tests.md`。
 
 ## 6. 备份
 
@@ -158,8 +175,15 @@ npm run restore -- backups/xuzao-backup-2026-11-04T14-00-47.json \
 
 ## 10. 回退
 
-- **应用回退**：本项目未发布版本化制品；回退即切回上一提交并重新构建。数据库迁移只追加，旧代码可忽略新表/新列。
+- **应用回退**：本项目未发布版本化制品；回退即切回上一提交并重新构建。0.2.0 的迁移全部是增量式（加列/加表/加索引），已实际演练 0.1.0 源码运行在 0.2.0 结构上：登录、订单读取、看板、建单均正常。详见 `tests/reports/2026-11-14-deploy-rollback.md`。
+- **回退窗口的数据边界**：0.1.0 代码创建的新订单不会写 `ownerId`。重新升级到 0.2.0 后执行一次：
+
+  ```sql
+  UPDATE orders SET "ownerId" = "createdById" WHERE "ownerId" IS NULL;
+  ```
+
 - **数据回退**：不提供“在线回滚”。需要恢复时，按第 6、7 节备份 → 隔离库验证 → 人工确认后再切换连接串。
+- **不可回退的变更**：一旦出现删除列、修改列类型或不可逆数据转换，就不能只靠 Git 回退应用，必须恢复备份。迁移文件只追加，不改已应用文件。
 - **禁止**：直接修改已应用的迁移文件；在真实库执行 `db:reset`、`migrate dev` 或 `seed`；用备份覆盖现有库。
 
 ## 11. 目录与产物

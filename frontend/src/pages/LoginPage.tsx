@@ -354,7 +354,7 @@ export function LoginPage() {
       >
         <div className="login-modal__card">
           <button type="button" className="login-modal__close" onClick={closeLogin} aria-label="关闭登录">
-            <CloseIcon size={16} />
+            <CloseIcon size={18} />
           </button>
 
           <aside className="login-modal__brand" aria-label="序造 XuZao">

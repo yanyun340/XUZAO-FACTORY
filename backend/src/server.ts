@@ -1,7 +1,7 @@
 import { buildApp } from './app.ts';
 import { config } from './config.ts';
 import { disconnectDatabase } from './db.ts';
-import { startDueDateReminderJob } from './jobs/scheduler.ts';
+import { startAttachmentCleanupJob, startDueDateReminderJob } from './jobs/scheduler.ts';
 
 const app = buildApp();
 
@@ -46,4 +46,5 @@ try {
 // 交期提醒：启动时补跑一次，之后每小时一次；测试环境不启用
 if (!config.isTest) {
   startDueDateReminderJob(app.log);
+  startAttachmentCleanupJob(app.log);
 }

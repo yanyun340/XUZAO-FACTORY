@@ -1,6 +1,6 @@
 # 订单状态与数量规则
 
-版本：0.1.0｜实现：`backend/src/domain/flow.ts`、`backend/src/routes/flow.ts`
+版本：0.2.0｜实现：`backend/src/domain/flow.ts`、`backend/src/routes/flow.ts`
 更新时间：2026-11-04
 
 本文是订单主链的唯一权威口径。前端只渲染 `allowedActions`，任何提交都会在后端重新校验；文档、接口和测试不一致时以本表与代码为准，并同步修正文档。
@@ -115,6 +115,8 @@ PENDING_PURCHASE ──采购下单──▶ PURCHASING ──生产下发──
 7. 事务写入业务记录 + 时间线 + 通知 + 审计 + 幂等结果。
 
 事务失败会整体回滚，因此不会出现“状态已改但记录没写”的情况。
+
+采购还有一条供应商集合校验（R02F）：配件配置了供应商后，所选供应商必须属于该集合，否则返回 422 `SUPPLIER_NOT_IN_PART_SET`；没配置集合时仍可选任意有效供应商。
 
 ## 5. 利润
 

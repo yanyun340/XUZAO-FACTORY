@@ -1,7 +1,9 @@
 import { useState, type FormEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { ApiError, apiPost } from '../api/client';
+import type { ExceptionCategory } from '../api/types';
 import { useModalFocus } from '../hooks/useModalFocus';
+import { EXCEPTION_CATEGORY_LABEL } from '../lib/format';
 import { AlertIcon } from './Icons';
 import { announce } from './LiveAnnouncer';
 import { Button } from './ui';
@@ -9,6 +11,7 @@ import { Button } from './ui';
 /** 平板端也能用：任何已登录角色都可以对当前订单上报现场异常。 */
 export function ReportException({ orderId }: { orderId: string }) {
   const [open, setOpen] = useState(false);
+  const [category, setCategory] = useState<ExceptionCategory>('OTHER');
   const [description, setDescription] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +29,11 @@ export function ReportException({ orderId }: { orderId: string }) {
     setBusy(true);
     setError(null);
     try {
-      await apiPost('/exceptions', { orderId, description: description.trim() });
+      await apiPost('/exceptions', {
+        orderId,
+        category,
+        description: description.trim(),
+      });
       setDescription('');
       setDone(true);
       setOpen(false);
@@ -68,6 +75,21 @@ export function ReportException({ orderId }: { orderId: string }) {
             <p className="eyebrow">INCIDENT REPORT</p>
             <h2 className="modal__title">上报异常</h2>
             <p className="modal__sub">描述越具体，管理员处理越快。上报会记录你的身份与时间。</p>
+
+            <label className="field">
+              <span className="field__label">异常分类</span>
+              <select
+                className="input input--select"
+                value={category}
+                onChange={(event) => setCategory(event.target.value as ExceptionCategory)}
+              >
+                {Object.entries(EXCEPTION_CATEGORY_LABEL).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
 
             <label className="field">
               <span className="field__label">异常描述</span>

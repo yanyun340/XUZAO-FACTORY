@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { ApiError, apiGetPage, apiPost } from '../api/client';
 import type { InventoryLogItem, PageMeta, PartStock, ProductStock } from '../api/types';
@@ -44,6 +44,9 @@ export function InventoryPage() {
   const [reason, setReason] = useState('');
   const [busy, setBusy] = useState(false);
   const [adjustError, setAdjustError] = useState<string | null>(null);
+  // R25F：同一次调整意图沿用同一把幂等键，网络失败后重试不会重复扣减。
+  const adjustKeyRef = useRef('');
+  const createKeyRef = useRef('');
 
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState('');
@@ -97,6 +100,7 @@ export function InventoryPage() {
     setDelta('');
     setReason('');
     setAdjustError(null);
+    adjustKeyRef.current = crypto.randomUUID();
   };
 
   const submitAdjust = useCallback(
@@ -120,7 +124,9 @@ export function InventoryPage() {
         await apiPost(
           `/inventory/${adjusting.kind === 'part' ? 'parts' : 'products'}/${adjusting.id}/adjust`,
           { delta: amount, reason: reason.trim() },
+          { 'Idempotency-Key': adjustKeyRef.current },
         );
+        adjustKeyRef.current = '';
         setAdjusting(null);
         announce(`库存已调整 ${amount > 0 ? '+' : ''}${amount}`);
         setReloadToken((token) => token + 1);
@@ -150,7 +156,10 @@ export function InventoryPage() {
           spec: newSpec.trim(),
           quantity: Number(newQty) || 0,
           reason: '新建商品档案',
-        }      );
+        },
+        { 'Idempotency-Key': createKeyRef.current },
+      );
+      createKeyRef.current = '';
       setCreating(false);
       setNewName('');
       setNewSpec('');
@@ -183,7 +192,15 @@ export function InventoryPage() {
         </div>
         {isAdmin && tab === 'products' ? (
           <div className="page-head__action">
-            <Button onClick={() => setCreating((value) => !value)} trailing={<PlusIcon size={16} />}>
+            <Button
+              onClick={() => {
+                setCreating((value) => {
+                  if (!value) createKeyRef.current = crypto.randomUUID();
+                  return !value;
+                });
+              }}
+              trailing={<PlusIcon size={16} />}
+            >
               新增商品
             </Button>
           </div>

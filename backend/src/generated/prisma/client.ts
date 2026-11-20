@@ -72,6 +72,11 @@ export type Customer = Prisma.CustomerModel
  */
 export type Supplier = Prisma.SupplierModel
 /**
+ * Model PartSupplier
+ * * 配件-供应商关系（R02F）；同一配件至多一个默认供应商。
+ */
+export type PartSupplier = Prisma.PartSupplierModel
+/**
  * Model Part
  * 
  */
@@ -166,6 +171,11 @@ export type AuditLog = Prisma.AuditLogModel
  * 
  */
 export type TabletException = Prisma.TabletExceptionModel
+/**
+ * Model ImportBatch
+ * 
+ */
+export type ImportBatch = Prisma.ImportBatchModel
 /**
  * Model TimelineEvent
  * 

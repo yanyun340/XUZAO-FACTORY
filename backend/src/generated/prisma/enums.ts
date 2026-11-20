@@ -67,3 +67,36 @@ export const QCDecisionType = {
 } as const
 
 export type QCDecisionType = (typeof QCDecisionType)[keyof typeof QCDecisionType]
+
+
+export const SupplierType = {
+  NORMAL: 'NORMAL',
+  ELECTROPLATING: 'ELECTROPLATING'
+} as const
+
+export type SupplierType = (typeof SupplierType)[keyof typeof SupplierType]
+
+
+export const ImportEntity = {
+  CUSTOMER: 'CUSTOMER',
+  SUPPLIER: 'SUPPLIER',
+  PART: 'PART',
+  EMPLOYEE: 'EMPLOYEE'
+} as const
+
+export type ImportEntity = (typeof ImportEntity)[keyof typeof ImportEntity]
+
+
+export const NotificationCategory = {
+  SYSTEM: 'SYSTEM',
+  ORDER: 'ORDER',
+  PRODUCTION: 'PRODUCTION',
+  QC: 'QC',
+  PACKING: 'PACKING',
+  SHIPPING: 'SHIPPING',
+  INVENTORY: 'INVENTORY',
+  EXCEPTION: 'EXCEPTION',
+  DUE_DATE: 'DUE_DATE'
+} as const
+
+export type NotificationCategory = (typeof NotificationCategory)[keyof typeof NotificationCategory]

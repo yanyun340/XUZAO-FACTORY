@@ -45,6 +45,7 @@ export async function runDueDateReminders(now = new Date()): Promise<ReminderRes
     for (const admin of admins) {
       rows.push({
         eventType: 'DUE_DATE_REMINDER',
+        category: 'DUE_DATE' as const,
         title: `交期提醒 · ${order.orderNo} ${when}`,
         body: `${order.customerName} 的订单交期为 ${toDateOnly(order.dueDate)}（${when}），当前状态：${statusLabel}。`,
         recipientId: admin.id,

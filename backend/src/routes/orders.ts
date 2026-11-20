@@ -27,6 +27,8 @@ const createOrderSchema = z.object({
   customerContact: z.string().trim().max(50).optional(),
   dueDate: z.string().refine(isDateOnly, '交期必须是 YYYY-MM-DD 格式的有效日期'),
   remark: z.string().trim().max(500).optional(),
+  /** 不填时默认创建人自己负责，和后端回填口径一致。 */
+  ownerId: z.string().uuid('负责人 ID 不合法').optional(),
   items: z.array(orderItemSchema).min(1, '至少需要一个产品明细').max(100),
 });
 
@@ -34,6 +36,7 @@ const listQuerySchema = z.object({
   status: z.nativeEnum(OrderStatus).optional(),
   keyword: z.string().trim().max(100).optional(),
   customerId: z.string().uuid().optional(),
+  ownerId: z.string().uuid().optional(),
   page: z.coerce.number().int().min(1).default(1),
   pageSize: z.coerce.number().int().min(1).max(100).default(20),
 });
@@ -54,6 +57,7 @@ export async function orderRoutes(app: FastifyInstance): Promise<void> {
     const where = {
       ...(query.status ? { status: query.status } : {}),
       ...(query.customerId ? { customerId: query.customerId } : {}),
+      ...(query.ownerId ? { ownerId: query.ownerId } : {}),
       ...(query.keyword
         ? {
             OR: [
@@ -110,7 +114,13 @@ export async function orderRoutes(app: FastifyInstance): Promise<void> {
 
     return ok(
       reply,
-      toOrderDetail(order, auth.user.role, auth.user.id, auth.user.departmentId),
+      toOrderDetail(
+        order,
+        auth.user.role,
+        auth.user.id,
+        auth.user.departmentId,
+        auth.user.department?.unitPriceVisible ?? false,
+      ),
     );
   });
 
@@ -144,6 +154,7 @@ export async function orderRoutes(app: FastifyInstance): Promise<void> {
               remark: body.remark,
               status: 'PENDING_PURCHASE',
               createdById: auth.user.id,
+              ownerId: body.ownerId ?? auth.user.id,
               items: {
                 create: body.items.map((item) => ({
                   productName: item.productName,
@@ -201,6 +212,7 @@ export async function orderRoutes(app: FastifyInstance): Promise<void> {
               auth.user.role,
               auth.user.id,
               auth.user.departmentId,
+              auth.user.department?.unitPriceVisible ?? false,
             ),
             resourceId: order.id,
           };

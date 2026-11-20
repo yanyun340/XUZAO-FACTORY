@@ -92,6 +92,7 @@ describe('交期提醒', () => {
     expect(after.body.data).toHaveLength(0);
 
     const summary = await admin('GET', '/api/v1/notifications/summary');
-    expect(summary.body.data).toEqual({ unread: 0, total: 1 });
+    expect(summary.body.data).toMatchObject({ unread: 0, total: 1 });
+    expect(summary.body.data.byCategory.DUE_DATE).toEqual({ total: 1, unread: 0 });
   });
 });

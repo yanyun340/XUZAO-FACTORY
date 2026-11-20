@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { ApiError, apiDownload, apiGetPage } from '../api/client';
 import type { OrderStatus, OrderSummary, PageMeta } from '../api/types';
 import { useAuth } from '../auth/AuthContext';
@@ -37,6 +37,7 @@ const STAGE_NAMES = Object.values(STAGE_LABELS);
 
 export function OrdersPage() {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
   const [orders, setOrders] = useState<OrderSummary[]>([]);
   const [meta, setMeta] = useState<PageMeta | null>(null);
   const [loading, setLoading] = useState(true);
@@ -44,7 +45,10 @@ export function OrdersPage() {
 
   const [queryInput, setQueryInput] = useState('');
   const [keyword, setKeyword] = useState('');
-  const [status, setStatus] = useState<OrderStatus | ''>('');
+  // 看板下钻：/orders?status=IN_PRODUCTION 直接落到对应状态。
+  const [status, setStatus] = useState<OrderStatus | ''>(
+    (searchParams.get('status') as OrderStatus | null) ?? '',
+  );
   const [page, setPage] = useState(1);
   const [reloadToken, setReloadToken] = useState(0);
   const [exporting, setExporting] = useState(false);

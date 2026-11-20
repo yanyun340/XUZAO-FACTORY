@@ -259,6 +259,7 @@ export type AdminUserWhereInput = {
   department?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
   sessions?: Prisma.SessionListRelationFilter
   ordersCreated?: Prisma.OrderListRelationFilter
+  ordersOwned?: Prisma.OrderListRelationFilter
   purchasesCreated?: Prisma.PurchaseOrderListRelationFilter
   arrivals?: Prisma.ArrivalRecordListRelationFilter
   productionsCreated?: Prisma.ProductionOrderListRelationFilter
@@ -272,6 +273,8 @@ export type AdminUserWhereInput = {
   notifications?: Prisma.NotificationListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
   exceptions?: Prisma.TabletExceptionListRelationFilter
+  handledExceptions?: Prisma.TabletExceptionListRelationFilter
+  importBatches?: Prisma.ImportBatchListRelationFilter
   timelineEvents?: Prisma.TimelineEventListRelationFilter
 }
 
@@ -289,6 +292,7 @@ export type AdminUserOrderByWithRelationInput = {
   department?: Prisma.DepartmentOrderByWithRelationInput
   sessions?: Prisma.SessionOrderByRelationAggregateInput
   ordersCreated?: Prisma.OrderOrderByRelationAggregateInput
+  ordersOwned?: Prisma.OrderOrderByRelationAggregateInput
   purchasesCreated?: Prisma.PurchaseOrderOrderByRelationAggregateInput
   arrivals?: Prisma.ArrivalRecordOrderByRelationAggregateInput
   productionsCreated?: Prisma.ProductionOrderOrderByRelationAggregateInput
@@ -302,6 +306,8 @@ export type AdminUserOrderByWithRelationInput = {
   notifications?: Prisma.NotificationOrderByRelationAggregateInput
   auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput
   exceptions?: Prisma.TabletExceptionOrderByRelationAggregateInput
+  handledExceptions?: Prisma.TabletExceptionOrderByRelationAggregateInput
+  importBatches?: Prisma.ImportBatchOrderByRelationAggregateInput
   timelineEvents?: Prisma.TimelineEventOrderByRelationAggregateInput
 }
 
@@ -322,6 +328,7 @@ export type AdminUserWhereUniqueInput = Prisma.AtLeast<{
   department?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
   sessions?: Prisma.SessionListRelationFilter
   ordersCreated?: Prisma.OrderListRelationFilter
+  ordersOwned?: Prisma.OrderListRelationFilter
   purchasesCreated?: Prisma.PurchaseOrderListRelationFilter
   arrivals?: Prisma.ArrivalRecordListRelationFilter
   productionsCreated?: Prisma.ProductionOrderListRelationFilter
@@ -335,6 +342,8 @@ export type AdminUserWhereUniqueInput = Prisma.AtLeast<{
   notifications?: Prisma.NotificationListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
   exceptions?: Prisma.TabletExceptionListRelationFilter
+  handledExceptions?: Prisma.TabletExceptionListRelationFilter
+  importBatches?: Prisma.ImportBatchListRelationFilter
   timelineEvents?: Prisma.TimelineEventListRelationFilter
 }, "id" | "username">
 
@@ -385,6 +394,7 @@ export type AdminUserCreateInput = {
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
@@ -398,6 +408,8 @@ export type AdminUserCreateInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
 }
 
@@ -414,6 +426,7 @@ export type AdminUserUncheckedCreateInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -427,6 +440,8 @@ export type AdminUserUncheckedCreateInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
 }
 
@@ -443,6 +458,7 @@ export type AdminUserUpdateInput = {
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
@@ -456,6 +472,8 @@ export type AdminUserUpdateInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
 }
 
@@ -472,6 +490,7 @@ export type AdminUserUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -485,6 +504,8 @@ export type AdminUserUncheckedUpdateInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
@@ -683,12 +704,28 @@ export type AdminUserCreateNestedOneWithoutOrdersCreatedInput = {
   connect?: Prisma.AdminUserWhereUniqueInput
 }
 
+export type AdminUserCreateNestedOneWithoutOrdersOwnedInput = {
+  create?: Prisma.XOR<Prisma.AdminUserCreateWithoutOrdersOwnedInput, Prisma.AdminUserUncheckedCreateWithoutOrdersOwnedInput>
+  connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutOrdersOwnedInput
+  connect?: Prisma.AdminUserWhereUniqueInput
+}
+
 export type AdminUserUpdateOneRequiredWithoutOrdersCreatedNestedInput = {
   create?: Prisma.XOR<Prisma.AdminUserCreateWithoutOrdersCreatedInput, Prisma.AdminUserUncheckedCreateWithoutOrdersCreatedInput>
   connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutOrdersCreatedInput
   upsert?: Prisma.AdminUserUpsertWithoutOrdersCreatedInput
   connect?: Prisma.AdminUserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.AdminUserUpdateToOneWithWhereWithoutOrdersCreatedInput, Prisma.AdminUserUpdateWithoutOrdersCreatedInput>, Prisma.AdminUserUncheckedUpdateWithoutOrdersCreatedInput>
+}
+
+export type AdminUserUpdateOneWithoutOrdersOwnedNestedInput = {
+  create?: Prisma.XOR<Prisma.AdminUserCreateWithoutOrdersOwnedInput, Prisma.AdminUserUncheckedCreateWithoutOrdersOwnedInput>
+  connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutOrdersOwnedInput
+  upsert?: Prisma.AdminUserUpsertWithoutOrdersOwnedInput
+  disconnect?: Prisma.AdminUserWhereInput | boolean
+  delete?: Prisma.AdminUserWhereInput | boolean
+  connect?: Prisma.AdminUserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AdminUserUpdateToOneWithWhereWithoutOrdersOwnedInput, Prisma.AdminUserUpdateWithoutOrdersOwnedInput>, Prisma.AdminUserUncheckedUpdateWithoutOrdersOwnedInput>
 }
 
 export type AdminUserCreateNestedOneWithoutPurchasesCreatedInput = {
@@ -867,12 +904,42 @@ export type AdminUserCreateNestedOneWithoutExceptionsInput = {
   connect?: Prisma.AdminUserWhereUniqueInput
 }
 
+export type AdminUserCreateNestedOneWithoutHandledExceptionsInput = {
+  create?: Prisma.XOR<Prisma.AdminUserCreateWithoutHandledExceptionsInput, Prisma.AdminUserUncheckedCreateWithoutHandledExceptionsInput>
+  connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutHandledExceptionsInput
+  connect?: Prisma.AdminUserWhereUniqueInput
+}
+
 export type AdminUserUpdateOneRequiredWithoutExceptionsNestedInput = {
   create?: Prisma.XOR<Prisma.AdminUserCreateWithoutExceptionsInput, Prisma.AdminUserUncheckedCreateWithoutExceptionsInput>
   connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutExceptionsInput
   upsert?: Prisma.AdminUserUpsertWithoutExceptionsInput
   connect?: Prisma.AdminUserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.AdminUserUpdateToOneWithWhereWithoutExceptionsInput, Prisma.AdminUserUpdateWithoutExceptionsInput>, Prisma.AdminUserUncheckedUpdateWithoutExceptionsInput>
+}
+
+export type AdminUserUpdateOneWithoutHandledExceptionsNestedInput = {
+  create?: Prisma.XOR<Prisma.AdminUserCreateWithoutHandledExceptionsInput, Prisma.AdminUserUncheckedCreateWithoutHandledExceptionsInput>
+  connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutHandledExceptionsInput
+  upsert?: Prisma.AdminUserUpsertWithoutHandledExceptionsInput
+  disconnect?: Prisma.AdminUserWhereInput | boolean
+  delete?: Prisma.AdminUserWhereInput | boolean
+  connect?: Prisma.AdminUserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AdminUserUpdateToOneWithWhereWithoutHandledExceptionsInput, Prisma.AdminUserUpdateWithoutHandledExceptionsInput>, Prisma.AdminUserUncheckedUpdateWithoutHandledExceptionsInput>
+}
+
+export type AdminUserCreateNestedOneWithoutImportBatchesInput = {
+  create?: Prisma.XOR<Prisma.AdminUserCreateWithoutImportBatchesInput, Prisma.AdminUserUncheckedCreateWithoutImportBatchesInput>
+  connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutImportBatchesInput
+  connect?: Prisma.AdminUserWhereUniqueInput
+}
+
+export type AdminUserUpdateOneRequiredWithoutImportBatchesNestedInput = {
+  create?: Prisma.XOR<Prisma.AdminUserCreateWithoutImportBatchesInput, Prisma.AdminUserUncheckedCreateWithoutImportBatchesInput>
+  connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutImportBatchesInput
+  upsert?: Prisma.AdminUserUpsertWithoutImportBatchesInput
+  connect?: Prisma.AdminUserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AdminUserUpdateToOneWithWhereWithoutImportBatchesInput, Prisma.AdminUserUpdateWithoutImportBatchesInput>, Prisma.AdminUserUncheckedUpdateWithoutImportBatchesInput>
 }
 
 export type AdminUserCreateNestedOneWithoutTimelineEventsInput = {
@@ -901,6 +968,7 @@ export type AdminUserCreateWithoutSessionsInput = {
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
@@ -914,6 +982,8 @@ export type AdminUserCreateWithoutSessionsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
 }
 
@@ -929,6 +999,7 @@ export type AdminUserUncheckedCreateWithoutSessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -942,6 +1013,8 @@ export type AdminUserUncheckedCreateWithoutSessionsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
 }
 
@@ -973,6 +1046,7 @@ export type AdminUserUpdateWithoutSessionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
@@ -986,6 +1060,8 @@ export type AdminUserUpdateWithoutSessionsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
 }
 
@@ -1001,6 +1077,7 @@ export type AdminUserUncheckedUpdateWithoutSessionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1014,6 +1091,8 @@ export type AdminUserUncheckedUpdateWithoutSessionsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
@@ -1029,6 +1108,7 @@ export type AdminUserCreateWithoutDepartmentInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
@@ -1042,6 +1122,8 @@ export type AdminUserCreateWithoutDepartmentInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
 }
 
@@ -1057,6 +1139,7 @@ export type AdminUserUncheckedCreateWithoutDepartmentInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1070,6 +1153,8 @@ export type AdminUserUncheckedCreateWithoutDepartmentInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
 }
 
@@ -1127,6 +1212,7 @@ export type AdminUserCreateWithoutOrdersCreatedInput = {
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
@@ -1140,6 +1226,8 @@ export type AdminUserCreateWithoutOrdersCreatedInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
 }
 
@@ -1155,6 +1243,7 @@ export type AdminUserUncheckedCreateWithoutOrdersCreatedInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1168,12 +1257,81 @@ export type AdminUserUncheckedCreateWithoutOrdersCreatedInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type AdminUserCreateOrConnectWithoutOrdersCreatedInput = {
   where: Prisma.AdminUserWhereUniqueInput
   create: Prisma.XOR<Prisma.AdminUserCreateWithoutOrdersCreatedInput, Prisma.AdminUserUncheckedCreateWithoutOrdersCreatedInput>
+}
+
+export type AdminUserCreateWithoutOrdersOwnedInput = {
+  id?: string
+  username: string
+  passwordHash: string
+  displayName: string
+  role: $Enums.Role
+  active?: boolean
+  sessionVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
+  arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
+  feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
+  qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
+  qcDecisions?: Prisma.QCDecisionCreateNestedManyWithoutDecidedByInput
+  packingRecords?: Prisma.PackingRecordCreateNestedManyWithoutOperatorInput
+  shipments?: Prisma.ShipmentRecordCreateNestedManyWithoutOperatorInput
+  inventoryLogs?: Prisma.InventoryLogCreateNestedManyWithoutOperatorInput
+  attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
+  timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
+}
+
+export type AdminUserUncheckedCreateWithoutOrdersOwnedInput = {
+  id?: string
+  username: string
+  passwordHash: string
+  displayName: string
+  role: $Enums.Role
+  departmentId?: string | null
+  active?: boolean
+  sessionVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
+  qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
+  qcDecisions?: Prisma.QCDecisionUncheckedCreateNestedManyWithoutDecidedByInput
+  packingRecords?: Prisma.PackingRecordUncheckedCreateNestedManyWithoutOperatorInput
+  shipments?: Prisma.ShipmentRecordUncheckedCreateNestedManyWithoutOperatorInput
+  inventoryLogs?: Prisma.InventoryLogUncheckedCreateNestedManyWithoutOperatorInput
+  attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
+  timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
+}
+
+export type AdminUserCreateOrConnectWithoutOrdersOwnedInput = {
+  where: Prisma.AdminUserWhereUniqueInput
+  create: Prisma.XOR<Prisma.AdminUserCreateWithoutOrdersOwnedInput, Prisma.AdminUserUncheckedCreateWithoutOrdersOwnedInput>
 }
 
 export type AdminUserUpsertWithoutOrdersCreatedInput = {
@@ -1199,6 +1357,7 @@ export type AdminUserUpdateWithoutOrdersCreatedInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
@@ -1212,6 +1371,8 @@ export type AdminUserUpdateWithoutOrdersCreatedInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
 }
 
@@ -1227,6 +1388,7 @@ export type AdminUserUncheckedUpdateWithoutOrdersCreatedInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1240,6 +1402,81 @@ export type AdminUserUncheckedUpdateWithoutOrdersCreatedInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
+  timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
+}
+
+export type AdminUserUpsertWithoutOrdersOwnedInput = {
+  update: Prisma.XOR<Prisma.AdminUserUpdateWithoutOrdersOwnedInput, Prisma.AdminUserUncheckedUpdateWithoutOrdersOwnedInput>
+  create: Prisma.XOR<Prisma.AdminUserCreateWithoutOrdersOwnedInput, Prisma.AdminUserUncheckedCreateWithoutOrdersOwnedInput>
+  where?: Prisma.AdminUserWhereInput
+}
+
+export type AdminUserUpdateToOneWithWhereWithoutOrdersOwnedInput = {
+  where?: Prisma.AdminUserWhereInput
+  data: Prisma.XOR<Prisma.AdminUserUpdateWithoutOrdersOwnedInput, Prisma.AdminUserUncheckedUpdateWithoutOrdersOwnedInput>
+}
+
+export type AdminUserUpdateWithoutOrdersOwnedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
+  arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
+  feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
+  qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
+  qcDecisions?: Prisma.QCDecisionUpdateManyWithoutDecidedByNestedInput
+  packingRecords?: Prisma.PackingRecordUpdateManyWithoutOperatorNestedInput
+  shipments?: Prisma.ShipmentRecordUpdateManyWithoutOperatorNestedInput
+  inventoryLogs?: Prisma.InventoryLogUpdateManyWithoutOperatorNestedInput
+  attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
+  timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
+}
+
+export type AdminUserUncheckedUpdateWithoutOrdersOwnedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
+  qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  qcDecisions?: Prisma.QCDecisionUncheckedUpdateManyWithoutDecidedByNestedInput
+  packingRecords?: Prisma.PackingRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  shipments?: Prisma.ShipmentRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  inventoryLogs?: Prisma.InventoryLogUncheckedUpdateManyWithoutOperatorNestedInput
+  attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
@@ -1256,6 +1493,7 @@ export type AdminUserCreateWithoutPurchasesCreatedInput = {
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
@@ -1268,6 +1506,8 @@ export type AdminUserCreateWithoutPurchasesCreatedInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
 }
 
@@ -1284,6 +1524,7 @@ export type AdminUserUncheckedCreateWithoutPurchasesCreatedInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
@@ -1296,6 +1537,8 @@ export type AdminUserUncheckedCreateWithoutPurchasesCreatedInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
 }
 
@@ -1328,6 +1571,7 @@ export type AdminUserUpdateWithoutPurchasesCreatedInput = {
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
@@ -1340,6 +1584,8 @@ export type AdminUserUpdateWithoutPurchasesCreatedInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
 }
 
@@ -1356,6 +1602,7 @@ export type AdminUserUncheckedUpdateWithoutPurchasesCreatedInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
@@ -1368,6 +1615,8 @@ export type AdminUserUncheckedUpdateWithoutPurchasesCreatedInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
@@ -1384,6 +1633,7 @@ export type AdminUserCreateWithoutArrivalsInput = {
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
@@ -1396,6 +1646,8 @@ export type AdminUserCreateWithoutArrivalsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
 }
 
@@ -1412,6 +1664,7 @@ export type AdminUserUncheckedCreateWithoutArrivalsInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
@@ -1424,6 +1677,8 @@ export type AdminUserUncheckedCreateWithoutArrivalsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
 }
 
@@ -1456,6 +1711,7 @@ export type AdminUserUpdateWithoutArrivalsInput = {
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
@@ -1468,6 +1724,8 @@ export type AdminUserUpdateWithoutArrivalsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
 }
 
@@ -1484,6 +1742,7 @@ export type AdminUserUncheckedUpdateWithoutArrivalsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
@@ -1496,6 +1755,8 @@ export type AdminUserUncheckedUpdateWithoutArrivalsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
@@ -1512,6 +1773,7 @@ export type AdminUserCreateWithoutProductionsCreatedInput = {
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
@@ -1524,6 +1786,8 @@ export type AdminUserCreateWithoutProductionsCreatedInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
 }
 
@@ -1540,6 +1804,7 @@ export type AdminUserUncheckedCreateWithoutProductionsCreatedInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
@@ -1552,6 +1817,8 @@ export type AdminUserUncheckedCreateWithoutProductionsCreatedInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
 }
 
@@ -1584,6 +1851,7 @@ export type AdminUserUpdateWithoutProductionsCreatedInput = {
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
@@ -1596,6 +1864,8 @@ export type AdminUserUpdateWithoutProductionsCreatedInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
 }
 
@@ -1612,6 +1882,7 @@ export type AdminUserUncheckedUpdateWithoutProductionsCreatedInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
@@ -1624,6 +1895,8 @@ export type AdminUserUncheckedUpdateWithoutProductionsCreatedInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
@@ -1640,6 +1913,7 @@ export type AdminUserCreateWithoutFeedbacksInput = {
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
@@ -1652,6 +1926,8 @@ export type AdminUserCreateWithoutFeedbacksInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
 }
 
@@ -1668,6 +1944,7 @@ export type AdminUserUncheckedCreateWithoutFeedbacksInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1680,6 +1957,8 @@ export type AdminUserUncheckedCreateWithoutFeedbacksInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
 }
 
@@ -1712,6 +1991,7 @@ export type AdminUserUpdateWithoutFeedbacksInput = {
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
@@ -1724,6 +2004,8 @@ export type AdminUserUpdateWithoutFeedbacksInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
 }
 
@@ -1740,6 +2022,7 @@ export type AdminUserUncheckedUpdateWithoutFeedbacksInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1752,6 +2035,8 @@ export type AdminUserUncheckedUpdateWithoutFeedbacksInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
@@ -1768,6 +2053,7 @@ export type AdminUserCreateWithoutQcRecordsInput = {
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
@@ -1780,6 +2066,8 @@ export type AdminUserCreateWithoutQcRecordsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
 }
 
@@ -1796,6 +2084,7 @@ export type AdminUserUncheckedCreateWithoutQcRecordsInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1808,6 +2097,8 @@ export type AdminUserUncheckedCreateWithoutQcRecordsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
 }
 
@@ -1840,6 +2131,7 @@ export type AdminUserUpdateWithoutQcRecordsInput = {
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
@@ -1852,6 +2144,8 @@ export type AdminUserUpdateWithoutQcRecordsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
 }
 
@@ -1868,6 +2162,7 @@ export type AdminUserUncheckedUpdateWithoutQcRecordsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1880,6 +2175,8 @@ export type AdminUserUncheckedUpdateWithoutQcRecordsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
@@ -1896,6 +2193,7 @@ export type AdminUserCreateWithoutQcDecisionsInput = {
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
@@ -1908,6 +2206,8 @@ export type AdminUserCreateWithoutQcDecisionsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
 }
 
@@ -1924,6 +2224,7 @@ export type AdminUserUncheckedCreateWithoutQcDecisionsInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1936,6 +2237,8 @@ export type AdminUserUncheckedCreateWithoutQcDecisionsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
 }
 
@@ -1968,6 +2271,7 @@ export type AdminUserUpdateWithoutQcDecisionsInput = {
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
@@ -1980,6 +2284,8 @@ export type AdminUserUpdateWithoutQcDecisionsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
 }
 
@@ -1996,6 +2302,7 @@ export type AdminUserUncheckedUpdateWithoutQcDecisionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2008,6 +2315,8 @@ export type AdminUserUncheckedUpdateWithoutQcDecisionsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
@@ -2024,6 +2333,7 @@ export type AdminUserCreateWithoutPackingRecordsInput = {
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
@@ -2036,6 +2346,8 @@ export type AdminUserCreateWithoutPackingRecordsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
 }
 
@@ -2052,6 +2364,7 @@ export type AdminUserUncheckedCreateWithoutPackingRecordsInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2064,6 +2377,8 @@ export type AdminUserUncheckedCreateWithoutPackingRecordsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
 }
 
@@ -2096,6 +2411,7 @@ export type AdminUserUpdateWithoutPackingRecordsInput = {
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
@@ -2108,6 +2424,8 @@ export type AdminUserUpdateWithoutPackingRecordsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
 }
 
@@ -2124,6 +2442,7 @@ export type AdminUserUncheckedUpdateWithoutPackingRecordsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2136,6 +2455,8 @@ export type AdminUserUncheckedUpdateWithoutPackingRecordsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
@@ -2152,6 +2473,7 @@ export type AdminUserCreateWithoutShipmentsInput = {
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
@@ -2164,6 +2486,8 @@ export type AdminUserCreateWithoutShipmentsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
 }
 
@@ -2180,6 +2504,7 @@ export type AdminUserUncheckedCreateWithoutShipmentsInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2192,6 +2517,8 @@ export type AdminUserUncheckedCreateWithoutShipmentsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
 }
 
@@ -2224,6 +2551,7 @@ export type AdminUserUpdateWithoutShipmentsInput = {
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
@@ -2236,6 +2564,8 @@ export type AdminUserUpdateWithoutShipmentsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
 }
 
@@ -2252,6 +2582,7 @@ export type AdminUserUncheckedUpdateWithoutShipmentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2264,6 +2595,8 @@ export type AdminUserUncheckedUpdateWithoutShipmentsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
@@ -2280,6 +2613,7 @@ export type AdminUserCreateWithoutInventoryLogsInput = {
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
@@ -2292,6 +2626,8 @@ export type AdminUserCreateWithoutInventoryLogsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
 }
 
@@ -2308,6 +2644,7 @@ export type AdminUserUncheckedCreateWithoutInventoryLogsInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2320,6 +2657,8 @@ export type AdminUserUncheckedCreateWithoutInventoryLogsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
 }
 
@@ -2352,6 +2691,7 @@ export type AdminUserUpdateWithoutInventoryLogsInput = {
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
@@ -2364,6 +2704,8 @@ export type AdminUserUpdateWithoutInventoryLogsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
 }
 
@@ -2380,6 +2722,7 @@ export type AdminUserUncheckedUpdateWithoutInventoryLogsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2392,6 +2735,8 @@ export type AdminUserUncheckedUpdateWithoutInventoryLogsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
@@ -2408,6 +2753,7 @@ export type AdminUserCreateWithoutAttachmentsInput = {
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
@@ -2420,6 +2766,8 @@ export type AdminUserCreateWithoutAttachmentsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
 }
 
@@ -2436,6 +2784,7 @@ export type AdminUserUncheckedCreateWithoutAttachmentsInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2448,6 +2797,8 @@ export type AdminUserUncheckedCreateWithoutAttachmentsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
 }
 
@@ -2480,6 +2831,7 @@ export type AdminUserUpdateWithoutAttachmentsInput = {
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
@@ -2492,6 +2844,8 @@ export type AdminUserUpdateWithoutAttachmentsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
 }
 
@@ -2508,6 +2862,7 @@ export type AdminUserUncheckedUpdateWithoutAttachmentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2520,6 +2875,8 @@ export type AdminUserUncheckedUpdateWithoutAttachmentsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
@@ -2536,6 +2893,7 @@ export type AdminUserCreateWithoutNotificationsInput = {
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
@@ -2548,6 +2906,8 @@ export type AdminUserCreateWithoutNotificationsInput = {
   attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
 }
 
@@ -2564,6 +2924,7 @@ export type AdminUserUncheckedCreateWithoutNotificationsInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2576,6 +2937,8 @@ export type AdminUserUncheckedCreateWithoutNotificationsInput = {
   attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
 }
 
@@ -2608,6 +2971,7 @@ export type AdminUserUpdateWithoutNotificationsInput = {
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
@@ -2620,6 +2984,8 @@ export type AdminUserUpdateWithoutNotificationsInput = {
   attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
 }
 
@@ -2636,6 +3002,7 @@ export type AdminUserUncheckedUpdateWithoutNotificationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2648,6 +3015,8 @@ export type AdminUserUncheckedUpdateWithoutNotificationsInput = {
   attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
@@ -2664,6 +3033,7 @@ export type AdminUserCreateWithoutAuditLogsInput = {
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
@@ -2676,6 +3046,8 @@ export type AdminUserCreateWithoutAuditLogsInput = {
   attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
 }
 
@@ -2692,6 +3064,7 @@ export type AdminUserUncheckedCreateWithoutAuditLogsInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2704,6 +3077,8 @@ export type AdminUserUncheckedCreateWithoutAuditLogsInput = {
   attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
 }
 
@@ -2736,6 +3111,7 @@ export type AdminUserUpdateWithoutAuditLogsInput = {
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
@@ -2748,6 +3124,8 @@ export type AdminUserUpdateWithoutAuditLogsInput = {
   attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
 }
 
@@ -2764,6 +3142,7 @@ export type AdminUserUncheckedUpdateWithoutAuditLogsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2776,6 +3155,8 @@ export type AdminUserUncheckedUpdateWithoutAuditLogsInput = {
   attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
@@ -2792,6 +3173,7 @@ export type AdminUserCreateWithoutExceptionsInput = {
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
@@ -2804,6 +3186,8 @@ export type AdminUserCreateWithoutExceptionsInput = {
   attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
 }
 
@@ -2820,6 +3204,7 @@ export type AdminUserUncheckedCreateWithoutExceptionsInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2832,12 +3217,81 @@ export type AdminUserUncheckedCreateWithoutExceptionsInput = {
   attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type AdminUserCreateOrConnectWithoutExceptionsInput = {
   where: Prisma.AdminUserWhereUniqueInput
   create: Prisma.XOR<Prisma.AdminUserCreateWithoutExceptionsInput, Prisma.AdminUserUncheckedCreateWithoutExceptionsInput>
+}
+
+export type AdminUserCreateWithoutHandledExceptionsInput = {
+  id?: string
+  username: string
+  passwordHash: string
+  displayName: string
+  role: $Enums.Role
+  active?: boolean
+  sessionVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
+  purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
+  arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
+  feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
+  qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
+  qcDecisions?: Prisma.QCDecisionCreateNestedManyWithoutDecidedByInput
+  packingRecords?: Prisma.PackingRecordCreateNestedManyWithoutOperatorInput
+  shipments?: Prisma.ShipmentRecordCreateNestedManyWithoutOperatorInput
+  inventoryLogs?: Prisma.InventoryLogCreateNestedManyWithoutOperatorInput
+  attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
+  timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
+}
+
+export type AdminUserUncheckedCreateWithoutHandledExceptionsInput = {
+  id?: string
+  username: string
+  passwordHash: string
+  displayName: string
+  role: $Enums.Role
+  departmentId?: string | null
+  active?: boolean
+  sessionVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
+  purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
+  qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
+  qcDecisions?: Prisma.QCDecisionUncheckedCreateNestedManyWithoutDecidedByInput
+  packingRecords?: Prisma.PackingRecordUncheckedCreateNestedManyWithoutOperatorInput
+  shipments?: Prisma.ShipmentRecordUncheckedCreateNestedManyWithoutOperatorInput
+  inventoryLogs?: Prisma.InventoryLogUncheckedCreateNestedManyWithoutOperatorInput
+  attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
+  timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
+}
+
+export type AdminUserCreateOrConnectWithoutHandledExceptionsInput = {
+  where: Prisma.AdminUserWhereUniqueInput
+  create: Prisma.XOR<Prisma.AdminUserCreateWithoutHandledExceptionsInput, Prisma.AdminUserUncheckedCreateWithoutHandledExceptionsInput>
 }
 
 export type AdminUserUpsertWithoutExceptionsInput = {
@@ -2864,6 +3318,7 @@ export type AdminUserUpdateWithoutExceptionsInput = {
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
@@ -2876,6 +3331,8 @@ export type AdminUserUpdateWithoutExceptionsInput = {
   attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
 }
 
@@ -2892,6 +3349,7 @@ export type AdminUserUncheckedUpdateWithoutExceptionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2904,6 +3362,221 @@ export type AdminUserUncheckedUpdateWithoutExceptionsInput = {
   attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
+  timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
+}
+
+export type AdminUserUpsertWithoutHandledExceptionsInput = {
+  update: Prisma.XOR<Prisma.AdminUserUpdateWithoutHandledExceptionsInput, Prisma.AdminUserUncheckedUpdateWithoutHandledExceptionsInput>
+  create: Prisma.XOR<Prisma.AdminUserCreateWithoutHandledExceptionsInput, Prisma.AdminUserUncheckedCreateWithoutHandledExceptionsInput>
+  where?: Prisma.AdminUserWhereInput
+}
+
+export type AdminUserUpdateToOneWithWhereWithoutHandledExceptionsInput = {
+  where?: Prisma.AdminUserWhereInput
+  data: Prisma.XOR<Prisma.AdminUserUpdateWithoutHandledExceptionsInput, Prisma.AdminUserUncheckedUpdateWithoutHandledExceptionsInput>
+}
+
+export type AdminUserUpdateWithoutHandledExceptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
+  purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
+  arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
+  feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
+  qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
+  qcDecisions?: Prisma.QCDecisionUpdateManyWithoutDecidedByNestedInput
+  packingRecords?: Prisma.PackingRecordUpdateManyWithoutOperatorNestedInput
+  shipments?: Prisma.ShipmentRecordUpdateManyWithoutOperatorNestedInput
+  inventoryLogs?: Prisma.InventoryLogUpdateManyWithoutOperatorNestedInput
+  attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
+  timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
+}
+
+export type AdminUserUncheckedUpdateWithoutHandledExceptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
+  purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
+  qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  qcDecisions?: Prisma.QCDecisionUncheckedUpdateManyWithoutDecidedByNestedInput
+  packingRecords?: Prisma.PackingRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  shipments?: Prisma.ShipmentRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  inventoryLogs?: Prisma.InventoryLogUncheckedUpdateManyWithoutOperatorNestedInput
+  attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
+  timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
+}
+
+export type AdminUserCreateWithoutImportBatchesInput = {
+  id?: string
+  username: string
+  passwordHash: string
+  displayName: string
+  role: $Enums.Role
+  active?: boolean
+  sessionVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
+  purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
+  arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
+  feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
+  qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
+  qcDecisions?: Prisma.QCDecisionCreateNestedManyWithoutDecidedByInput
+  packingRecords?: Prisma.PackingRecordCreateNestedManyWithoutOperatorInput
+  shipments?: Prisma.ShipmentRecordCreateNestedManyWithoutOperatorInput
+  inventoryLogs?: Prisma.InventoryLogCreateNestedManyWithoutOperatorInput
+  attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
+}
+
+export type AdminUserUncheckedCreateWithoutImportBatchesInput = {
+  id?: string
+  username: string
+  passwordHash: string
+  displayName: string
+  role: $Enums.Role
+  departmentId?: string | null
+  active?: boolean
+  sessionVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
+  purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
+  qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
+  qcDecisions?: Prisma.QCDecisionUncheckedCreateNestedManyWithoutDecidedByInput
+  packingRecords?: Prisma.PackingRecordUncheckedCreateNestedManyWithoutOperatorInput
+  shipments?: Prisma.ShipmentRecordUncheckedCreateNestedManyWithoutOperatorInput
+  inventoryLogs?: Prisma.InventoryLogUncheckedCreateNestedManyWithoutOperatorInput
+  attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
+}
+
+export type AdminUserCreateOrConnectWithoutImportBatchesInput = {
+  where: Prisma.AdminUserWhereUniqueInput
+  create: Prisma.XOR<Prisma.AdminUserCreateWithoutImportBatchesInput, Prisma.AdminUserUncheckedCreateWithoutImportBatchesInput>
+}
+
+export type AdminUserUpsertWithoutImportBatchesInput = {
+  update: Prisma.XOR<Prisma.AdminUserUpdateWithoutImportBatchesInput, Prisma.AdminUserUncheckedUpdateWithoutImportBatchesInput>
+  create: Prisma.XOR<Prisma.AdminUserCreateWithoutImportBatchesInput, Prisma.AdminUserUncheckedCreateWithoutImportBatchesInput>
+  where?: Prisma.AdminUserWhereInput
+}
+
+export type AdminUserUpdateToOneWithWhereWithoutImportBatchesInput = {
+  where?: Prisma.AdminUserWhereInput
+  data: Prisma.XOR<Prisma.AdminUserUpdateWithoutImportBatchesInput, Prisma.AdminUserUncheckedUpdateWithoutImportBatchesInput>
+}
+
+export type AdminUserUpdateWithoutImportBatchesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
+  purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
+  arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
+  feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
+  qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
+  qcDecisions?: Prisma.QCDecisionUpdateManyWithoutDecidedByNestedInput
+  packingRecords?: Prisma.PackingRecordUpdateManyWithoutOperatorNestedInput
+  shipments?: Prisma.ShipmentRecordUpdateManyWithoutOperatorNestedInput
+  inventoryLogs?: Prisma.InventoryLogUpdateManyWithoutOperatorNestedInput
+  attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
+}
+
+export type AdminUserUncheckedUpdateWithoutImportBatchesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
+  purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
+  qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  qcDecisions?: Prisma.QCDecisionUncheckedUpdateManyWithoutDecidedByNestedInput
+  packingRecords?: Prisma.PackingRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  shipments?: Prisma.ShipmentRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  inventoryLogs?: Prisma.InventoryLogUncheckedUpdateManyWithoutOperatorNestedInput
+  attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
   timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
@@ -2920,6 +3593,7 @@ export type AdminUserCreateWithoutTimelineEventsInput = {
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
@@ -2933,6 +3607,8 @@ export type AdminUserCreateWithoutTimelineEventsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
 }
 
 export type AdminUserUncheckedCreateWithoutTimelineEventsInput = {
@@ -2948,6 +3624,7 @@ export type AdminUserUncheckedCreateWithoutTimelineEventsInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2961,6 +3638,8 @@ export type AdminUserUncheckedCreateWithoutTimelineEventsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type AdminUserCreateOrConnectWithoutTimelineEventsInput = {
@@ -2992,6 +3671,7 @@ export type AdminUserUpdateWithoutTimelineEventsInput = {
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
@@ -3005,6 +3685,8 @@ export type AdminUserUpdateWithoutTimelineEventsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
 }
 
 export type AdminUserUncheckedUpdateWithoutTimelineEventsInput = {
@@ -3020,6 +3702,7 @@ export type AdminUserUncheckedUpdateWithoutTimelineEventsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -3033,6 +3716,8 @@ export type AdminUserUncheckedUpdateWithoutTimelineEventsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type AdminUserCreateManyDepartmentInput = {
@@ -3059,6 +3744,7 @@ export type AdminUserUpdateWithoutDepartmentInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
@@ -3072,6 +3758,8 @@ export type AdminUserUpdateWithoutDepartmentInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
 }
 
@@ -3087,6 +3775,7 @@ export type AdminUserUncheckedUpdateWithoutDepartmentInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -3100,6 +3789,8 @@ export type AdminUserUncheckedUpdateWithoutDepartmentInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
 }
 
@@ -3123,6 +3814,7 @@ export type AdminUserUncheckedUpdateManyWithoutDepartmentInput = {
 export type AdminUserCountOutputType = {
   sessions: number
   ordersCreated: number
+  ordersOwned: number
   purchasesCreated: number
   arrivals: number
   productionsCreated: number
@@ -3136,12 +3828,15 @@ export type AdminUserCountOutputType = {
   notifications: number
   auditLogs: number
   exceptions: number
+  handledExceptions: number
+  importBatches: number
   timelineEvents: number
 }
 
 export type AdminUserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessions?: boolean | AdminUserCountOutputTypeCountSessionsArgs
   ordersCreated?: boolean | AdminUserCountOutputTypeCountOrdersCreatedArgs
+  ordersOwned?: boolean | AdminUserCountOutputTypeCountOrdersOwnedArgs
   purchasesCreated?: boolean | AdminUserCountOutputTypeCountPurchasesCreatedArgs
   arrivals?: boolean | AdminUserCountOutputTypeCountArrivalsArgs
   productionsCreated?: boolean | AdminUserCountOutputTypeCountProductionsCreatedArgs
@@ -3155,6 +3850,8 @@ export type AdminUserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensi
   notifications?: boolean | AdminUserCountOutputTypeCountNotificationsArgs
   auditLogs?: boolean | AdminUserCountOutputTypeCountAuditLogsArgs
   exceptions?: boolean | AdminUserCountOutputTypeCountExceptionsArgs
+  handledExceptions?: boolean | AdminUserCountOutputTypeCountHandledExceptionsArgs
+  importBatches?: boolean | AdminUserCountOutputTypeCountImportBatchesArgs
   timelineEvents?: boolean | AdminUserCountOutputTypeCountTimelineEventsArgs
 }
 
@@ -3179,6 +3876,13 @@ export type AdminUserCountOutputTypeCountSessionsArgs<ExtArgs extends runtime.Ty
  * AdminUserCountOutputType without action
  */
 export type AdminUserCountOutputTypeCountOrdersCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OrderWhereInput
+}
+
+/**
+ * AdminUserCountOutputType without action
+ */
+export type AdminUserCountOutputTypeCountOrdersOwnedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.OrderWhereInput
 }
 
@@ -3276,6 +3980,20 @@ export type AdminUserCountOutputTypeCountExceptionsArgs<ExtArgs extends runtime.
 /**
  * AdminUserCountOutputType without action
  */
+export type AdminUserCountOutputTypeCountHandledExceptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TabletExceptionWhereInput
+}
+
+/**
+ * AdminUserCountOutputType without action
+ */
+export type AdminUserCountOutputTypeCountImportBatchesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ImportBatchWhereInput
+}
+
+/**
+ * AdminUserCountOutputType without action
+ */
 export type AdminUserCountOutputTypeCountTimelineEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.TimelineEventWhereInput
 }
@@ -3295,6 +4013,7 @@ export type AdminUserSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   department?: boolean | Prisma.AdminUser$departmentArgs<ExtArgs>
   sessions?: boolean | Prisma.AdminUser$sessionsArgs<ExtArgs>
   ordersCreated?: boolean | Prisma.AdminUser$ordersCreatedArgs<ExtArgs>
+  ordersOwned?: boolean | Prisma.AdminUser$ordersOwnedArgs<ExtArgs>
   purchasesCreated?: boolean | Prisma.AdminUser$purchasesCreatedArgs<ExtArgs>
   arrivals?: boolean | Prisma.AdminUser$arrivalsArgs<ExtArgs>
   productionsCreated?: boolean | Prisma.AdminUser$productionsCreatedArgs<ExtArgs>
@@ -3308,6 +4027,8 @@ export type AdminUserSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   notifications?: boolean | Prisma.AdminUser$notificationsArgs<ExtArgs>
   auditLogs?: boolean | Prisma.AdminUser$auditLogsArgs<ExtArgs>
   exceptions?: boolean | Prisma.AdminUser$exceptionsArgs<ExtArgs>
+  handledExceptions?: boolean | Prisma.AdminUser$handledExceptionsArgs<ExtArgs>
+  importBatches?: boolean | Prisma.AdminUser$importBatchesArgs<ExtArgs>
   timelineEvents?: boolean | Prisma.AdminUser$timelineEventsArgs<ExtArgs>
   _count?: boolean | Prisma.AdminUserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["adminUser"]>
@@ -3358,6 +4079,7 @@ export type AdminUserInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   department?: boolean | Prisma.AdminUser$departmentArgs<ExtArgs>
   sessions?: boolean | Prisma.AdminUser$sessionsArgs<ExtArgs>
   ordersCreated?: boolean | Prisma.AdminUser$ordersCreatedArgs<ExtArgs>
+  ordersOwned?: boolean | Prisma.AdminUser$ordersOwnedArgs<ExtArgs>
   purchasesCreated?: boolean | Prisma.AdminUser$purchasesCreatedArgs<ExtArgs>
   arrivals?: boolean | Prisma.AdminUser$arrivalsArgs<ExtArgs>
   productionsCreated?: boolean | Prisma.AdminUser$productionsCreatedArgs<ExtArgs>
@@ -3371,6 +4093,8 @@ export type AdminUserInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   notifications?: boolean | Prisma.AdminUser$notificationsArgs<ExtArgs>
   auditLogs?: boolean | Prisma.AdminUser$auditLogsArgs<ExtArgs>
   exceptions?: boolean | Prisma.AdminUser$exceptionsArgs<ExtArgs>
+  handledExceptions?: boolean | Prisma.AdminUser$handledExceptionsArgs<ExtArgs>
+  importBatches?: boolean | Prisma.AdminUser$importBatchesArgs<ExtArgs>
   timelineEvents?: boolean | Prisma.AdminUser$timelineEventsArgs<ExtArgs>
   _count?: boolean | Prisma.AdminUserCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -3387,6 +4111,7 @@ export type $AdminUserPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     department: Prisma.$DepartmentPayload<ExtArgs> | null
     sessions: Prisma.$SessionPayload<ExtArgs>[]
     ordersCreated: Prisma.$OrderPayload<ExtArgs>[]
+    ordersOwned: Prisma.$OrderPayload<ExtArgs>[]
     purchasesCreated: Prisma.$PurchaseOrderPayload<ExtArgs>[]
     arrivals: Prisma.$ArrivalRecordPayload<ExtArgs>[]
     productionsCreated: Prisma.$ProductionOrderPayload<ExtArgs>[]
@@ -3400,6 +4125,8 @@ export type $AdminUserPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     notifications: Prisma.$NotificationPayload<ExtArgs>[]
     auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
     exceptions: Prisma.$TabletExceptionPayload<ExtArgs>[]
+    handledExceptions: Prisma.$TabletExceptionPayload<ExtArgs>[]
+    importBatches: Prisma.$ImportBatchPayload<ExtArgs>[]
     timelineEvents: Prisma.$TimelineEventPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -3810,6 +4537,7 @@ export interface Prisma__AdminUserClient<T, Null = never, ExtArgs extends runtim
   department<T extends Prisma.AdminUser$departmentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$departmentArgs<ExtArgs>>): Prisma.Prisma__DepartmentClient<runtime.Types.Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   sessions<T extends Prisma.AdminUser$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   ordersCreated<T extends Prisma.AdminUser$ordersCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$ordersCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ordersOwned<T extends Prisma.AdminUser$ordersOwnedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$ordersOwnedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   purchasesCreated<T extends Prisma.AdminUser$purchasesCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$purchasesCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PurchaseOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   arrivals<T extends Prisma.AdminUser$arrivalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$arrivalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ArrivalRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   productionsCreated<T extends Prisma.AdminUser$productionsCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$productionsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductionOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3823,6 +4551,8 @@ export interface Prisma__AdminUserClient<T, Null = never, ExtArgs extends runtim
   notifications<T extends Prisma.AdminUser$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   auditLogs<T extends Prisma.AdminUser$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   exceptions<T extends Prisma.AdminUser$exceptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$exceptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TabletExceptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  handledExceptions<T extends Prisma.AdminUser$handledExceptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$handledExceptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TabletExceptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  importBatches<T extends Prisma.AdminUser$importBatchesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$importBatchesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImportBatchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   timelineEvents<T extends Prisma.AdminUser$timelineEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$timelineEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimelineEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -4331,6 +5061,30 @@ export type AdminUser$ordersCreatedArgs<ExtArgs extends runtime.Types.Extensions
 }
 
 /**
+ * AdminUser.ordersOwned
+ */
+export type AdminUser$ordersOwnedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Order
+   */
+  select?: Prisma.OrderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Order
+   */
+  omit?: Prisma.OrderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OrderInclude<ExtArgs> | null
+  where?: Prisma.OrderWhereInput
+  orderBy?: Prisma.OrderOrderByWithRelationInput | Prisma.OrderOrderByWithRelationInput[]
+  cursor?: Prisma.OrderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OrderScalarFieldEnum | Prisma.OrderScalarFieldEnum[]
+}
+
+/**
  * AdminUser.purchasesCreated
  */
 export type AdminUser$purchasesCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4640,6 +5394,54 @@ export type AdminUser$exceptionsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.TabletExceptionScalarFieldEnum | Prisma.TabletExceptionScalarFieldEnum[]
+}
+
+/**
+ * AdminUser.handledExceptions
+ */
+export type AdminUser$handledExceptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TabletException
+   */
+  select?: Prisma.TabletExceptionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TabletException
+   */
+  omit?: Prisma.TabletExceptionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TabletExceptionInclude<ExtArgs> | null
+  where?: Prisma.TabletExceptionWhereInput
+  orderBy?: Prisma.TabletExceptionOrderByWithRelationInput | Prisma.TabletExceptionOrderByWithRelationInput[]
+  cursor?: Prisma.TabletExceptionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TabletExceptionScalarFieldEnum | Prisma.TabletExceptionScalarFieldEnum[]
+}
+
+/**
+ * AdminUser.importBatches
+ */
+export type AdminUser$importBatchesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ImportBatch
+   */
+  select?: Prisma.ImportBatchSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ImportBatch
+   */
+  omit?: Prisma.ImportBatchOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ImportBatchInclude<ExtArgs> | null
+  where?: Prisma.ImportBatchWhereInput
+  orderBy?: Prisma.ImportBatchOrderByWithRelationInput | Prisma.ImportBatchOrderByWithRelationInput[]
+  cursor?: Prisma.ImportBatchWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ImportBatchScalarFieldEnum | Prisma.ImportBatchScalarFieldEnum[]
 }
 
 /**

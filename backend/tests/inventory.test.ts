@@ -182,3 +182,120 @@ describe('商品库存', () => {
     expect(success.body.data).toMatchObject({ before: 3, after: 0 });
   });
 });
+describe('库存幂等与失败回滚（R25F）', () => {
+  // 前面的并发用例会把库存扣到 0；这里直接补一笔，避免幂等用例受执行顺序影响。
+  beforeAll(async () => {
+    const inventory = await prisma.partInventory.findFirstOrThrow({ where: { partId: fx.partId } });
+    await prisma.partInventory.update({
+      where: { id: inventory.id },
+      data: { quantity: 500 },
+    });
+  });
+
+  it('同键同体重放只扣一次，返回首次结果', async () => {
+    const id = await partInventoryId();
+    const before = await partQuantity();
+    const key = 'inv-replay-key-0001';
+    const body = { delta: -2, reason: '幂等扣减' };
+
+    const first = await admin('POST', `/api/v1/inventory/parts/${id}/adjust`, body, {
+      'idempotency-key': key,
+    });
+    expect(first.status).toBe(200);
+    expect(first.body.data.after).toBe(before - 2);
+
+    const replay = await admin('POST', `/api/v1/inventory/parts/${id}/adjust`, body, {
+      'idempotency-key': key,
+    });
+    expect(replay.status).toBe(200);
+    expect(replay.headers['idempotent-replayed']).toBe('true');
+    expect(replay.body.data.after).toBe(before - 2);
+
+    expect(await partQuantity()).toBe(before - 2);
+
+    const logs = await prisma.inventoryLog.count({ where: { reason: '幂等扣减' } });
+    expect(logs).toBe(1);
+  });
+
+  it('同键不同请求体被拒绝，不会复用旧结果', async () => {
+    const id = await partInventoryId();
+    const key = 'inv-reuse-key-0001';
+    await admin('POST', `/api/v1/inventory/parts/${id}/adjust`, { delta: -1, reason: '第一次' }, {
+      'idempotency-key': key,
+    });
+
+    const reused = await admin(
+      'POST',
+      `/api/v1/inventory/parts/${id}/adjust`,
+      { delta: -3, reason: '换了数量' },
+      { 'idempotency-key': key },
+    );
+    expect(reused.status).toBe(409);
+    expect(reused.body.error?.code).toBe('IDEMPOTENCY_KEY_REUSED');
+  });
+
+  it('同键指向另一个库存资源也视为不同意图', async () => {
+    const second = await prisma.part.create({
+      data: { code: 'PRT-IDEM-2', name: '另一个配件', spec: 'S2', inventory: { create: { quantity: 10 } } },
+    });
+    const secondInventory = await prisma.partInventory.findFirstOrThrow({
+      where: { partId: second.id },
+    });
+    const first = await partInventoryId();
+    const key = 'inv-cross-resource-0001';
+
+    const a = await admin('POST', `/api/v1/inventory/parts/${first}/adjust`, {
+      delta: -1,
+      reason: '资源 A',
+    }, { 'idempotency-key': key });
+    expect(a.status).toBe(200);
+
+    const b = await admin('POST', `/api/v1/inventory/parts/${secondInventory.id}/adjust`, {
+      delta: -1,
+      reason: '资源 B',
+    }, { 'idempotency-key': key });
+    expect(b.status).toBe(409);
+    expect(b.body.error?.code).toBe('IDEMPOTENCY_KEY_REUSED');
+  });
+
+  it('业务失败时不留下流水、审计或已完成的幂等记录', async () => {
+    const id = await partInventoryId();
+    const before = await partQuantity();
+    const key = 'inv-fail-key-0001';
+
+    const failed = await admin('POST', `/api/v1/inventory/parts/${id}/adjust`, {
+      delta: -999999,
+      reason: '故意失败',
+    }, { 'idempotency-key': key });
+    expect(failed.status).toBe(409);
+    expect(failed.body.error?.code).toBe('INSUFFICIENT_STOCK');
+
+    expect(await partQuantity()).toBe(before);
+    expect(await prisma.inventoryLog.count({ where: { reason: '故意失败' } })).toBe(0);
+    expect(
+      await prisma.auditLog.count({
+        where: { action: 'inventory.part.adjust', afterJson: { path: ['reason'], equals: '故意失败' } },
+      }),
+    ).toBe(0);
+    expect(
+      await prisma.idempotencyRequest.count({ where: { key, status: 'COMPLETED' } }),
+    ).toBe(0);
+  });
+
+  it('并发同键只有一个有效扣减', async () => {
+    const id = await partInventoryId();
+    const before = await partQuantity();
+    const key = 'inv-concurrent-key-0001';
+    const body = { delta: -2, reason: '并发同键' };
+
+    const [a, b] = await Promise.all([
+      admin('POST', `/api/v1/inventory/parts/${id}/adjust`, body, { 'idempotency-key': key }),
+      admin('POST', `/api/v1/inventory/parts/${id}/adjust`, body, { 'idempotency-key': key }),
+    ]);
+
+    expect([200, 409]).toContain(a.status);
+    expect([200, 409]).toContain(b.status);
+    expect(await partQuantity()).toBe(before - 2);
+    expect(await prisma.inventoryLog.count({ where: { reason: '并发同键' } })).toBe(1);
+  });
+});

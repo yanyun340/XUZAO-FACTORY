@@ -403,6 +403,7 @@ export const ModelName = {
   Employee: 'Employee',
   Customer: 'Customer',
   Supplier: 'Supplier',
+  PartSupplier: 'PartSupplier',
   Part: 'Part',
   Order: 'Order',
   OrderItem: 'OrderItem',
@@ -422,6 +423,7 @@ export const ModelName = {
   Notification: 'Notification',
   AuditLog: 'AuditLog',
   TabletException: 'TabletException',
+  ImportBatch: 'ImportBatch',
   TimelineEvent: 'TimelineEvent',
   IdempotencyRequest: 'IdempotencyRequest',
   SequenceCounter: 'SequenceCounter'
@@ -440,7 +442,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "adminUser" | "session" | "department" | "employee" | "customer" | "supplier" | "part" | "order" | "orderItem" | "purchaseOrder" | "purchaseItem" | "arrivalRecord" | "productionOrder" | "productionFeedback" | "qCRecord" | "qCDecision" | "packingRecord" | "shipmentRecord" | "partInventory" | "productInventory" | "inventoryLog" | "attachment" | "notification" | "auditLog" | "tabletException" | "timelineEvent" | "idempotencyRequest" | "sequenceCounter"
+    modelProps: "adminUser" | "session" | "department" | "employee" | "customer" | "supplier" | "partSupplier" | "part" | "order" | "orderItem" | "purchaseOrder" | "purchaseItem" | "arrivalRecord" | "productionOrder" | "productionFeedback" | "qCRecord" | "qCDecision" | "packingRecord" | "shipmentRecord" | "partInventory" | "productInventory" | "inventoryLog" | "attachment" | "notification" | "auditLog" | "tabletException" | "importBatch" | "timelineEvent" | "idempotencyRequest" | "sequenceCounter"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -885,6 +887,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.SupplierCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.SupplierCountAggregateOutputType> | number
+        }
+      }
+    }
+    PartSupplier: {
+      payload: Prisma.$PartSupplierPayload<ExtArgs>
+      fields: Prisma.PartSupplierFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PartSupplierFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartSupplierPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PartSupplierFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartSupplierPayload>
+        }
+        findFirst: {
+          args: Prisma.PartSupplierFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartSupplierPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PartSupplierFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartSupplierPayload>
+        }
+        findMany: {
+          args: Prisma.PartSupplierFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartSupplierPayload>[]
+        }
+        create: {
+          args: Prisma.PartSupplierCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartSupplierPayload>
+        }
+        createMany: {
+          args: Prisma.PartSupplierCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PartSupplierCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartSupplierPayload>[]
+        }
+        delete: {
+          args: Prisma.PartSupplierDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartSupplierPayload>
+        }
+        update: {
+          args: Prisma.PartSupplierUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartSupplierPayload>
+        }
+        deleteMany: {
+          args: Prisma.PartSupplierDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PartSupplierUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PartSupplierUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartSupplierPayload>[]
+        }
+        upsert: {
+          args: Prisma.PartSupplierUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PartSupplierPayload>
+        }
+        aggregate: {
+          args: Prisma.PartSupplierAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePartSupplier>
+        }
+        groupBy: {
+          args: Prisma.PartSupplierGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PartSupplierGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PartSupplierCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PartSupplierCountAggregateOutputType> | number
         }
       }
     }
@@ -2294,6 +2370,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ImportBatch: {
+      payload: Prisma.$ImportBatchPayload<ExtArgs>
+      fields: Prisma.ImportBatchFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ImportBatchFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImportBatchPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ImportBatchFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImportBatchPayload>
+        }
+        findFirst: {
+          args: Prisma.ImportBatchFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImportBatchPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ImportBatchFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImportBatchPayload>
+        }
+        findMany: {
+          args: Prisma.ImportBatchFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImportBatchPayload>[]
+        }
+        create: {
+          args: Prisma.ImportBatchCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImportBatchPayload>
+        }
+        createMany: {
+          args: Prisma.ImportBatchCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ImportBatchCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImportBatchPayload>[]
+        }
+        delete: {
+          args: Prisma.ImportBatchDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImportBatchPayload>
+        }
+        update: {
+          args: Prisma.ImportBatchUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImportBatchPayload>
+        }
+        deleteMany: {
+          args: Prisma.ImportBatchDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ImportBatchUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ImportBatchUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImportBatchPayload>[]
+        }
+        upsert: {
+          args: Prisma.ImportBatchUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImportBatchPayload>
+        }
+        aggregate: {
+          args: Prisma.ImportBatchAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateImportBatch>
+        }
+        groupBy: {
+          args: Prisma.ImportBatchGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ImportBatchGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ImportBatchCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ImportBatchCountAggregateOutputType> | number
+        }
+      }
+    }
     TimelineEvent: {
       payload: Prisma.$TimelineEventPayload<ExtArgs>
       fields: Prisma.TimelineEventFieldRefs
@@ -2589,6 +2739,7 @@ export const DepartmentScalarFieldEnum = {
   name: 'name',
   category: 'category',
   active: 'active',
+  unitPriceVisible: 'unitPriceVisible',
   createdAt: 'createdAt'
 } as const
 
@@ -2626,11 +2777,23 @@ export const SupplierScalarFieldEnum = {
   name: 'name',
   contact: 'contact',
   phone: 'phone',
+  type: 'type',
   active: 'active',
   createdAt: 'createdAt'
 } as const
 
 export type SupplierScalarFieldEnum = (typeof SupplierScalarFieldEnum)[keyof typeof SupplierScalarFieldEnum]
+
+
+export const PartSupplierScalarFieldEnum = {
+  id: 'id',
+  partId: 'partId',
+  supplierId: 'supplierId',
+  isDefault: 'isDefault',
+  createdAt: 'createdAt'
+} as const
+
+export type PartSupplierScalarFieldEnum = (typeof PartSupplierScalarFieldEnum)[keyof typeof PartSupplierScalarFieldEnum]
 
 
 export const PartScalarFieldEnum = {
@@ -2655,6 +2818,7 @@ export const OrderScalarFieldEnum = {
   remark: 'remark',
   status: 'status',
   createdById: 'createdById',
+  ownerId: 'ownerId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   completedAt: 'completedAt'
@@ -2851,6 +3015,7 @@ export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof
 export const NotificationScalarFieldEnum = {
   id: 'id',
   eventType: 'eventType',
+  category: 'category',
   title: 'title',
   body: 'body',
   recipientId: 'recipientId',
@@ -2885,12 +3050,35 @@ export const TabletExceptionScalarFieldEnum = {
   orderId: 'orderId',
   productionOrderId: 'productionOrderId',
   reporterId: 'reporterId',
+  category: 'category',
   description: 'description',
   status: 'status',
-  createdAt: 'createdAt'
+  handlerId: 'handlerId',
+  expectedAt: 'expectedAt',
+  resolvedAt: 'resolvedAt',
+  resolution: 'resolution',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type TabletExceptionScalarFieldEnum = (typeof TabletExceptionScalarFieldEnum)[keyof typeof TabletExceptionScalarFieldEnum]
+
+
+export const ImportBatchScalarFieldEnum = {
+  id: 'id',
+  entity: 'entity',
+  status: 'status',
+  fileName: 'fileName',
+  rowCount: 'rowCount',
+  errorCount: 'errorCount',
+  errors: 'errors',
+  rows: 'rows',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  committedAt: 'committedAt'
+} as const
+
+export type ImportBatchScalarFieldEnum = (typeof ImportBatchScalarFieldEnum)[keyof typeof ImportBatchScalarFieldEnum]
 
 
 export const TimelineEventScalarFieldEnum = {
@@ -3054,6 +3242,20 @@ export type ListEnumDepartmentCategoryFieldRefInput<$PrismaModel> = FieldRefInpu
 
 
 /**
+ * Reference to a field of type 'SupplierType'
+ */
+export type EnumSupplierTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SupplierType'>
+    
+
+
+/**
+ * Reference to a field of type 'SupplierType[]'
+ */
+export type ListEnumSupplierTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SupplierType[]'>
+    
+
+
+/**
  * Reference to a field of type 'OrderStatus'
  */
 export type EnumOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrderStatus'>
@@ -3110,6 +3312,20 @@ export type ListEnumInventoryKindFieldRefInput<$PrismaModel> = FieldRefInputType
 
 
 /**
+ * Reference to a field of type 'NotificationCategory'
+ */
+export type EnumNotificationCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationCategory'>
+    
+
+
+/**
+ * Reference to a field of type 'NotificationCategory[]'
+ */
+export type ListEnumNotificationCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationCategory[]'>
+    
+
+
+/**
  * Reference to a field of type 'AuditResult'
  */
 export type EnumAuditResultFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuditResult'>
@@ -3134,6 +3350,20 @@ export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'J
  * Reference to a field of type 'QueryMode'
  */
 export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'ImportEntity'
+ */
+export type EnumImportEntityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImportEntity'>
+    
+
+
+/**
+ * Reference to a field of type 'ImportEntity[]'
+ */
+export type ListEnumImportEntityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImportEntity[]'>
     
 
 
@@ -3307,6 +3537,7 @@ export type GlobalOmitConfig = {
   employee?: Prisma.EmployeeOmit
   customer?: Prisma.CustomerOmit
   supplier?: Prisma.SupplierOmit
+  partSupplier?: Prisma.PartSupplierOmit
   part?: Prisma.PartOmit
   order?: Prisma.OrderOmit
   orderItem?: Prisma.OrderItemOmit
@@ -3326,6 +3557,7 @@ export type GlobalOmitConfig = {
   notification?: Prisma.NotificationOmit
   auditLog?: Prisma.AuditLogOmit
   tabletException?: Prisma.TabletExceptionOmit
+  importBatch?: Prisma.ImportBatchOmit
   timelineEvent?: Prisma.TimelineEventOmit
   idempotencyRequest?: Prisma.IdempotencyRequestOmit
   sequenceCounter?: Prisma.SequenceCounterOmit

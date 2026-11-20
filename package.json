@@ -1,6 +1,6 @@
 {
   "name": "xuzao-factory",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "序造 XuZao — 一单到底的工厂协同管理系统",
   "workspaces": [
