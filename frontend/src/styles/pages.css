@@ -891,9 +891,11 @@
 
 .data-table--suppliers .data-table__head,
 .data-table--suppliers .data-table__row {
-  grid-template-columns: minmax(200px, 1.5fr) minmax(0, 1fr) minmax(0, 1fr) 64px 140px;
+  /* 六列：名称/编码、联系人、电话、类型、状态、操作。
+     原来只有五条轨道，类型被塞进 64px、操作没有轨道，整行掉到第二行 */
+  grid-template-columns: minmax(170px, 1.5fr) minmax(84px, 1fr) minmax(106px, 1fr) 90px 64px 140px;
   grid-auto-flow: row;
-  min-width: 680px;
+  min-width: 720px;
 }
 
 .data-table--parts .data-table__head,
@@ -905,9 +907,10 @@
 
 .data-table--departments .data-table__head,
 .data-table--departments .data-table__row {
-  grid-template-columns: minmax(220px, 1.6fr) minmax(0, 1fr) 90px 64px 140px;
+  /* 六列：名称/编码、类别、工艺价、员工数、状态、操作。员工数原先没有轨道 */
+  grid-template-columns: minmax(220px, 1.6fr) minmax(0, 1fr) 90px 72px 64px 140px;
   grid-auto-flow: row;
-  min-width: 660px;
+  min-width: 720px;
 }
 
 .data-table--employees .data-table__head,
