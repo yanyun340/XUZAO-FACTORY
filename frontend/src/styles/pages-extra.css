@@ -247,9 +247,11 @@
   margin-bottom: 24px;
 }
 
-/* 图表容器：内边距 16px，固定最低高度避免加载后容器抖动 */
+/* 图表容器：内边距 16px。
+   原先的 min-height: 280px 是用来防加载抖动的，但 loading 时整块换成
+   LoadingBlock，面板根本不在 DOM 里，不存在抖动；它只会让内容少的面板
+   底下一大片空白（生产看板空 131px，库存汇总/发货完成率各空 70px）。 */
 .dash-panel {
-  min-height: 280px;
   padding: 16px;
 }
 
@@ -535,6 +537,41 @@
 .progress-stat__row strong {
   font-size: 22px;
   font-family: var(--font-display);
+}
+
+/* 部门完成度：文字一行 + 进度条一行，与状态分布条同色族 */
+.progress-stat__row--stacked {
+  display: block;
+  padding-bottom: 14px;
+}
+
+.progress-stat__line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.qbar {
+  height: 6px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: var(--paper-deep);
+  overflow: hidden;
+}
+
+.qbar__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--pine);
+  transition: width 240ms var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qbar__fill {
+    transition: none;
+  }
 }
 
 .dash-list {

@@ -415,13 +415,29 @@ export function DashboardPage() {
                       ? 0
                       : Math.round((row.completedQty / row.plannedQty) * 100);
                   return (
-                    <div className="progress-stat__row" key={row.departmentId}>
-                      <span>
-                        {row.departmentName} · {row.tasks} 个任务
-                      </span>
-                      <strong className="mono">
-                        {formatNumber(row.completedQty)} / {formatNumber(row.plannedQty)}（{percent}%）
-                      </strong>
+                    <div
+                      className="progress-stat__row progress-stat__row--stacked"
+                      key={row.departmentId}
+                    >
+                      <div className="progress-stat__line">
+                        <span>
+                          {row.departmentName} · {row.tasks} 个任务
+                        </span>
+                        <strong className="mono">
+                          {formatNumber(row.completedQty)} / {formatNumber(row.plannedQty)}（{percent}
+                          %）
+                        </strong>
+                      </div>
+                      <div
+                        className="qbar"
+                        role="progressbar"
+                        aria-valuenow={percent}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-label={`${row.departmentName}完成进度`}
+                      >
+                        <span className="qbar__fill" style={{ width: `${percent}%` }} />
+                      </div>
                     </div>
                   );
                 })}
