@@ -11,6 +11,7 @@ import { ApiError } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 import { DropdownNav, type NavMenu } from '../components/DropdownNav';
 import { BrandMark } from '../components/BrandMark';
+import { BrandWordmark } from '../components/BrandWordmark';
 import { Field, InlineNotice } from '../components/ui';
 import { ArrowUpRight, CloseIcon } from '../components/Icons';
 
@@ -214,11 +215,11 @@ export function LoginPage() {
         {
           heading: '订单主线',
           rows: [
-            { title: '订单全链路', description: '一张订单贯穿采购、生产、质检、包装、发货' },
-            { title: '采购与到货', description: '建采购单，按批次登记实收数量' },
-            { title: '生产与报工', description: '按部门派工，现场报本工序完成量' },
-            { title: '质检放行', description: '录入检验结果，管理员决定放行量' },
-            { title: '包装与发货', description: '按剩余量登记，发货足量后自动完成' },
+            { title: '订单全链路' },
+            { title: '采购与到货' },
+            { title: '生产与报工' },
+            { title: '质检放行' },
+            { title: '包装与发货' },
           ],
         },
       ],
@@ -228,10 +229,9 @@ export function LoginPage() {
       label: '角色',
       groups: [
         {
-          heading: '五个岗位 · 点击回填演示账号',
+          heading: '五个岗位',
           rows: DEMO_ACCOUNTS.map((account) => ({
             title: account.label,
-            description: `演示账号 ${account.username}`,
             onSelect: () => selectDemo(account.username),
           })),
         },
@@ -244,9 +244,9 @@ export function LoginPage() {
         {
           heading: '运行方式',
           rows: [
-            { title: '本地部署', description: '服务与数据库都在厂内网络，不依赖公网' },
-            { title: '演示数据', description: '当前实例为示范数据，可自由试用各角色' },
-            { title: '权限与审计', description: '金额与联系方式按角色脱敏，写操作留痕' },
+            { title: '本地部署' },
+            { title: '演示数据' },
+            { title: '权限与审计' },
           ],
         },
       ],
@@ -289,33 +289,21 @@ export function LoginPage() {
       </header>
 
       <main className="landing__hero">
-        <p className="landing__badge">
-          <span className="landing__badge-dot" aria-hidden />
-          本地部署 · 演示环境
-        </p>
-        <h1 className="landing__title">
-          一单到底
-          <span>全厂协同</span>
-        </h1>
-        <p className="landing__lede">
-          <span className="login__lede-wide">
-            从业务订单到发货完成，采购、生产、质检、包装、物流在同一条数据链上协作。
-          </span>
-          <span className="login__lede-narrow">订单到发货，全程在同一条数据链上协作。</span>
-        </p>
+        <h1 className="sr-only">序造</h1>
+        <BrandWordmark />
+        <p className="landing__tagline">一单到底 · 全厂协同</p>
         <button type="button" className="landing__hero-cta" onClick={handleEnter}>
           进入系统
         </button>
         {user ? (
           <p className="landing__signed-in" role="status">
-            已登录为 {user.displayName} · 点击「进入系统」进入工作台
+            已登录 · {user.displayName}
           </p>
         ) : null}
       </main>
 
       <section className="landing__stage" aria-label="订单流转演示">
         <div className="landing__demo">
-          <p className="landing__demo-label">订单流转演示 · 点击任一环节</p>
           <div className="login__flowbar">
             <div className="flow" role="group" aria-label="订单流程演示，点击任意节点查看该环节">
               <div className="flow__rail">
@@ -349,9 +337,6 @@ export function LoginPage() {
             </div>
           </div>
         </div>
-        <p className="landing__fineprint">
-          序造 XuZao · 工厂业务协同管理系统 · 演示数据均为合成数据 · 本地部署
-        </p>
       </section>
 
       <dialog
@@ -372,18 +357,15 @@ export function LoginPage() {
               <strong>序造</strong>
               <span className="mono">XUZAO / FACTORY OS</span>
             </span>
-            <p className="login-modal__tagline">一单到底，全厂协同</p>
             <p className="login-modal__meta mono">本地部署 · 演示环境</p>
             <BrandMark className="login-modal__watermark" size={220} aria-hidden />
           </aside>
 
           <div className="login-modal__panel">
             <div className="login__card-head">
-              <p className="eyebrow">SIGN IN / 工作台</p>
               <h2 className="login__card-title" id="login-title">
                 登录工作台
               </h2>
-              <p className="login__card-sub">使用分配给你的工厂角色账号登录，再从首页进入工作台。</p>
             </div>
 
             <form className="login__form" onSubmit={(event) => void handleSubmit(event)}>
@@ -445,8 +427,7 @@ export function LoginPage() {
               </button>
             </form>
 
-            <div className="login__demo">
-              <p className="login__demo-label">演示账号</p>
+            <div className="login__demo" role="group" aria-label="演示账号">
               <div className="login__demo-chips">
                 {DEMO_ACCOUNTS.map((account) => (
                   <button
@@ -463,7 +444,6 @@ export function LoginPage() {
                   </button>
                 ))}
               </div>
-              <p className="login__demo-hint">密码见交付说明中的本地演示环境配置。</p>
             </div>
           </div>
         </div>

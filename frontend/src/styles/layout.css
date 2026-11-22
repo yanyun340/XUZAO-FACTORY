@@ -370,13 +370,104 @@ body:has(.landing) {
   animation: riseIn 220ms var(--ease-out) backwards;
 }
 
-.landing__title {
+/* ---------- 主字标：蓝图描边 + 绘图机落笔 ---------- */
+.wordmark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: clamp(8px, 1.6vh, 18px) clamp(18px, 3vw, 36px);
+}
+
+/* 与底部流程舞台同一节奏的网格，四周淡出 */
+.wordmark::before {
+  content: "";
+  position: absolute;
+  inset: -12% -8%;
+  background-image:
+    linear-gradient(rgba(99, 102, 241, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.16) 1px, transparent 1px);
+  background-size: 52px 52px;
+  -webkit-mask-image: radial-gradient(closest-side, #000 35%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 35%, transparent 100%);
+  pointer-events: none;
+}
+
+.wordmark__svg {
+  position: relative;
+  width: min(560px, 78vw);
+  height: auto;
+  overflow: visible;
+}
+
+/* 描边字形。fill: none 让字变空心；stroke 用品牌靛蓝 */
+.wordmark__glyph {
+  fill: none;
+  stroke: var(--pine);
+  stroke-width: 2;
+  stroke-linejoin: round;
   font-family: var(--font-body);
-  font-size: clamp(56px, 9vw, 112px);
+  font-size: 118px;
   font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.045em;
-  color: var(--k-ink);
+  letter-spacing: 0.08em;
+  /* 遮罩推进代替 dash：终态由 inset(0) 保证闭合，与字体回退无关。
+     匀速而非 ease-out——绘图机是等速走线的，快进快出就读不出「落笔」 */
+  clip-path: inset(0 100% 0 0);
+  animation: wordmarkPlot 1000ms linear 160ms forwards;
+}
+
+@keyframes wordmarkPlot {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* 笔尖：与遮罩前沿同速同位置（字形的左右边界分别落在容器 18.6% / 81.4%） */
+.wordmark__pen {
+  position: absolute;
+  top: 9%;
+  height: 82%;
+  width: 1.5px;
+  background: var(--pine);
+  box-shadow: 0 0 14px rgba(99, 102, 241, 0.55);
+  opacity: 0;
+  animation: penSweep 1000ms linear 160ms forwards;
+  pointer-events: none;
+}
+
+@keyframes penSweep {
+  0% {
+    left: 18.6%;
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  94% {
+    opacity: 1;
+  }
+  100% {
+    left: 81.4%;
+    opacity: 0;
+  }
+}
+
+/* 尺寸标注画在 SVG 坐标系里，随字形等比缩放 */
+.wordmark__dims path {
+  fill: none;
+  stroke: rgba(99, 102, 241, 0.4);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wordmark__glyph {
+    animation: none;
+    clip-path: none;
+  }
+
+  .wordmark__pen {
+    display: none;
+  }
 }
 
 .landing__tagline {

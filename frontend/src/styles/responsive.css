@@ -14,8 +14,8 @@
     padding-block: 16px;
   }
 
-  .landing__title {
-    font-size: clamp(44px, 5.4vw, 64px);
+  .wordmark__svg {
+    width: min(420px, 62vw);
   }
 
   .landing__hero-cta {
@@ -230,8 +230,8 @@
     align-items: flex-start;
   }
 
-  .landing__title {
-    font-size: clamp(56px, 11vw, 88px);
+  .wordmark__svg {
+    width: min(500px, 72vw);
   }
 
   .landing__demo {
@@ -402,8 +402,8 @@
     padding: 34px 18px 30px;
   }
 
-  .landing__title {
-    font-size: clamp(52px, 18vw, 84px);
+  .wordmark__svg {
+    width: min(340px, 84vw);
   }
 
   .landing__hero-cta {
