@@ -28,7 +28,8 @@
 | `role` | enum `Role` | ADMIN/LOGISTICS/PRODUCTION/QC/PACKING | |
 | `departmentId` | uuid? | 所属部门 | FK `departments` |
 | `active` | bool，true | 是否启用 | 停用即拒绝登录 |
-| `sessionVersion` | int，0 | 会话版本；改角色/停用/改密时递增 | |
+| `sessionVersion` | int，0 | 会话版本；改角色/停用/改密/开启受控设备时递增 | |
+| `deviceBindingMode` | enum `DeviceBindingMode`，OFF | OFF=任意设备可登录；ENFORCED=只允许已批准设备 | 不能对自己开启 |
 | `createdAt` / `updatedAt` | datetime | 创建/更新时间 | |
 
 ### `sessions` 会话
@@ -38,9 +39,23 @@
 | `id` | uuid | 会话 ID | PK |
 | `tokenHash` | string | 32 字节 token 的 SHA-256 | UNIQUE |
 | `userId` | uuid | 所属用户 | FK，索引 |
+| `deviceId` | uuid? | 签发时使用的受控设备；历史会话为空 | FK `devices` |
 | `expiresAt` | datetime | 过期时间（默认 168h） | |
 | `revokedAt` | datetime? | 主动撤销时间 | |
 | `createdAt` | datetime | 签发时间 | |
+
+### `devices` 受控设备（R01F）
+
+| 字段 | 类型 / 默认 | 含义 | 约束/索引 |
+| --- | --- | --- | --- |
+| `userId` + `deviceKey` | uuid + string | 账号与浏览器生成的设备标识 | UNIQUE |
+| `label` / `userAgent` | string / string? | 可读标签（如 Windows · Chrome）与原始 UA | 仅展示/审计，不作身份依据 |
+| `status` | enum `DeviceStatus`，PENDING | PENDING 待批准 / ACTIVE 已授权 / REVOKED 已吊销 | 索引 `(userId, status)` |
+| `boundById` | uuid? | 批准它的管理员 | |
+| `lastSeenAt` | datetime? | 最近一次成功登录 | |
+| `createdAt` | datetime | 首次发现时间 | |
+
+**弱绑定边界**：`deviceKey` 存在浏览器 localStorage，清数据或被手工复制都能绕过；服务端用它做审批与审计，不宣称硬件级防伪造。
 
 ### `departments` 部门
 

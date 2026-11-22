@@ -33,6 +33,7 @@ export function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [deviceCode, setDeviceCode] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [active, setActive] = useState(0);
   const [playing, setPlaying] = useState(true);
@@ -132,6 +133,7 @@ export function LoginPage() {
       focusPasswordRef.current = true;
     }
     setError(null);
+    setDeviceCode(null);
     setLoginOpen(true);
   };
 
@@ -175,6 +177,7 @@ export function LoginPage() {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setError(null);
+    setDeviceCode(null);
 
     if (!username.trim() || !password) {
       setError('请输入用户名和密码');
@@ -188,7 +191,13 @@ export function LoginPage() {
       setPassword('');
       closeLogin();
     } catch (caught) {
-      setError(caught instanceof ApiError ? caught.message : '登录失败，请稍后重试');
+      if (caught instanceof ApiError && caught.code === 'DEVICE_NOT_ALLOWED') {
+        const details = caught.details as { deviceCode?: string } | null;
+        setError('这台设备还没有被授权。请把下面的设备码报给管理员，批准后再登录。');
+        setDeviceCode(details?.deviceCode ?? null);
+      } else {
+        setError(caught instanceof ApiError ? caught.message : '登录失败，请稍后重试');
+      }
       setSubmitting(false);
     }
   };
@@ -411,6 +420,22 @@ export function LoginPage() {
               </Field>
 
               {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
+
+              {deviceCode ? (
+                <div className="device-code">
+                  <span className="device-code__label">设备码</span>
+                  <code className="device-code__value">{deviceCode}</code>
+                  <button
+                    type="button"
+                    className="text-btn"
+                    onClick={() => {
+                      if (deviceCode) void navigator.clipboard?.writeText(deviceCode);
+                    }}
+                  >
+                    复制
+                  </button>
+                </div>
+              ) : null}
 
               <button type="submit" className="btn btn--primary btn--block" disabled={submitting}>
                 <span className="btn__label">{submitting ? '正在验证…' : '登录'}</span>

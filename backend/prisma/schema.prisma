@@ -91,10 +91,13 @@ model AdminUser {
   department     Department? @relation(fields: [departmentId], references: [id])
   active         Boolean     @default(true)
   sessionVersion Int         @default(0)
+  /** R01F：受控设备。OFF 时任何设备都能登录；ENFORCED 时只允许已登记设备。 */
+  deviceBindingMode DeviceBindingMode @default(OFF)
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
   sessions           Session[]
+  devices            Device[]
   ordersCreated      Order[]              @relation("OrderCreatedBy")
   ordersOwned        Order[]              @relation("OrderOwner")
   purchasesCreated   PurchaseOrder[]      @relation("PurchaseCreatedBy")
@@ -122,12 +125,52 @@ model Session {
   tokenHash String    @unique
   userId    String    @db.Uuid
   user      AdminUser @relation(fields: [userId], references: [id])
+  /** R01F：签发时使用的设备；历史会话为 null。 */
+  deviceId  String?   @db.Uuid
+  device    Device?   @relation(fields: [deviceId], references: [id])
   expiresAt DateTime
   revokedAt DateTime?
   createdAt DateTime  @default(now())
 
   @@index([userId])
+  @@index([deviceId])
   @@map("sessions")
+}
+
+/** R01F 受控设备的绑定状态。 */
+enum DeviceBindingMode {
+  OFF
+  ENFORCED
+}
+
+enum DeviceStatus {
+  PENDING
+  ACTIVE
+  REVOKED
+}
+
+/**
+ * R01F：受控设备。
+ * deviceKey 由浏览器生成并保存在 localStorage，属于弱凭据：
+ * 能挡住“换台手机直接输密码”，挡不住手工复制，文档里如实标注。
+ */
+model Device {
+  id         String       @id @default(uuid()) @db.Uuid
+  userId     String       @db.Uuid
+  user       AdminUser    @relation(fields: [userId], references: [id])
+  deviceKey  String
+  label      String
+  userAgent  String?
+  status     DeviceStatus @default(PENDING)
+  boundById  String?      @db.Uuid
+  lastSeenAt DateTime?
+  createdAt  DateTime     @default(now())
+
+  sessions Session[]
+
+  @@unique([userId, deviceKey])
+  @@index([userId, status])
+  @@map("devices")
 }
 
 model Department {

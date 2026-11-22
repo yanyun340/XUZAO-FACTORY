@@ -448,6 +448,9 @@ export interface AuditFacets {
   actors: Array<{ id: string; displayName: string }>;
 }
 
+export type DeviceBindingMode = 'OFF' | 'ENFORCED';
+export type DeviceStatus = 'PENDING' | 'ACTIVE' | 'REVOKED';
+
 export interface ManagedUser {
   id: string;
   username: string;
@@ -455,6 +458,18 @@ export interface ManagedUser {
   role: Role;
   active: boolean;
   department: Department | null;
+  deviceBindingMode: DeviceBindingMode;
+  activeDevices: number;
   activeSessions: number;
+  createdAt: string;
+}
+
+export interface DeviceItem {
+  id: string;
+  deviceCode: string;
+  label: string;
+  userAgent: string | null;
+  status: DeviceStatus;
+  lastSeenAt: string | null;
   createdAt: string;
 }

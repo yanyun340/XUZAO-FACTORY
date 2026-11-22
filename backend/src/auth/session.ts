@@ -14,7 +14,10 @@ function hashToken(token: string): string {
   return createHash('sha256').update(token).digest('hex');
 }
 
-export async function createSession(userId: string): Promise<{ token: string; expiresAt: Date }> {
+export async function createSession(
+  userId: string,
+  deviceId: string | null = null,
+): Promise<{ token: string; expiresAt: Date }> {
   const token = randomBytes(32).toString('base64url');
   const expiresAt = new Date(Date.now() + config.sessionTtlHours * 60 * 60 * 1000);
 
@@ -22,6 +25,7 @@ export async function createSession(userId: string): Promise<{ token: string; ex
     data: {
       tokenHash: hashToken(token),
       userId,
+      deviceId,
       expiresAt,
     },
   });

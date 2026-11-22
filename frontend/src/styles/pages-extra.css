@@ -1294,6 +1294,62 @@
   background: rgba(4, 120, 87, 0.1);
 }
 
+.badge--device-active {
+  color: #047857;
+  background: rgba(4, 120, 87, 0.1);
+}
+
+.badge--device-pending {
+  color: #b45309;
+  background: rgba(180, 83, 9, 0.1);
+}
+
+.badge--device-revoked {
+  color: var(--muted);
+  background: rgba(17, 24, 39, 0.06);
+}
+
+.device-binding {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+}
+
+.device-code {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px dashed rgba(37, 99, 235, 0.4);
+  border-radius: var(--radius-md);
+  background: rgba(37, 99, 235, 0.04);
+  font-size: 12px;
+}
+
+.device-code__label {
+  color: var(--muted);
+}
+
+.device-code__value {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  user-select: all;
+}
+
+@media (max-width: 640px) {
+  .device-binding {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
 .row-actions {
   display: flex;
   align-items: center;
@@ -1336,13 +1392,14 @@
 }
 
 .user-table > * {
-  min-width: 760px;
+  min-width: 860px;
 }
 
 .user-table__head,
 .user-row {
   display: grid;
-  grid-template-columns: minmax(0, 1.3fr) 92px minmax(0, 1fr) 62px 54px minmax(0, 220px);
+  grid-template-columns:
+    minmax(0, 1.3fr) 92px minmax(0, 1fr) 62px 90px 54px minmax(0, 240px);
   gap: 14px;
   align-items: center;
   padding: 0 22px;
@@ -1363,6 +1420,12 @@
   padding-bottom: 13px;
   border-bottom: 1px solid var(--line);
   font-size: 13px;
+}
+
+.user-row__devices {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
 }
 
 .user-row:last-child {

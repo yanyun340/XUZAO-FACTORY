@@ -134,7 +134,7 @@ npm run dev -w frontend    # 终端 3：Web http://localhost:5173
 | --- | --- | --- | --- |
 | 类型检查 | 根目录 `npm run typecheck` | 无 | 终端输出 |
 | 前端构建 | 根目录 `npm run build -w frontend` | 无 | 终端输出 |
-| 后端测试 | 根目录 `npm test` | 隔离库 `xuzao_test`；13 文件 / 102 用例；会先 `migrate deploy` 再清表 | [tests/reports/2026-11-14-backend-tests.md](tests/reports/2026-11-14-backend-tests.md) |
+| 后端测试 | 根目录 `npm test` | 隔离库 `xuzao_test`；14 文件 / 112 用例；会先 `migrate deploy` 再清表 | [tests/reports/2026-11-22-devices.md](tests/reports/2026-11-22-devices.md) |
 | 备份恢复 | `backend/` 下 `npm run backup` / `npm run restore -- …` | 新隔离库 + 隔离附件目录 | [tests/reports/2026-11-04-backup-restore.md](tests/reports/2026-11-04-backup-restore.md) |
 | 浏览器闭环 | 启动后按角色登录操作 | 合成演示数据 | `.shots/`（过程材料） |
 

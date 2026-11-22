@@ -100,3 +100,20 @@ export const NotificationCategory = {
 } as const
 
 export type NotificationCategory = (typeof NotificationCategory)[keyof typeof NotificationCategory]
+
+
+export const DeviceBindingMode = {
+  OFF: 'OFF',
+  ENFORCED: 'ENFORCED'
+} as const
+
+export type DeviceBindingMode = (typeof DeviceBindingMode)[keyof typeof DeviceBindingMode]
+
+
+export const DeviceStatus = {
+  PENDING: 'PENDING',
+  ACTIVE: 'ACTIVE',
+  REVOKED: 'REVOKED'
+} as const
+
+export type DeviceStatus = (typeof DeviceStatus)[keyof typeof DeviceStatus]

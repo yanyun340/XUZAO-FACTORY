@@ -43,6 +43,7 @@ export type AdminUserMinAggregateOutputType = {
   departmentId: string | null
   active: boolean | null
   sessionVersion: number | null
+  deviceBindingMode: $Enums.DeviceBindingMode | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -56,6 +57,7 @@ export type AdminUserMaxAggregateOutputType = {
   departmentId: string | null
   active: boolean | null
   sessionVersion: number | null
+  deviceBindingMode: $Enums.DeviceBindingMode | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -69,6 +71,7 @@ export type AdminUserCountAggregateOutputType = {
   departmentId: number
   active: number
   sessionVersion: number
+  deviceBindingMode: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -92,6 +95,7 @@ export type AdminUserMinAggregateInputType = {
   departmentId?: true
   active?: true
   sessionVersion?: true
+  deviceBindingMode?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -105,6 +109,7 @@ export type AdminUserMaxAggregateInputType = {
   departmentId?: true
   active?: true
   sessionVersion?: true
+  deviceBindingMode?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -118,6 +123,7 @@ export type AdminUserCountAggregateInputType = {
   departmentId?: true
   active?: true
   sessionVersion?: true
+  deviceBindingMode?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -218,6 +224,7 @@ export type AdminUserGroupByOutputType = {
   departmentId: string | null
   active: boolean
   sessionVersion: number
+  deviceBindingMode: $Enums.DeviceBindingMode
   createdAt: Date
   updatedAt: Date
   _count: AdminUserCountAggregateOutputType | null
@@ -254,10 +261,12 @@ export type AdminUserWhereInput = {
   departmentId?: Prisma.UuidNullableFilter<"AdminUser"> | string | null
   active?: Prisma.BoolFilter<"AdminUser"> | boolean
   sessionVersion?: Prisma.IntFilter<"AdminUser"> | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFilter<"AdminUser"> | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFilter<"AdminUser"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AdminUser"> | Date | string
   department?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
   sessions?: Prisma.SessionListRelationFilter
+  devices?: Prisma.DeviceListRelationFilter
   ordersCreated?: Prisma.OrderListRelationFilter
   ordersOwned?: Prisma.OrderListRelationFilter
   purchasesCreated?: Prisma.PurchaseOrderListRelationFilter
@@ -287,10 +296,12 @@ export type AdminUserOrderByWithRelationInput = {
   departmentId?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
   sessionVersion?: Prisma.SortOrder
+  deviceBindingMode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   department?: Prisma.DepartmentOrderByWithRelationInput
   sessions?: Prisma.SessionOrderByRelationAggregateInput
+  devices?: Prisma.DeviceOrderByRelationAggregateInput
   ordersCreated?: Prisma.OrderOrderByRelationAggregateInput
   ordersOwned?: Prisma.OrderOrderByRelationAggregateInput
   purchasesCreated?: Prisma.PurchaseOrderOrderByRelationAggregateInput
@@ -323,10 +334,12 @@ export type AdminUserWhereUniqueInput = Prisma.AtLeast<{
   departmentId?: Prisma.UuidNullableFilter<"AdminUser"> | string | null
   active?: Prisma.BoolFilter<"AdminUser"> | boolean
   sessionVersion?: Prisma.IntFilter<"AdminUser"> | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFilter<"AdminUser"> | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFilter<"AdminUser"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AdminUser"> | Date | string
   department?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
   sessions?: Prisma.SessionListRelationFilter
+  devices?: Prisma.DeviceListRelationFilter
   ordersCreated?: Prisma.OrderListRelationFilter
   ordersOwned?: Prisma.OrderListRelationFilter
   purchasesCreated?: Prisma.PurchaseOrderListRelationFilter
@@ -356,6 +369,7 @@ export type AdminUserOrderByWithAggregationInput = {
   departmentId?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
   sessionVersion?: Prisma.SortOrder
+  deviceBindingMode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.AdminUserCountOrderByAggregateInput
@@ -377,6 +391,7 @@ export type AdminUserScalarWhereWithAggregatesInput = {
   departmentId?: Prisma.UuidNullableWithAggregatesFilter<"AdminUser"> | string | null
   active?: Prisma.BoolWithAggregatesFilter<"AdminUser"> | boolean
   sessionVersion?: Prisma.IntWithAggregatesFilter<"AdminUser"> | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeWithAggregatesFilter<"AdminUser"> | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"AdminUser"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"AdminUser"> | Date | string
 }
@@ -389,10 +404,12 @@ export type AdminUserCreateInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
@@ -422,9 +439,11 @@ export type AdminUserUncheckedCreateInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -453,10 +472,12 @@ export type AdminUserUpdateInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
@@ -486,9 +507,11 @@ export type AdminUserUncheckedUpdateInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -518,6 +541,7 @@ export type AdminUserCreateManyInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -530,6 +554,7 @@ export type AdminUserUpdateManyMutationInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -543,6 +568,7 @@ export type AdminUserUncheckedUpdateManyInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -556,6 +582,7 @@ export type AdminUserCountOrderByAggregateInput = {
   departmentId?: Prisma.SortOrder
   active?: Prisma.SortOrder
   sessionVersion?: Prisma.SortOrder
+  deviceBindingMode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -573,6 +600,7 @@ export type AdminUserMaxOrderByAggregateInput = {
   departmentId?: Prisma.SortOrder
   active?: Prisma.SortOrder
   sessionVersion?: Prisma.SortOrder
+  deviceBindingMode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -586,6 +614,7 @@ export type AdminUserMinOrderByAggregateInput = {
   departmentId?: Prisma.SortOrder
   active?: Prisma.SortOrder
   sessionVersion?: Prisma.SortOrder
+  deviceBindingMode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -634,6 +663,10 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type EnumDeviceBindingModeFieldUpdateOperationsInput = {
+  set?: $Enums.DeviceBindingMode
+}
+
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
@@ -654,6 +687,20 @@ export type AdminUserUpdateOneRequiredWithoutSessionsNestedInput = {
   upsert?: Prisma.AdminUserUpsertWithoutSessionsInput
   connect?: Prisma.AdminUserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.AdminUserUpdateToOneWithWhereWithoutSessionsInput, Prisma.AdminUserUpdateWithoutSessionsInput>, Prisma.AdminUserUncheckedUpdateWithoutSessionsInput>
+}
+
+export type AdminUserCreateNestedOneWithoutDevicesInput = {
+  create?: Prisma.XOR<Prisma.AdminUserCreateWithoutDevicesInput, Prisma.AdminUserUncheckedCreateWithoutDevicesInput>
+  connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutDevicesInput
+  connect?: Prisma.AdminUserWhereUniqueInput
+}
+
+export type AdminUserUpdateOneRequiredWithoutDevicesNestedInput = {
+  create?: Prisma.XOR<Prisma.AdminUserCreateWithoutDevicesInput, Prisma.AdminUserUncheckedCreateWithoutDevicesInput>
+  connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutDevicesInput
+  upsert?: Prisma.AdminUserUpsertWithoutDevicesInput
+  connect?: Prisma.AdminUserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AdminUserUpdateToOneWithWhereWithoutDevicesInput, Prisma.AdminUserUpdateWithoutDevicesInput>, Prisma.AdminUserUncheckedUpdateWithoutDevicesInput>
 }
 
 export type AdminUserCreateNestedManyWithoutDepartmentInput = {
@@ -964,9 +1011,11 @@ export type AdminUserCreateWithoutSessionsInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
@@ -996,8 +1045,10 @@ export type AdminUserUncheckedCreateWithoutSessionsInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1042,9 +1093,11 @@ export type AdminUserUpdateWithoutSessionsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
@@ -1074,8 +1127,158 @@ export type AdminUserUncheckedUpdateWithoutSessionsInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
+  ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
+  purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
+  qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  qcDecisions?: Prisma.QCDecisionUncheckedUpdateManyWithoutDecidedByNestedInput
+  packingRecords?: Prisma.PackingRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  shipments?: Prisma.ShipmentRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  inventoryLogs?: Prisma.InventoryLogUncheckedUpdateManyWithoutOperatorNestedInput
+  attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
+  timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
+}
+
+export type AdminUserCreateWithoutDevicesInput = {
+  id?: string
+  username: string
+  passwordHash: string
+  displayName: string
+  role: $Enums.Role
+  active?: boolean
+  sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
+  purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
+  arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
+  feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
+  qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
+  qcDecisions?: Prisma.QCDecisionCreateNestedManyWithoutDecidedByInput
+  packingRecords?: Prisma.PackingRecordCreateNestedManyWithoutOperatorInput
+  shipments?: Prisma.ShipmentRecordCreateNestedManyWithoutOperatorInput
+  inventoryLogs?: Prisma.InventoryLogCreateNestedManyWithoutOperatorInput
+  attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
+  timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
+}
+
+export type AdminUserUncheckedCreateWithoutDevicesInput = {
+  id?: string
+  username: string
+  passwordHash: string
+  displayName: string
+  role: $Enums.Role
+  departmentId?: string | null
+  active?: boolean
+  sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
+  purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
+  qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
+  qcDecisions?: Prisma.QCDecisionUncheckedCreateNestedManyWithoutDecidedByInput
+  packingRecords?: Prisma.PackingRecordUncheckedCreateNestedManyWithoutOperatorInput
+  shipments?: Prisma.ShipmentRecordUncheckedCreateNestedManyWithoutOperatorInput
+  inventoryLogs?: Prisma.InventoryLogUncheckedCreateNestedManyWithoutOperatorInput
+  attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
+  timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
+}
+
+export type AdminUserCreateOrConnectWithoutDevicesInput = {
+  where: Prisma.AdminUserWhereUniqueInput
+  create: Prisma.XOR<Prisma.AdminUserCreateWithoutDevicesInput, Prisma.AdminUserUncheckedCreateWithoutDevicesInput>
+}
+
+export type AdminUserUpsertWithoutDevicesInput = {
+  update: Prisma.XOR<Prisma.AdminUserUpdateWithoutDevicesInput, Prisma.AdminUserUncheckedUpdateWithoutDevicesInput>
+  create: Prisma.XOR<Prisma.AdminUserCreateWithoutDevicesInput, Prisma.AdminUserUncheckedCreateWithoutDevicesInput>
+  where?: Prisma.AdminUserWhereInput
+}
+
+export type AdminUserUpdateToOneWithWhereWithoutDevicesInput = {
+  where?: Prisma.AdminUserWhereInput
+  data: Prisma.XOR<Prisma.AdminUserUpdateWithoutDevicesInput, Prisma.AdminUserUncheckedUpdateWithoutDevicesInput>
+}
+
+export type AdminUserUpdateWithoutDevicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
+  purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
+  arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
+  feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
+  qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
+  qcDecisions?: Prisma.QCDecisionUpdateManyWithoutDecidedByNestedInput
+  packingRecords?: Prisma.PackingRecordUpdateManyWithoutOperatorNestedInput
+  shipments?: Prisma.ShipmentRecordUpdateManyWithoutOperatorNestedInput
+  inventoryLogs?: Prisma.InventoryLogUpdateManyWithoutOperatorNestedInput
+  attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
+  timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
+}
+
+export type AdminUserUncheckedUpdateWithoutDevicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1104,9 +1307,11 @@ export type AdminUserCreateWithoutDepartmentInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
@@ -1135,9 +1340,11 @@ export type AdminUserUncheckedCreateWithoutDepartmentInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1196,6 +1403,7 @@ export type AdminUserScalarWhereInput = {
   departmentId?: Prisma.UuidNullableFilter<"AdminUser"> | string | null
   active?: Prisma.BoolFilter<"AdminUser"> | boolean
   sessionVersion?: Prisma.IntFilter<"AdminUser"> | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFilter<"AdminUser"> | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFilter<"AdminUser"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AdminUser"> | Date | string
 }
@@ -1208,10 +1416,12 @@ export type AdminUserCreateWithoutOrdersCreatedInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
@@ -1240,9 +1450,11 @@ export type AdminUserUncheckedCreateWithoutOrdersCreatedInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -1275,10 +1487,12 @@ export type AdminUserCreateWithoutOrdersOwnedInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
@@ -1307,9 +1521,11 @@ export type AdminUserUncheckedCreateWithoutOrdersOwnedInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -1353,10 +1569,12 @@ export type AdminUserUpdateWithoutOrdersCreatedInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
@@ -1385,9 +1603,11 @@ export type AdminUserUncheckedUpdateWithoutOrdersCreatedInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -1426,10 +1646,12 @@ export type AdminUserUpdateWithoutOrdersOwnedInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
@@ -1458,9 +1680,11 @@ export type AdminUserUncheckedUpdateWithoutOrdersOwnedInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -1488,10 +1712,12 @@ export type AdminUserCreateWithoutPurchasesCreatedInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
@@ -1520,9 +1746,11 @@ export type AdminUserUncheckedCreateWithoutPurchasesCreatedInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -1566,10 +1794,12 @@ export type AdminUserUpdateWithoutPurchasesCreatedInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
@@ -1598,9 +1828,11 @@ export type AdminUserUncheckedUpdateWithoutPurchasesCreatedInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -1628,10 +1860,12 @@ export type AdminUserCreateWithoutArrivalsInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
@@ -1660,9 +1894,11 @@ export type AdminUserUncheckedCreateWithoutArrivalsInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1706,10 +1942,12 @@ export type AdminUserUpdateWithoutArrivalsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
@@ -1738,9 +1976,11 @@ export type AdminUserUncheckedUpdateWithoutArrivalsInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1768,10 +2008,12 @@ export type AdminUserCreateWithoutProductionsCreatedInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
@@ -1800,9 +2042,11 @@ export type AdminUserUncheckedCreateWithoutProductionsCreatedInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1846,10 +2090,12 @@ export type AdminUserUpdateWithoutProductionsCreatedInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
@@ -1878,9 +2124,11 @@ export type AdminUserUncheckedUpdateWithoutProductionsCreatedInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1908,10 +2156,12 @@ export type AdminUserCreateWithoutFeedbacksInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
@@ -1940,9 +2190,11 @@ export type AdminUserUncheckedCreateWithoutFeedbacksInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1986,10 +2238,12 @@ export type AdminUserUpdateWithoutFeedbacksInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
@@ -2018,9 +2272,11 @@ export type AdminUserUncheckedUpdateWithoutFeedbacksInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2048,10 +2304,12 @@ export type AdminUserCreateWithoutQcRecordsInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
@@ -2080,9 +2338,11 @@ export type AdminUserUncheckedCreateWithoutQcRecordsInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2126,10 +2386,12 @@ export type AdminUserUpdateWithoutQcRecordsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
@@ -2158,9 +2420,11 @@ export type AdminUserUncheckedUpdateWithoutQcRecordsInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2188,10 +2452,12 @@ export type AdminUserCreateWithoutQcDecisionsInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
@@ -2220,9 +2486,11 @@ export type AdminUserUncheckedCreateWithoutQcDecisionsInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2266,10 +2534,12 @@ export type AdminUserUpdateWithoutQcDecisionsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
@@ -2298,9 +2568,11 @@ export type AdminUserUncheckedUpdateWithoutQcDecisionsInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2328,10 +2600,12 @@ export type AdminUserCreateWithoutPackingRecordsInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
@@ -2360,9 +2634,11 @@ export type AdminUserUncheckedCreateWithoutPackingRecordsInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2406,10 +2682,12 @@ export type AdminUserUpdateWithoutPackingRecordsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
@@ -2438,9 +2716,11 @@ export type AdminUserUncheckedUpdateWithoutPackingRecordsInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2468,10 +2748,12 @@ export type AdminUserCreateWithoutShipmentsInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
@@ -2500,9 +2782,11 @@ export type AdminUserUncheckedCreateWithoutShipmentsInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2546,10 +2830,12 @@ export type AdminUserUpdateWithoutShipmentsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
@@ -2578,9 +2864,11 @@ export type AdminUserUncheckedUpdateWithoutShipmentsInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2608,10 +2896,12 @@ export type AdminUserCreateWithoutInventoryLogsInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
@@ -2640,9 +2930,11 @@ export type AdminUserUncheckedCreateWithoutInventoryLogsInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2686,10 +2978,12 @@ export type AdminUserUpdateWithoutInventoryLogsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
@@ -2718,9 +3012,11 @@ export type AdminUserUncheckedUpdateWithoutInventoryLogsInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2748,10 +3044,12 @@ export type AdminUserCreateWithoutAttachmentsInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
@@ -2780,9 +3078,11 @@ export type AdminUserUncheckedCreateWithoutAttachmentsInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2826,10 +3126,12 @@ export type AdminUserUpdateWithoutAttachmentsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
@@ -2858,9 +3160,11 @@ export type AdminUserUncheckedUpdateWithoutAttachmentsInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2888,10 +3192,12 @@ export type AdminUserCreateWithoutNotificationsInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
@@ -2920,9 +3226,11 @@ export type AdminUserUncheckedCreateWithoutNotificationsInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2966,10 +3274,12 @@ export type AdminUserUpdateWithoutNotificationsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
@@ -2998,9 +3308,11 @@ export type AdminUserUncheckedUpdateWithoutNotificationsInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -3028,10 +3340,12 @@ export type AdminUserCreateWithoutAuditLogsInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
@@ -3060,9 +3374,11 @@ export type AdminUserUncheckedCreateWithoutAuditLogsInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -3106,10 +3422,12 @@ export type AdminUserUpdateWithoutAuditLogsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
@@ -3138,9 +3456,11 @@ export type AdminUserUncheckedUpdateWithoutAuditLogsInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -3168,10 +3488,12 @@ export type AdminUserCreateWithoutExceptionsInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
@@ -3200,9 +3522,11 @@ export type AdminUserUncheckedCreateWithoutExceptionsInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -3235,10 +3559,12 @@ export type AdminUserCreateWithoutHandledExceptionsInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
@@ -3267,9 +3593,11 @@ export type AdminUserUncheckedCreateWithoutHandledExceptionsInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -3313,10 +3641,12 @@ export type AdminUserUpdateWithoutExceptionsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
@@ -3345,9 +3675,11 @@ export type AdminUserUncheckedUpdateWithoutExceptionsInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -3386,10 +3718,12 @@ export type AdminUserUpdateWithoutHandledExceptionsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
@@ -3418,9 +3752,11 @@ export type AdminUserUncheckedUpdateWithoutHandledExceptionsInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -3448,10 +3784,12 @@ export type AdminUserCreateWithoutImportBatchesInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
@@ -3480,9 +3818,11 @@ export type AdminUserUncheckedCreateWithoutImportBatchesInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -3526,10 +3866,12 @@ export type AdminUserUpdateWithoutImportBatchesInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
@@ -3558,9 +3900,11 @@ export type AdminUserUncheckedUpdateWithoutImportBatchesInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -3588,10 +3932,12 @@ export type AdminUserCreateWithoutTimelineEventsInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
@@ -3620,9 +3966,11 @@ export type AdminUserUncheckedCreateWithoutTimelineEventsInput = {
   departmentId?: string | null
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
@@ -3666,10 +4014,12 @@ export type AdminUserUpdateWithoutTimelineEventsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
@@ -3698,9 +4048,11 @@ export type AdminUserUncheckedUpdateWithoutTimelineEventsInput = {
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -3728,6 +4080,7 @@ export type AdminUserCreateManyDepartmentInput = {
   role: $Enums.Role
   active?: boolean
   sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -3740,9 +4093,11 @@ export type AdminUserUpdateWithoutDepartmentInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
@@ -3771,9 +4126,11 @@ export type AdminUserUncheckedUpdateWithoutDepartmentInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -3802,6 +4159,7 @@ export type AdminUserUncheckedUpdateManyWithoutDepartmentInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -3813,6 +4171,7 @@ export type AdminUserUncheckedUpdateManyWithoutDepartmentInput = {
 
 export type AdminUserCountOutputType = {
   sessions: number
+  devices: number
   ordersCreated: number
   ordersOwned: number
   purchasesCreated: number
@@ -3835,6 +4194,7 @@ export type AdminUserCountOutputType = {
 
 export type AdminUserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessions?: boolean | AdminUserCountOutputTypeCountSessionsArgs
+  devices?: boolean | AdminUserCountOutputTypeCountDevicesArgs
   ordersCreated?: boolean | AdminUserCountOutputTypeCountOrdersCreatedArgs
   ordersOwned?: boolean | AdminUserCountOutputTypeCountOrdersOwnedArgs
   purchasesCreated?: boolean | AdminUserCountOutputTypeCountPurchasesCreatedArgs
@@ -3870,6 +4230,13 @@ export type AdminUserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ex
  */
 export type AdminUserCountOutputTypeCountSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.SessionWhereInput
+}
+
+/**
+ * AdminUserCountOutputType without action
+ */
+export type AdminUserCountOutputTypeCountDevicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DeviceWhereInput
 }
 
 /**
@@ -4008,10 +4375,12 @@ export type AdminUserSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   departmentId?: boolean
   active?: boolean
   sessionVersion?: boolean
+  deviceBindingMode?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   department?: boolean | Prisma.AdminUser$departmentArgs<ExtArgs>
   sessions?: boolean | Prisma.AdminUser$sessionsArgs<ExtArgs>
+  devices?: boolean | Prisma.AdminUser$devicesArgs<ExtArgs>
   ordersCreated?: boolean | Prisma.AdminUser$ordersCreatedArgs<ExtArgs>
   ordersOwned?: boolean | Prisma.AdminUser$ordersOwnedArgs<ExtArgs>
   purchasesCreated?: boolean | Prisma.AdminUser$purchasesCreatedArgs<ExtArgs>
@@ -4042,6 +4411,7 @@ export type AdminUserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   departmentId?: boolean
   active?: boolean
   sessionVersion?: boolean
+  deviceBindingMode?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   department?: boolean | Prisma.AdminUser$departmentArgs<ExtArgs>
@@ -4056,6 +4426,7 @@ export type AdminUserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   departmentId?: boolean
   active?: boolean
   sessionVersion?: boolean
+  deviceBindingMode?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   department?: boolean | Prisma.AdminUser$departmentArgs<ExtArgs>
@@ -4070,14 +4441,16 @@ export type AdminUserSelectScalar = {
   departmentId?: boolean
   active?: boolean
   sessionVersion?: boolean
+  deviceBindingMode?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type AdminUserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "passwordHash" | "displayName" | "role" | "departmentId" | "active" | "sessionVersion" | "createdAt" | "updatedAt", ExtArgs["result"]["adminUser"]>
+export type AdminUserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "passwordHash" | "displayName" | "role" | "departmentId" | "active" | "sessionVersion" | "deviceBindingMode" | "createdAt" | "updatedAt", ExtArgs["result"]["adminUser"]>
 export type AdminUserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   department?: boolean | Prisma.AdminUser$departmentArgs<ExtArgs>
   sessions?: boolean | Prisma.AdminUser$sessionsArgs<ExtArgs>
+  devices?: boolean | Prisma.AdminUser$devicesArgs<ExtArgs>
   ordersCreated?: boolean | Prisma.AdminUser$ordersCreatedArgs<ExtArgs>
   ordersOwned?: boolean | Prisma.AdminUser$ordersOwnedArgs<ExtArgs>
   purchasesCreated?: boolean | Prisma.AdminUser$purchasesCreatedArgs<ExtArgs>
@@ -4110,6 +4483,7 @@ export type $AdminUserPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   objects: {
     department: Prisma.$DepartmentPayload<ExtArgs> | null
     sessions: Prisma.$SessionPayload<ExtArgs>[]
+    devices: Prisma.$DevicePayload<ExtArgs>[]
     ordersCreated: Prisma.$OrderPayload<ExtArgs>[]
     ordersOwned: Prisma.$OrderPayload<ExtArgs>[]
     purchasesCreated: Prisma.$PurchaseOrderPayload<ExtArgs>[]
@@ -4138,6 +4512,10 @@ export type $AdminUserPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     departmentId: string | null
     active: boolean
     sessionVersion: number
+    /**
+     * * R01F：受控设备。OFF 时任何设备都能登录；ENFORCED 时只允许已登记设备。
+     */
+    deviceBindingMode: $Enums.DeviceBindingMode
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["adminUser"]>
@@ -4536,6 +4914,7 @@ export interface Prisma__AdminUserClient<T, Null = never, ExtArgs extends runtim
   readonly [Symbol.toStringTag]: "PrismaPromise"
   department<T extends Prisma.AdminUser$departmentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$departmentArgs<ExtArgs>>): Prisma.Prisma__DepartmentClient<runtime.Types.Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   sessions<T extends Prisma.AdminUser$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  devices<T extends Prisma.AdminUser$devicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$devicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DevicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   ordersCreated<T extends Prisma.AdminUser$ordersCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$ordersCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   ordersOwned<T extends Prisma.AdminUser$ordersOwnedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$ordersOwnedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   purchasesCreated<T extends Prisma.AdminUser$purchasesCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$purchasesCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PurchaseOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4591,6 +4970,7 @@ export interface AdminUserFieldRefs {
   readonly departmentId: Prisma.FieldRef<"AdminUser", 'String'>
   readonly active: Prisma.FieldRef<"AdminUser", 'Boolean'>
   readonly sessionVersion: Prisma.FieldRef<"AdminUser", 'Int'>
+  readonly deviceBindingMode: Prisma.FieldRef<"AdminUser", 'DeviceBindingMode'>
   readonly createdAt: Prisma.FieldRef<"AdminUser", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"AdminUser", 'DateTime'>
 }
@@ -5034,6 +5414,30 @@ export type AdminUser$sessionsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.SessionScalarFieldEnum | Prisma.SessionScalarFieldEnum[]
+}
+
+/**
+ * AdminUser.devices
+ */
+export type AdminUser$devicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Device
+   */
+  select?: Prisma.DeviceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Device
+   */
+  omit?: Prisma.DeviceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DeviceInclude<ExtArgs> | null
+  where?: Prisma.DeviceWhereInput
+  orderBy?: Prisma.DeviceOrderByWithRelationInput | Prisma.DeviceOrderByWithRelationInput[]
+  cursor?: Prisma.DeviceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DeviceScalarFieldEnum | Prisma.DeviceScalarFieldEnum[]
 }
 
 /**

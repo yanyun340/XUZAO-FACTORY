@@ -1,3 +1,4 @@
+import { getDeviceId } from '../lib/device';
 import type { Envelope } from './types';
 
 const API_BASE = '/api/v1';
@@ -70,6 +71,8 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<E
       credentials: 'same-origin',
       headers: {
         Accept: 'application/json',
+        // R01F：受控设备。服务端只在登录时用它校验，其余请求携带无害。
+        'X-Device-Id': getDeviceId(),
         ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
         ...headers,
       },

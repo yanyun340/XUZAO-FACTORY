@@ -41,8 +41,9 @@ npx vitest                            # watch
 | `ops.test.ts` | 3 | `/health`、`/ready`、未知接口 JSON 404 |
 | `imports.test.ts` | 5 | 模板、预检不写库、错误行、整批原子、重复提交 409 |
 | `part-suppliers.test.ts` | 6 | 多供应商、默认唯一/并发切换、采购集合校验、停用与移除边界 |
+| `devices.test.ts` | 10 | 受控设备开关、待批准、批准/吊销/删除、解绑踢下线、弱绑定边界 |
 
-合计：13 个文件、102 个用例。最近一次执行结果见 `reports/2026-11-14-backend-tests.md`。
+合计：14 个文件、112 个用例。最近一次执行结果见 `reports/2026-11-22-devices.md`。
 
 ## 3. 测试辅助
 

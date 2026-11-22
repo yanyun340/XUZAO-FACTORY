@@ -91,7 +91,7 @@ npm run start -w backend
 ## 5. 测试
 
 ```bash
-npm test             # backend Vitest，13 个文件 / 102 个用例
+npm test             # backend Vitest，14 个文件 / 112 个用例
 ```
 
 - 测试库来自 `TEST_DATABASE_URL`，`config.ts` 强制库名包含 `test`；未配置、指向开发库或库名不含 `test` 都会直接失败。
@@ -167,6 +167,9 @@ npm run restore -- backups/xuzao-backup-2026-11-04T14-00-47.json \
 | `DATABASE_UNAVAILABLE` | 库进程掉线/端口被占 | 查 `%USERPROFILE%\.xuzao\pg.log`；确认 55432 未被其他实例占用 |
 | 测试报“TEST_DATABASE_URL 必须指向 test 库” | 环境变量缺失或指向开发库 | 在 `backend/.env` 配好 `TEST_DATABASE_URL` |
 | 登录成功但刷新后 401 | Cookie 被代理改写 / 跨端口访问 | 用 `localhost:5173` 访问，确认 `/api` 代理到 3001 |
+| 登录报 `DEVICE_NOT_ALLOWED` | 账号开启了受控设备，当前浏览器未批准 | 把页面上的 8 位设备码报给管理员；账号页 → 设备 → 批准 |
+| 清了浏览器数据 / 换了设备登录不了 | localStorage 里的设备 ID 丢了，旧设备无法自动认出 | 同上，走新设备待批准流程；管理员也可关闭受控设备后重登 |
+| 管理员把自己锁在外面 | 已禁止对自己开启受控设备；若仍发生 | 用另一个管理员账号关闭该账号的受控设备，或按第 7 节恢复备份 |
 | 写请求 403 `FORBIDDEN` | 角色无权限 | 对照 `docs/permissions.md`；不要绕过服务端守卫 |
 | 生产环境 seed 报错 | 种子拒绝写入生产 | 正常行为；生产数据应由业务流程产生 |
 | 备份报“附件文件缺失” | 数据库有附件记录但 `UPLOAD_DIR` 下无文件 | 先恢复附件目录，再重新备份 |

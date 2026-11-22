@@ -53,6 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   AdminUser: 'AdminUser',
   Session: 'Session',
+  Device: 'Device',
   Department: 'Department',
   Employee: 'Employee',
   Customer: 'Customer',
@@ -108,6 +109,7 @@ export const AdminUserScalarFieldEnum = {
   departmentId: 'departmentId',
   active: 'active',
   sessionVersion: 'sessionVersion',
+  deviceBindingMode: 'deviceBindingMode',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -119,12 +121,28 @@ export const SessionScalarFieldEnum = {
   id: 'id',
   tokenHash: 'tokenHash',
   userId: 'userId',
+  deviceId: 'deviceId',
   expiresAt: 'expiresAt',
   revokedAt: 'revokedAt',
   createdAt: 'createdAt'
 } as const
 
 export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
+
+
+export const DeviceScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  deviceKey: 'deviceKey',
+  label: 'label',
+  userAgent: 'userAgent',
+  status: 'status',
+  boundById: 'boundById',
+  lastSeenAt: 'lastSeenAt',
+  createdAt: 'createdAt'
+} as const
+
+export type DeviceScalarFieldEnum = (typeof DeviceScalarFieldEnum)[keyof typeof DeviceScalarFieldEnum]
 
 
 export const DepartmentScalarFieldEnum = {

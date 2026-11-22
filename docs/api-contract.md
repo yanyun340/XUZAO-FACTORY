@@ -33,6 +33,7 @@
 - 认证：`Cookie: xuzao_session=<token>`，`HttpOnly`、`SameSite=Lax`、默认 168 小时。
 - 未登录：401 `NOT_LOGGED_IN`；会话过期/被撤销：401 `SESSION_EXPIRED`。
 - 角色不符：403 `FORBIDDEN`。
+- 受控设备（R01F）：登录请求可带 `X-Device-Id`（16–128 位 `[A-Za-z0-9_-]`）。账号开启受控设备后，只有已批准设备能登录；未登记设备返回 403 `DEVICE_NOT_ALLOWED`，`details` 含 `deviceCode`、`deviceLabel`。格式非法返回 400 `DEVICE_KEY_INVALID`。
 - 写请求（POST/PUT/PATCH/DELETE）必须是 `application/json`；附件上传用 `multipart/form-data` 且 `Origin` 必须等于 `APP_ORIGIN`。
 - 未匹配路由：404 `ROUTE_NOT_FOUND`。
 
@@ -61,6 +62,8 @@
 | 401 | `AUTH_INVALID_CREDENTIALS` | 用户名/密码错误或账号停用（统一文案） |
 | 401 | `NOT_LOGGED_IN` / `SESSION_EXPIRED` | 未登录 / 会话失效 |
 | 403 | `FORBIDDEN` | 角色或部门不匹配 |
+| 403 | `DEVICE_NOT_ALLOWED` | 受控设备账号从未授权设备登录；`details` 含设备短码 |
+| 400 | `DEVICE_KEY_INVALID` / `CANNOT_ENFORCE_SELF` | 设备标识格式非法 / 管理员对自己开启受控设备 |
 | 404 | 资源码，如 `ORDER_NOT_FOUND`、`USER_NOT_FOUND` | 资源不存在 |
 | 409 | `DUPLICATE_VALUE` | 唯一键冲突（编码、用户名等） |
 | 409 | `ORDER_STATUS_CONFLICT` | 当前状态不允许该动作 |
@@ -79,12 +82,16 @@
 
 | 方法/路径 | 角色 | 请求 | 成功 | 主要错误 |
 | --- | --- | --- | --- | --- |
-| `POST /auth/login` | 公开 | `{username, password}` | 200 `{user, expiresAt}` + Set-Cookie | 401 `AUTH_INVALID_CREDENTIALS` |
+| `POST /auth/login` | 公开 | `{username, password}` + 可选 `X-Device-Id` | 200 `{user, expiresAt}` + Set-Cookie | 401 `AUTH_INVALID_CREDENTIALS`；403 `DEVICE_NOT_ALLOWED` |
 | `GET /auth/me` | 登录 | — | 200 `{user, expiresAt}` | 401 |
+| `GET /auth/devices` | 登录 | — | 200 自己的设备列表（短码/状态/最近登录） | 401 |
 | `POST /auth/logout` | 公开/登录 | — | 200 `{loggedOut:true}`，清 Cookie | — |
 | `GET /users` | ADMIN | `page,pageSize,keyword,role,active` | 200 分页用户（含 `activeSessions`） | 403 |
 | `POST /users` | ADMIN | `{username,password,displayName,role,departmentId?}` | 201 用户 | 409 `DUPLICATE_VALUE`、404 `DEPARTMENT_NOT_FOUND` |
-| `PATCH /users/:id` | ADMIN | `{displayName?,role?,departmentId?,active?}` 至少一项 | 200 用户 + `sessionsRevoked` | 400 自停用/自改角色、404 |
+| `PATCH /users/:id` | ADMIN | `{displayName?,role?,departmentId?,active?,deviceBindingMode?}` 至少一项 | 200 用户 + `sessionsRevoked`；开启受控设备会撤销旧会话 | 400 自停用/自改角色/对自己开启受控、404 |
+| `GET /users/:id/devices` | ADMIN | — | 200 设备列表（`deviceCode/label/status/lastSeenAt`） | 404 |
+| `PATCH /users/:id/devices/:deviceId` | ADMIN | `{status?: ACTIVE\|REVOKED, label?}` 至少一项 | 200 设备；吊销会撤销该设备会话 | 404 `DEVICE_NOT_FOUND` |
+| `DELETE /users/:id/devices/:deviceId` | ADMIN | — | 200 `{removed,remaining,bindingDisabled}`；删最后 ACTIVE 设备自动关闭受控 | 404 |
 | `POST /users/:id/password` | ADMIN | `{password}` ≥8 位 | 200 `{reset:true,sessionsRevoked:true}` | 404 |
 | `POST /users/:id/revoke-sessions` | ADMIN | — | 200 `{revoked: count}` | 404 |
 

@@ -399,6 +399,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   AdminUser: 'AdminUser',
   Session: 'Session',
+  Device: 'Device',
   Department: 'Department',
   Employee: 'Employee',
   Customer: 'Customer',
@@ -442,7 +443,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "adminUser" | "session" | "department" | "employee" | "customer" | "supplier" | "partSupplier" | "part" | "order" | "orderItem" | "purchaseOrder" | "purchaseItem" | "arrivalRecord" | "productionOrder" | "productionFeedback" | "qCRecord" | "qCDecision" | "packingRecord" | "shipmentRecord" | "partInventory" | "productInventory" | "inventoryLog" | "attachment" | "notification" | "auditLog" | "tabletException" | "importBatch" | "timelineEvent" | "idempotencyRequest" | "sequenceCounter"
+    modelProps: "adminUser" | "session" | "device" | "department" | "employee" | "customer" | "supplier" | "partSupplier" | "part" | "order" | "orderItem" | "purchaseOrder" | "purchaseItem" | "arrivalRecord" | "productionOrder" | "productionFeedback" | "qCRecord" | "qCDecision" | "packingRecord" | "shipmentRecord" | "partInventory" | "productInventory" | "inventoryLog" | "attachment" | "notification" | "auditLog" | "tabletException" | "importBatch" | "timelineEvent" | "idempotencyRequest" | "sequenceCounter"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -591,6 +592,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.SessionCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.SessionCountAggregateOutputType> | number
+        }
+      }
+    }
+    Device: {
+      payload: Prisma.$DevicePayload<ExtArgs>
+      fields: Prisma.DeviceFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DeviceFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevicePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DeviceFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevicePayload>
+        }
+        findFirst: {
+          args: Prisma.DeviceFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevicePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DeviceFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevicePayload>
+        }
+        findMany: {
+          args: Prisma.DeviceFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevicePayload>[]
+        }
+        create: {
+          args: Prisma.DeviceCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevicePayload>
+        }
+        createMany: {
+          args: Prisma.DeviceCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DeviceCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevicePayload>[]
+        }
+        delete: {
+          args: Prisma.DeviceDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevicePayload>
+        }
+        update: {
+          args: Prisma.DeviceUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevicePayload>
+        }
+        deleteMany: {
+          args: Prisma.DeviceDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DeviceUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DeviceUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevicePayload>[]
+        }
+        upsert: {
+          args: Prisma.DeviceUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevicePayload>
+        }
+        aggregate: {
+          args: Prisma.DeviceAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDevice>
+        }
+        groupBy: {
+          args: Prisma.DeviceGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DeviceGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DeviceCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DeviceCountAggregateOutputType> | number
         }
       }
     }
@@ -2714,6 +2789,7 @@ export const AdminUserScalarFieldEnum = {
   departmentId: 'departmentId',
   active: 'active',
   sessionVersion: 'sessionVersion',
+  deviceBindingMode: 'deviceBindingMode',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -2725,12 +2801,28 @@ export const SessionScalarFieldEnum = {
   id: 'id',
   tokenHash: 'tokenHash',
   userId: 'userId',
+  deviceId: 'deviceId',
   expiresAt: 'expiresAt',
   revokedAt: 'revokedAt',
   createdAt: 'createdAt'
 } as const
 
 export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
+
+
+export const DeviceScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  deviceKey: 'deviceKey',
+  label: 'label',
+  userAgent: 'userAgent',
+  status: 'status',
+  boundById: 'boundById',
+  lastSeenAt: 'lastSeenAt',
+  createdAt: 'createdAt'
+} as const
+
+export type DeviceScalarFieldEnum = (typeof DeviceScalarFieldEnum)[keyof typeof DeviceScalarFieldEnum]
 
 
 export const DepartmentScalarFieldEnum = {
@@ -3214,6 +3306,20 @@ export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
+ * Reference to a field of type 'DeviceBindingMode'
+ */
+export type EnumDeviceBindingModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DeviceBindingMode'>
+    
+
+
+/**
+ * Reference to a field of type 'DeviceBindingMode[]'
+ */
+export type ListEnumDeviceBindingModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DeviceBindingMode[]'>
+    
+
+
+/**
  * Reference to a field of type 'DateTime'
  */
 export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -3224,6 +3330,20 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'DateTime[]'
  */
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
+ * Reference to a field of type 'DeviceStatus'
+ */
+export type EnumDeviceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DeviceStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'DeviceStatus[]'
+ */
+export type ListEnumDeviceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DeviceStatus[]'>
     
 
 
@@ -3533,6 +3653,7 @@ export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaC
 export type GlobalOmitConfig = {
   adminUser?: Prisma.AdminUserOmit
   session?: Prisma.SessionOmit
+  device?: Prisma.DeviceOmit
   department?: Prisma.DepartmentOmit
   employee?: Prisma.EmployeeOmit
   customer?: Prisma.CustomerOmit

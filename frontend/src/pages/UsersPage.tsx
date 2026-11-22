@@ -4,6 +4,7 @@ import { ApiError, apiGetPage, apiPatch, apiPost } from '../api/client';
 import type { Department, ManagedUser, PageMeta, Role } from '../api/types';
 import { useAuth } from '../auth/AuthContext';
 import { PlusIcon } from '../components/Icons';
+import { UserDevicesDialog } from '../components/UserDevicesDialog';
 import { Button, EmptyState, InlineNotice, LoadingBlock } from '../components/ui';
 import { useModalFocus } from '../hooks/useModalFocus';
 import { ROLE_LABEL } from '../lib/format';
@@ -27,6 +28,7 @@ export function UsersPage() {
   const [reloadToken, setReloadToken] = useState(0);
 
   const [modal, setModal] = useState<ModalState>(null);
+  const [devicesFor, setDevicesFor] = useState<ManagedUser | null>(null);
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -224,6 +226,7 @@ export function UsersPage() {
               <span>角色</span>
               <span>部门</span>
               <span>状态</span>
+              <span>受控设备</span>
               <span>会话</span>
               <span>操作</span>
             </div>
@@ -250,8 +253,16 @@ export function UsersPage() {
                       {item.active ? '启用' : '停用'}
                     </span>
                   </span>
+                  <span className="user-row__devices">
+                    {item.deviceBindingMode === 'ENFORCED'
+                      ? `已启用（${item.activeDevices} 台）`
+                      : '关闭'}
+                  </span>
                   <span className="user-row__sessions mono">{item.activeSessions}</span>
                   <span className="user-row__actions">
+                    <button type="button" className="text-btn" onClick={() => setDevicesFor(item)}>
+                      设备
+                    </button>
                     <button type="button" className="text-btn" onClick={() => openEdit(item)}>
                       编辑
                     </button>
@@ -436,6 +447,15 @@ export function UsersPage() {
             document.body,
           )
         : null}
+
+      {devicesFor ? (
+        <UserDevicesDialog
+          key={`${devicesFor.id}:${devicesFor.deviceBindingMode}`}
+          user={devicesFor}
+          onClose={() => setDevicesFor(null)}
+          onChanged={reload}
+        />
+      ) : null}
     </div>
   );
 }

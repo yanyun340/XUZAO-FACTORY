@@ -13,7 +13,7 @@
 
 | 需求 | 状态 | 实现位置 | 验收 | 限制 |
 | --- | --- | --- | --- | --- |
-| R01 身份 | 已验收 | `backend/src/auth/`、`frontend/src/pages/LoginPage.tsx` | A01、A02；`tests/auth.test.ts` | 五种角色；受控设备未做 |
+| R01 身份 | 已验收 | `backend/src/auth/`、`frontend/src/pages/LoginPage.tsx` | A01、A02；`tests/auth.test.ts`、`tests/devices.test.ts` | 五种角色；受控设备为 F 项，见 R01F |
 | R02 基础数据 | 已验收 | `backend/src/routes/base-data.ts`、`BaseDataPage.tsx` | A03；`tests/basedata.test.ts` | 修改/停用不破坏历史 |
 | R03 业务订单 | 已验收 | `backend/src/routes/orders.ts`、`NewOrderPage.tsx` | A04、A05；`tests/flow.test.ts` | 单产品主链；列表支持状态/关键词/客户/负责人过滤 |
 | R04 采购 | 已验收 | `flow.ts` `POST /orders/:id/purchase` | A06；`tests/flow.test.ts` | 一单一采购单、单配件、手选供应商 |
@@ -47,7 +47,7 @@
 
 | 需求 | 状态 | 已实现的部分 | 未实现/边界 |
 | --- | --- | --- | --- |
-| R01F | 已验收 | 停用账号、改角色、重置密码、撤销全部会话；`sessionVersion` 立即失效；用户管理页可操作 | 受控设备绑定未做（F 原文为可选） |
+| R01F | 已验收 | 停用账号、改角色、重置密码、撤销全部会话；`sessionVersion` 立即失效；受控设备：按账号开启、未登记设备待批准、批准/吊销/删除、解绑即踢下线、审计 | 弱绑定：设备 ID 存在 localStorage，清浏览器数据或被手工复制可绕过；不宣称硬件级防伪造 |
 | R02F | 已验收 | 配件多供应商集合、默认供应商（每配件至多一个）、供应商类型（普通/电镀）、采购只能从集合选、移除/停用边界、审计 | 未做多供应商报价与自动分单 |
 | R03F | 部分 | 多明细建单、金额汇总、负责人字段与接口过滤 | 下游按明细流转、外部单号、负责人筛选 UI 未做；**不宣称完整** |
 | R04F | 未选做 | 单采购单 | 多采购单、多配件、报价关联、镀层标记未做 |
@@ -91,7 +91,8 @@
 
 | 证据 | 位置 |
 | --- | --- |
-| 后端测试（13 文件 / 102 用例） | `tests/reports/2026-11-14-backend-tests.md` |
+| 后端测试（14 文件 / 112 用例） | `tests/reports/2026-11-22-devices.md` |
+| 受控设备边界与端到端截图 | `tests/reports/2026-11-22-devices.md` 第 4、5 节；`.shots/2026-11-22-device-*.png` |
 | 部署、就绪与回退演练 | `tests/reports/2026-11-14-deploy-rollback.md` |
 | 历史测试（0.1.0） | `tests/reports/2026-11-04-backend-tests.md` |
 | 备份恢复演练 | `tests/reports/2026-11-04-backup-restore.md` |

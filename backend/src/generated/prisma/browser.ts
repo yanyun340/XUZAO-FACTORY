@@ -28,6 +28,14 @@ export type AdminUser = Prisma.AdminUserModel
  */
 export type Session = Prisma.SessionModel
 /**
+ * Model Device
+ * *
+ *  * R01F：受控设备。
+ *  * deviceKey 由浏览器生成并保存在 localStorage，属于弱凭据：
+ *  * 能挡住“换台手机直接输密码”，挡不住手工复制，文档里如实标注。
+ */
+export type Device = Prisma.DeviceModel
+/**
  * Model Department
  * 
  */

@@ -10,6 +10,7 @@
  */
 export type * from './models/AdminUser.ts'
 export type * from './models/Session.ts'
+export type * from './models/Device.ts'
 export type * from './models/Department.ts'
 export type * from './models/Employee.ts'
 export type * from './models/Customer.ts'
