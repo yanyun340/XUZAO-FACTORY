@@ -35,13 +35,13 @@
   letter-spacing: 0;
 }
 
+
+/* 仅用于承载数据的面板副行（共 N 条 / 匹配关键词）；解释性文案已全部移除 */
 .panel__meta {
   margin-top: 4px;
   font-size: 12px;
   color: var(--muted);
 }
-
-.panel__count {
   font-family: var(--font-mono);
   font-size: 12px;
   color: var(--muted);

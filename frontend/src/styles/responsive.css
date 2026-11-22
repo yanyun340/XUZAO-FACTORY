@@ -14,16 +14,8 @@
     padding-block: 16px;
   }
 
-  .landing__badge {
-    margin-bottom: 14px;
-  }
-
   .landing__title {
-    font-size: clamp(40px, 5.4vw, 64px);
-  }
-
-  .landing__lede {
-    margin-top: 14px;
+    font-size: clamp(44px, 5.4vw, 64px);
   }
 
   .landing__hero-cta {
@@ -193,10 +185,6 @@
     gap: 10px;
   }
 
-  .rail__hint {
-    display: none;
-  }
-
   .rail__user {
     border-top: 0;
     padding: 0;
@@ -243,12 +231,7 @@
   }
 
   .landing__title {
-    font-size: clamp(48px, 8vw, 76px);
-  }
-
-  .landing__lede {
-    max-width: 640px;
-    font-size: 15px;
+    font-size: clamp(56px, 11vw, 88px);
   }
 
   .landing__demo {
@@ -420,17 +403,7 @@
   }
 
   .landing__title {
-    font-size: clamp(40px, 13vw, 64px);
-  }
-
-  .landing__badge {
-    margin-bottom: 18px;
-    font-size: 12px;
-  }
-
-  .landing__lede {
-    max-width: 34ch;
-    font-size: 14px;
+    font-size: clamp(52px, 18vw, 84px);
   }
 
   .landing__hero-cta {
@@ -447,16 +420,6 @@
   .landing__demo {
     padding: 18px 14px 12px;
     border-radius: 16px;
-  }
-
-  .landing__demo-label {
-    font-size: 10.5px;
-    letter-spacing: 0.12em;
-  }
-
-  .landing__fineprint {
-    font-size: 10.5px;
-    line-height: 1.7;
   }
 
   .login-modal {
@@ -489,7 +452,6 @@
     font-size: 18px;
   }
 
-  .login-modal__tagline,
   .login-modal__meta,
   .login-modal__watermark {
     display: none;

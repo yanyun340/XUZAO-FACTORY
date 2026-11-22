@@ -193,20 +193,17 @@ export function InlineNotice({
 export function SectionHeading({
   eyebrow,
   title,
-  description,
   action,
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
-  description?: string;
   action?: ReactNode;
 }) {
   return (
     <header className="page-head">
       <div className="page-head__copy">
-        <p className="eyebrow">{eyebrow}</p>
+        {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
         <h1 className="page-title">{title}</h1>
-        {description ? <p className="page-lede">{description}</p> : null}
       </div>
       {action ? <div className="page-head__action">{action}</div> : null}
     </header>

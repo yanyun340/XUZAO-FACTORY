@@ -479,11 +479,12 @@
   color: var(--ink-2);
 }
 
+/* 空态与不可逆操作的提示，非装饰性文案，保留 */
 .next-step__hint {
   margin-top: 14px;
   padding-top: 12px;
   border-top: 1px solid var(--line);
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.6;
   color: var(--muted);
 }
@@ -750,43 +751,18 @@
   font-weight: 600;
 }
 
-.tab__hint {
-  font-size: 10.5px;
-  color: var(--muted);
-  white-space: nowrap;
-}
-
 .tab--active {
   background: var(--pine);
   border-color: var(--pine);
   color: var(--cream);
 }
 
-.tab--active .tab__hint {
-  color: rgba(255, 255, 255, 0.72);
-}
-
 .tab-caption-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 16px;
   margin: 16px 2px;
-}
-
-.tab-caption {
-  display: flex;
-  gap: 10px;
-  align-items: baseline;
-  margin: 0;
-  font-size: 10.5px;
-  color: var(--muted);
-}
-
-.tab-caption .mono {
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  color: var(--ink-2);
 }
 
 .data-layout {
@@ -881,12 +857,13 @@
 
 .data-table--customers .data-table__head,
 .data-table--customers .data-table__row {
-  /* 电话列给足单行宽度，避免 1120px 版心下号码折行 */
+  /* 电话列给足单行宽度，避免 1120px 版心下号码折行；
+     原 min-width 760 在 1440 版心下比容器宽 21px，操作列被裁掉一半 */
   grid-template-columns:
-    minmax(190px, 1.4fr) minmax(88px, 0.8fr) minmax(108px, 0.9fr) minmax(76px, 0.7fr)
-    64px 120px;
+    minmax(190px, 1.4fr) minmax(88px, 0.8fr) minmax(108px, 0.9fr) minmax(72px, 0.7fr)
+    64px 112px;
   grid-auto-flow: row;
-  min-width: 760px;
+  min-width: 716px;
 }
 
 .data-table--suppliers .data-table__head,

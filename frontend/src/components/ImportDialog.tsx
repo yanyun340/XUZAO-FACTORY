@@ -106,10 +106,7 @@ export function ImportDialog({
       <form ref={cardRef} className="modal__card modal__card--wide" onSubmit={(event) => void commit(event)}>
         <p className="eyebrow">BULK IMPORT</p>
         <h2 className="modal__title">Excel 导入</h2>
-        <p className="modal__sub">
-          先下载模板，填好后上传预检；预检只校验不写库，确认无错误后才整批写入。
-        </p>
-
+        
         <div className="segmented" role="tablist" aria-label="导入对象">
           {ENTITIES.map((item) => (
             <button

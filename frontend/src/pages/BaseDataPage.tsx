@@ -25,12 +25,12 @@ import {
 
 type TabKey = 'customers' | 'suppliers' | 'parts' | 'departments' | 'employees';
 
-const TABS: Array<{ key: TabKey; label: string; hint: string }> = [
-  { key: 'customers', label: '客户', hint: '业务订单的甲方' },
-  { key: 'suppliers', label: '供应商', hint: '采购与电镀来源' },
-  { key: 'parts', label: '配件', hint: '采购物料主数据' },
-  { key: 'departments', label: '部门', hint: '生产 / 物流 / 品控 / 包装' },
-  { key: 'employees', label: '员工', hint: '生产任务可指派对象' },
+const TABS: Array<{ key: TabKey; label: string }> = [
+  { key: 'customers', label: '客户' },
+  { key: 'suppliers', label: '供应商' },
+  { key: 'parts', label: '配件' },
+  { key: 'departments', label: '部门' },
+  { key: 'employees', label: '员工' },
 ];
 
 interface Supplier {
@@ -175,12 +175,10 @@ function RecordsTable<T extends { id: string }>({
 
 function Panel({
   title,
-  hint,
   count,
   children,
 }: {
   title: string;
-  hint: string;
   count: number | null;
   children: ReactNode;
 }) {
@@ -189,7 +187,6 @@ function Panel({
       <div className="panel__head">
         <div>
           <h2 className="panel__title">{title}</h2>
-          <p className="panel__meta">{hint}</p>
         </div>
         <span className="panel__count">{count === null ? '' : `${count} 条`}</span>
       </div>
@@ -260,7 +257,6 @@ interface EditFieldDef {
 
 /** 基础数据共用的编辑弹窗：字段由调用方描述，保存交给对应的 PATCH。 */
 function EditDialog({
-  eyebrow,
   title,
   sub,
   fields,
@@ -270,7 +266,6 @@ function EditDialog({
   onSubmit,
   onClose,
 }: {
-  eyebrow: string;
   title: string;
   sub: string;
   fields: EditFieldDef[];
@@ -299,7 +294,6 @@ function EditDialog({
           onSubmit(values);
         }}
       >
-        <p className="eyebrow">{eyebrow}</p>
         <h2 className="modal__title">{title}</h2>
         <p className="modal__sub">{sub}</p>
 
@@ -434,7 +428,7 @@ function CustomerPanel({ canEdit }: { canEdit: boolean }) {
 
   return (
     <div className={`data-layout${canEdit ? '' : ' data-layout--single'}`}>
-      <Panel title="客户" hint="订单快照来源；停用不影响历史订单" count={collection.meta?.total ?? null}>
+      <Panel title="客户" count={collection.meta?.total ?? null}>
         <RecordsTable
           label="客户列表"
           variant="customers"
@@ -478,7 +472,7 @@ function CustomerPanel({ canEdit }: { canEdit: boolean }) {
       </Panel>
 
       {canEdit ? (
-        <Panel title="新增客户" hint="编码留空时由系统生成" count={null}>
+        <Panel title="新增客户" count={null}>
           <form className="stack-form" onSubmit={(event) => void submit(event)}>
             <Field label="客户名称" htmlFor="customer-name" required>
               <input
@@ -519,7 +513,6 @@ function CustomerPanel({ canEdit }: { canEdit: boolean }) {
       {editing ? (
         <EditDialog
           key={editing.id}
-          eyebrow="EDIT CUSTOMER"
           title={editing.name}
           sub="改名只影响之后的引用；历史订单保留创建时的客户名称快照。"
           initial={{
@@ -589,7 +582,7 @@ function SupplierPanel({ canEdit }: { canEdit: boolean }) {
 
   return (
     <div className={`data-layout${canEdit ? '' : ' data-layout--single'}`}>
-      <Panel title="供应商" hint="采购单与电镀服务的来源" count={collection.meta?.total ?? null}>
+      <Panel title="供应商" count={collection.meta?.total ?? null}>
         <RecordsTable
           label="供应商列表"
           variant="suppliers"
@@ -633,7 +626,7 @@ function SupplierPanel({ canEdit }: { canEdit: boolean }) {
       </Panel>
 
       {canEdit ? (
-        <Panel title="新增供应商" hint="编码留空时由系统生成" count={null}>
+        <Panel title="新增供应商" count={null}>
           <form className="stack-form" onSubmit={(event) => void submit(event)}>
             <Field label="供应商名称" htmlFor="supplier-name" required>
               <input
@@ -688,7 +681,6 @@ function SupplierPanel({ canEdit }: { canEdit: boolean }) {
       {editing ? (
         <EditDialog
           key={editing.id}
-          eyebrow="EDIT SUPPLIER"
           title={editing.name}
           sub="改名不会改写已有采购单上的供应商名称；停用后不能再被选来建采购。"
           initial={{
@@ -758,7 +750,7 @@ function PartPanel({ canEdit }: { canEdit: boolean }) {
 
   return (
     <div className={`data-layout${canEdit ? '' : ' data-layout--single'}`}>
-      <Panel title="配件" hint="采购物料主数据，名称与规格为快照来源" count={collection.meta?.total ?? null}>
+      <Panel title="配件" count={collection.meta?.total ?? null}>
         <RecordsTable
           label="配件列表"
           variant="parts"
@@ -805,7 +797,7 @@ function PartPanel({ canEdit }: { canEdit: boolean }) {
       </Panel>
 
       {canEdit ? (
-        <Panel title="新增配件" hint="编码留空时由系统生成" count={null}>
+        <Panel title="新增配件" count={null}>
           <form className="stack-form" onSubmit={(event) => void submit(event)}>
             <Field label="配件名称" htmlFor="part-name" required>
               <input
@@ -837,7 +829,6 @@ function PartPanel({ canEdit }: { canEdit: boolean }) {
       {editing ? (
         <EditDialog
           key={editing.id}
-          eyebrow="EDIT PART"
           title={`${editing.code} · ${editing.name}`}
           sub="名称和规格只影响之后的引用；已有采购单保留下单时的快照。"
           initial={{ name: editing.name, spec: editing.spec, active: editing.active }}
@@ -919,7 +910,7 @@ function DepartmentPanel({ canEdit }: { canEdit: boolean }) {
 
   return (
     <div className={`data-layout${canEdit ? '' : ' data-layout--single'}`}>
-      <Panel title="部门" hint="部门类别决定现场人员能看到的任务范围" count={collection.meta?.total ?? null}>
+      <Panel title="部门" count={collection.meta?.total ?? null}>
         <RecordsTable
           label="部门列表"
           variant="departments"
@@ -973,12 +964,14 @@ function DepartmentPanel({ canEdit }: { canEdit: boolean }) {
       </Panel>
 
       {canEdit ? (
-        <Panel title="新增部门" hint="编码用于稳定引用，创建后不建议修改" count={null}>
+        <Panel title="新增部门" count={null}>
           <form className="stack-form" onSubmit={(event) => void submit(event)}>
-            <Field label="部门编码" htmlFor="dept-code" required hint="2-30 位字母、数字、_ 或 -">
+            <Field label="部门编码" htmlFor="dept-code" required>
               <input
                 id="dept-code"
                 className="input mono"
+                pattern="[A-Za-z0-9_-]{2,30}"
+                title="2-30 位字母、数字、_ 或 -"
                 value={code}
                 onChange={(event) => setCode(event.target.value.toUpperCase())}
                 placeholder="例如：PROD"
@@ -1027,7 +1020,6 @@ function DepartmentPanel({ canEdit }: { canEdit: boolean }) {
       {editing ? (
         <EditDialog
           key={editing.id}
-          eyebrow="EDIT DEPARTMENT"
           title={`${editing.code} · ${editing.name}`}
           sub="已有生产任务的部门不能改类别；停用后不能再承接新的下发。"
           initial={{
@@ -1099,7 +1091,7 @@ function EmployeePanel({ canEdit }: { canEdit: boolean }) {
 
   return (
     <div className={`data-layout${canEdit ? '' : ' data-layout--single'}`}>
-      <Panel title="员工" hint="生产任务必须指派给目标部门的有效员工" count={collection.meta?.total ?? null}>
+      <Panel title="员工" count={collection.meta?.total ?? null}>
         <RecordsTable
           label="员工列表"
           variant="employees"
@@ -1137,7 +1129,7 @@ function EmployeePanel({ canEdit }: { canEdit: boolean }) {
       </Panel>
 
       {canEdit ? (
-        <Panel title="新增员工" hint="编码留空时由系统生成" count={null}>
+        <Panel title="新增员工" count={null}>
           <form className="stack-form" onSubmit={(event) => void submit(event)}>
             <Field label="员工姓名" htmlFor="employee-name" required>
               <input
@@ -1175,7 +1167,6 @@ function EmployeePanel({ canEdit }: { canEdit: boolean }) {
       {editing ? (
         <EditDialog
           key={editing.id}
-          eyebrow="EDIT EMPLOYEE"
           title={`${editing.code} · ${editing.name}`}
           sub="已有生产任务的员工不能换部门；停用后不会再被指派新任务。"
           initial={{
@@ -1221,18 +1212,11 @@ export function BaseDataPage() {
   const [importOpen, setImportOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const canEdit = user?.role === 'ADMIN';
-  const activeTab = TABS.find((entry) => entry.key === tab)!;
 
   return (
     <div className="page">
       <SectionHeading
-        eyebrow="MASTER DATA"
         title="基础数据"
-        description={
-          canEdit
-            ? '客户、供应商、配件、部门与员工是订单链路的引用来源。修改这里不会改写历史快照。'
-            : '当前角色可以查看基础数据；新增与维护由管理员完成。'
-        }
       />
 
       <div className="tabs" role="tablist" aria-label="基础数据分类">
@@ -1246,16 +1230,11 @@ export function BaseDataPage() {
             onClick={() => setTab(entry.key)}
           >
             <span className="tab__label">{entry.label}</span>
-            <span className="tab__hint">{entry.hint}</span>
           </button>
         ))}
       </div>
 
       <div className="tab-caption-row">
-        <p className="tab-caption">
-          <span className="mono">/ {activeTab.key.toUpperCase()}</span>
-          {activeTab.hint}
-        </p>
         {canEdit ? (
           <button type="button" className="btn btn--secondary btn--sm" onClick={() => setImportOpen(true)}>
             <span className="btn__label">Excel 导入</span>

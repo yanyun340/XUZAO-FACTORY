@@ -127,7 +127,6 @@ export function OrdersPage() {
       <SectionHeading
         eyebrow={`${greeting()}，${user?.displayName ?? ''} · ${new Date().getFullYear()}`}
         title="业务订单"
-        description="所有角色的唯一订单视图。金额与客户联系方式按角色脱敏。"
         action={
           isAdmin ? (
             <Link className="btn btn--primary" to="/orders/new">

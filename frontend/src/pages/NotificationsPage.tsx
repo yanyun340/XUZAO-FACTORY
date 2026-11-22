@@ -90,9 +90,7 @@ export function NotificationsPage() {
     <div className="page">
       <header className="page-head">
         <div className="page-head__copy">
-          <p className="eyebrow">INBOX / 通知中心</p>
           <h1 className="page-title">通知</h1>
-          <p className="page-lede">订单流转产生的管理员提醒。点击可直接跳到对应订单。</p>
         </div>
         <div className="page-head__action">
           <button

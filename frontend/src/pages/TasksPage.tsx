@@ -65,7 +65,6 @@ export function TasksPage() {
           user ? ROLE_LABEL[user.role] : ''
         }${user?.department ? ` · ${user.department.name}` : ''}`}
         title="待办"
-        description="只列出你所在岗位此刻能推进的订单，按交期从早到晚排列。点开即可直接处理。"
         action={
           <button
             type="button"

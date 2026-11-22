@@ -318,10 +318,8 @@ export function OrderDetailPage() {
           ) : (
             <div className="bezelt">
               <div className="detail-card detail-card--tight">
-                <p className="eyebrow">NEXT STEP</p>
                 <h2 className="next-step__owner">{next.owner}</h2>
                 <p className="next-step__text">{next.text}</p>
-                <p className="next-step__hint">动作入口按角色显示，后端会再次校验权限与数量。</p>
               </div>
             </div>
           )}
@@ -381,7 +379,6 @@ export function OrderDetailPage() {
         <div className="panel__head">
           <div>
             <h2 className="panel__title" id="order-history-title">订单历程</h2>
-            <p className="panel__meta">按发生顺序排列，全部来自订单事件流。</p>
           </div>
           <span className="panel__count mono">
             {order.timeline.length} {order.timeline.length === 1 ? 'EVENT' : 'EVENTS'}

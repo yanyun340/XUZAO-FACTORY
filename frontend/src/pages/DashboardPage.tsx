@@ -113,7 +113,6 @@ export function DashboardPage() {
         <div className="page-head__copy">
           <p className="eyebrow">TODAY / {today()}</p>
           <h1 className="page-title">工厂看板</h1>
-          <p className="page-lede">订单分布、生产进度与利润汇总，全部来自当前数据库的真实记录。</p>
         </div>
         <div className="page-head__action dash-actions">
           {notice && notice.unread > 0 ? (
@@ -326,9 +325,6 @@ export function DashboardPage() {
               <div className="panel__head">
                 <div>
                   <h2 className="panel__title">{isAdmin ? '利润汇总' : '生产进度'}</h2>
-                  <p className="panel__meta">
-                    {isAdmin ? '销售额 − 采购成本 − 生产成本' : '全部生产任务与已反馈数量'}
-                  </p>
                 </div>
               </div>
 
@@ -376,9 +372,6 @@ export function DashboardPage() {
                       </dd>
                     </div>
                   </dl>
-                  <p className="dash-footnote">
-                    生产成本 = 有效完成量 × 工艺单价；电镀成本按业务口径计 0。
-                  </p>
                 </>
               ) : (
                 <>
@@ -392,7 +385,6 @@ export function DashboardPage() {
                       <strong className="mono">{formatNumber(data.production.completedFeedback)}</strong>
                     </div>
                   </div>
-                  <p className="dash-footnote">金额与利润仅管理员可见，服务端已按角色脱敏。</p>
                 </>
               )}
             </section>
@@ -402,7 +394,6 @@ export function DashboardPage() {
             <div className="panel__head">
               <div>
                 <h2 className="panel__title">生产看板</h2>
-                <p className="panel__meta">按部门汇总当前筛选范围内的任务与完成量</p>
               </div>
             </div>
             {data.productionBoard.length === 0 ? (
@@ -450,7 +441,6 @@ export function DashboardPage() {
               <div className="panel__head">
                 <div>
                   <h2 className="panel__title">库存汇总</h2>
-                  <p className="panel__meta">手工台账当前数量，包装与发货不会自动扣减</p>
                 </div>
               </div>
               <div className="progress-stat">
@@ -469,7 +459,6 @@ export function DashboardPage() {
               <div className="panel__head">
                 <div>
                   <h2 className="panel__title">发货完成率</h2>
-                  <p className="panel__meta">已发货数量 ÷ 订单应交数量</p>
                 </div>
               </div>
               <div className="progress-stat">
@@ -492,7 +481,6 @@ export function DashboardPage() {
             <div className="panel__head">
               <div>
                 <h2 className="panel__title">最近订单</h2>
-                <p className="panel__meta">最近创建的 5 张订单</p>
               </div>
               <Link className="text-link" to="/orders">
                 查看全部

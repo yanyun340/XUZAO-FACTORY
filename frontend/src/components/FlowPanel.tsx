@@ -160,11 +160,13 @@ function PurchaseForm({ ctx }: { ctx: Ctx }) {
             onChange={(event) => setQuantity(event.target.value)}
           />
         </Field>
-        <Field label="采购单价" htmlFor="flow-purchase-price" required hint="元 / 件，两位小数">
+        <Field label="采购单价（元 / 件）" htmlFor="flow-purchase-price" required>
           <input
             id="flow-purchase-price"
             className="input mono"
             inputMode="decimal"
+            step="0.01"
+            min="0"
             placeholder="如 12.50"
             value={unitPrice}
             onChange={(event) => setUnitPrice(event.target.value)}
@@ -216,14 +218,19 @@ function ArrivalForm({ ctx }: { ctx: Ctx }) {
       <p className="flow-form__meta mono">
         已到 {item.arrivedQty} / {item.quantity} · 剩余 {remaining}
       </p>
-      <Field label="本次到货数量" htmlFor="flow-arrival-qty" required hint="不得超过采购剩余量">
+      <Field label="本次到货数量" htmlFor="flow-arrival-qty" required>
         <input
           id="flow-arrival-qty"
           className="input mono"
           inputMode="numeric"
+          max={remaining}
+          aria-describedby="flow-arrival-qty-constraint"
           value={quantity}
           onChange={(event) => setQuantity(event.target.value)}
         />
+        <span id="flow-arrival-qty-constraint" className="sr-only">
+          最多 {remaining}
+        </span>
       </Field>
       <Button
         loading={ctx.pending === 'record-arrival'}
@@ -297,11 +304,13 @@ function ProductionDispatchForm({ ctx }: { ctx: Ctx }) {
             onChange={(event) => setQuantity(event.target.value)}
           />
         </Field>
-        <Field label="加工单价" htmlFor="flow-production-price" required hint="元 / 件">
+        <Field label="加工单价（元 / 件）" htmlFor="flow-production-price" required>
           <input
             id="flow-production-price"
             className="input mono"
             inputMode="decimal"
+            step="0.01"
+            min="0"
             placeholder="0.00"
             value={unitPrice}
             onChange={(event) => setUnitPrice(event.target.value)}
@@ -355,14 +364,19 @@ function FeedbackForm({ ctx }: { ctx: Ctx }) {
       {production.unitPriceForWorker ? (
         <p className="flow-form__meta mono">本任务加工单价 ¥{production.unitPriceForWorker}</p>
       ) : null}
-      <Field label="本次完成数量" htmlFor="flow-feedback-qty" required hint="不得超过任务数量">
+      <Field label="本次完成数量" htmlFor="flow-feedback-qty" required>
         <input
           id="flow-feedback-qty"
           className="input mono"
           inputMode="numeric"
+          max={production.quantity}
+          aria-describedby="flow-feedback-qty-constraint"
           value={quantity}
           onChange={(event) => setQuantity(event.target.value)}
         />
+        <span id="flow-feedback-qty-constraint" className="sr-only">
+          最多 {production.quantity}
+        </span>
       </Field>
       <Button
         loading={ctx.pending === 'production-feedback'}
@@ -390,14 +404,19 @@ function QcEntryForm({ ctx }: { ctx: Ctx }) {
     <div className="flow-form">
       <p className="flow-form__lead">M 版本仅支持全合格质检：合格量自动等于检验量。</p>
       <p className="flow-form__meta mono">已生产 {produced}</p>
-      <Field label="检验数量" htmlFor="flow-qc-qty" required hint="不得超过已生产数量">
+      <Field label="检验数量" htmlFor="flow-qc-qty" required>
         <input
           id="flow-qc-qty"
           className="input mono"
           inputMode="numeric"
+          max={produced}
+          aria-describedby="flow-qc-qty-constraint"
           value={quantity}
           onChange={(event) => setQuantity(event.target.value)}
         />
+        <span id="flow-qc-qty-constraint" className="sr-only">
+          最多 {produced}
+        </span>
       </Field>
       <Button
         loading={ctx.pending === 'qc-entry'}
@@ -445,7 +464,6 @@ function QuantityForm({
   path,
   max,
   label,
-  hint,
   suffix,
 }: {
   ctx: Ctx;
@@ -453,7 +471,6 @@ function QuantityForm({
   path: string;
   max: number;
   label: string;
-  hint: string;
   suffix: string;
 }) {
   const [quantity, setQuantity] = useState(String(Math.max(max, 1)));
@@ -461,14 +478,19 @@ function QuantityForm({
   return (
     <div className="flow-form">
       <p className="flow-form__meta mono">{suffix}</p>
-      <Field label={label} htmlFor={`flow-${action}-qty`} required hint={hint}>
+      <Field label={label} htmlFor={`flow-${action}-qty`} required>
         <input
           id={`flow-${action}-qty`}
           className="input mono"
           inputMode="numeric"
+          max={max}
+          aria-describedby={`flow-${action}-qty-constraint`}
           value={quantity}
           onChange={(event) => setQuantity(event.target.value)}
         />
+        <span id={`flow-${action}-qty-constraint`} className="sr-only">
+          最多 {max}
+        </span>
       </Field>
       <Button
         loading={ctx.pending === action}
@@ -552,7 +574,6 @@ function renderAction(action: OrderAction, ctx: Ctx, key: string) {
           path={`/orders/${orderId}/packing-records`}
           max={q.packableRemaining}
           label="本次包装数量"
-          hint="不得超过可包装剩余"
           suffix={`放行 ${q.releasedQty} · 已包装 ${q.packedQty} · 可包装剩余 ${q.packableRemaining}`}
         />
       );
@@ -575,7 +596,6 @@ function renderAction(action: OrderAction, ctx: Ctx, key: string) {
           path={`/orders/${orderId}/shipment-records`}
           max={Math.min(q.shippableRemaining, q.dueRemaining)}
           label="本次发货数量"
-          hint="不超过可发货剩余与应交剩余中的较小值"
           suffix={`已包装 ${q.packedQty} · 已发货 ${q.shippedQty} · 应交剩余 ${q.dueRemaining}`}
         />
       );

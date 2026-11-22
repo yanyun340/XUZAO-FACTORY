@@ -355,6 +355,7 @@ body:has(.landing) {
 }
 
 /* ---------- 主视觉 ---------- */
+/* 只剩标题、一行副题与 CTA；原先靠 badge / lede 撑的纵向留白改由这是自身留白承担 */
 .landing__hero {
   position: relative;
   z-index: 1;
@@ -365,65 +366,25 @@ body:has(.landing) {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: clamp(24px, 5vh, 76px) clamp(20px, 4vw, 48px) clamp(20px, 3.6vh, 40px);
+  padding: clamp(32px, 7vh, 96px) clamp(20px, 4vw, 48px) clamp(24px, 4.4vh, 52px);
   animation: riseIn 220ms var(--ease-out) backwards;
-}
-
-.landing__badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: clamp(18px, 3vh, 28px);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  color: var(--k-muted);
-}
-
-.landing__badge-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 4px;
-  background: var(--pine);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
 }
 
 .landing__title {
   font-family: var(--font-body);
-  font-size: clamp(44px, 6.6vw, 88px);
+  font-size: clamp(56px, 9vw, 112px);
   font-weight: 700;
-  line-height: 1.04;
-  letter-spacing: -0.035em;
+  line-height: 1;
+  letter-spacing: -0.045em;
   color: var(--k-ink);
-  text-wrap: balance;
 }
 
-.landing__title span {
-  display: block;
+.landing__tagline {
+  margin-top: clamp(14px, 2.2vh, 22px);
+  font-size: clamp(14px, 1.1vw, 16px);
+  font-weight: 500;
+  letter-spacing: 0.24em;
   color: #7c8798;
-}
-
-.landing__lede {
-  margin-top: clamp(16px, 2.4vh, 24px);
-  max-width: 700px;
-  font-size: clamp(15px, 1.15vw, 17px);
-  line-height: 1.65;
-  color: var(--k-ink-2);
-}
-
-.login__lede-narrow {
-  display: none;
-}
-
-/* 小屏换短句，避免强制换行把词组拆开 */
-@media (max-width: 480px) {
-  .login__lede-wide {
-    display: none;
-  }
-
-  .login__lede-narrow {
-    display: inline;
-  }
 }
 
 /* 白色胶囊按钮：参考图里唯一的高亮面，不抢导航里的实心登录键 */
@@ -462,8 +423,8 @@ body:has(.landing) {
   position: relative;
   z-index: 1;
   flex: none;
-  /* 40dvh 时 nav + hero + stage 合计超出视口，页面凭空多出一条竖滚动条 */
-  min-height: clamp(260px, 34dvh, 400px);
+  /* hero 变矮后把余量交给舞台，首屏仍是一整屏 */
+  min-height: clamp(300px, 42dvh, 460px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -500,33 +461,12 @@ body:has(.landing) {
   box-shadow: 0 18px 48px rgba(30, 41, 59, 0.1);
 }
 
-.landing__demo-label {
-  margin-bottom: 4px;
-  font-size: 11.5px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--k-muted);
-}
-
 /* 流程条本身保留，舞台里去掉自带的分隔线和外宽，交给卡片承担 */
 .landing__demo .login__flowbar {
   width: 100%;
   margin: 0;
-  padding: 6px 0 0;
+  padding: 10px 0;
   border: 0;
-}
-
-.landing__fineprint {
-  position: relative;
-  z-index: 1;
-  margin: 0;
-  font-size: 12px;
-  letter-spacing: 0.02em;
-  /* 下面就是白色网格线，文字需要压过网格才读得清 */
-  color: #334155;
-  text-align: center;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 /* ---------- 登录弹层：点击后才出现 ---------- */
@@ -604,13 +544,6 @@ body:has(.landing) {
   color: var(--k-muted);
 }
 
-.login-modal__tagline {
-  max-width: 18ch;
-  margin-top: 18px;
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--k-ink-2);
-}
 
 .login-modal__meta {
   margin-top: auto;
@@ -736,13 +669,6 @@ body:has(.login-modal[open]) {
   color: var(--k-ink);
 }
 
-.login__card-sub {
-  margin-top: 6px;
-  font-size: 14px;
-  line-height: 1.65;
-  color: var(--k-muted);
-}
-
 .login__form {
   display: flex;
   flex-direction: column;
@@ -831,13 +757,6 @@ body:has(.login-modal[open]) {
   background: var(--surface-2);
 }
 
-.login__demo-label {
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0;
-  color: var(--muted);
-  margin-bottom: 10px;
-}
 
 /* 5 个账号用自动折行的 flex 会剩下一个孤零零的第二行；改成等宽网格，末项补齐整行 */
 .login__demo-chips {
@@ -882,11 +801,6 @@ body:has(.login-modal[open]) {
   color: rgba(99, 102, 241, 0.7);
 }
 
-.login__demo-hint {
-  margin-top: 8px;
-  font-size: 12px;
-  color: var(--muted);
-}
 
 @media (hover: hover) and (pointer: fine) {
   .chip:hover {
@@ -1073,15 +987,6 @@ body:has(.boot) {
   gap: 12px;
 }
 
-.rail__hint {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 0 8px;
-  font-size: 12px;
-  letter-spacing: 0;
-  color: var(--muted);
-}
 
 .rail__user {
   display: flex;
@@ -1184,13 +1089,6 @@ body:has(.boot) {
   font-weight: 700;
 }
 
-.page-lede {
-  margin-top: 8px;
-  max-width: 640px;
-  font-size: 14px;
-  line-height: 1.65;
-  color: var(--muted);
-}
 
 .page-head__action {
   flex-shrink: 0;

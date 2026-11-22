@@ -141,7 +141,7 @@ export function NewOrderPage() {
   if (user && user.role !== 'ADMIN') {
     return (
       <div className="page">
-        <SectionHeading eyebrow="权限受限" title="新建订单" />
+        <SectionHeading title="新建订单" />
         <div className="panel panel--pad">
           <InlineNotice tone="info">
             当前角色（{user.displayName}）只能查看订单，不能创建业务订单。请让管理员操作。
@@ -281,9 +281,7 @@ export function NewOrderPage() {
       </Link>
 
       <SectionHeading
-        eyebrow="ORDERS / NEW"
         title="新建业务订单"
-        description="订单号由后端并发安全生成。提交后进入待采购状态，后续动作都在同一张订单下留痕。"
       />
 
       {restored ? (
@@ -312,7 +310,6 @@ export function NewOrderPage() {
                 <span className="form-card__step mono">01</span>
                 <div>
                   <h2>订单信息</h2>
-                  <p>客户与交期决定这张订单的对外承诺。</p>
                 </div>
               </div>
 
@@ -327,7 +324,7 @@ export function NewOrderPage() {
                       ? '正在加载客户…'
                       : selectedCustomer
                         ? `${selectedCustomer.code}${selectedCustomer.contact ? ` · 联系人 ${selectedCustomer.contact}` : ''}`
-                        : '客户来自基础数据，停用的客户不会出现在这里。'
+                        : undefined
                   }
                 >
                   <select
@@ -346,7 +343,7 @@ export function NewOrderPage() {
                   </select>
                 </Field>
 
-                <Field label="交期" htmlFor="dueDate" required error={errors.dueDate} hint="按北京时间自然日计算">
+                <Field label="交期（北京时间）" htmlFor="dueDate" required error={errors.dueDate}>
                   <input
                     id="dueDate"
                     className="input"
@@ -358,7 +355,7 @@ export function NewOrderPage() {
                 </Field>
               </div>
 
-              <Field label="备注" htmlFor="remark" hint="选填，最多 500 字">
+              <Field label="备注（选填）" htmlFor="remark">
                 <textarea
                   id="remark"
                   className="input input--textarea"
@@ -378,7 +375,6 @@ export function NewOrderPage() {
                 <span className="form-card__step mono">02</span>
                 <div>
                   <h2>产品明细</h2>
-                  <p>数量与单价会进入后续利润口径，提交后不可直接编辑。</p>
                 </div>
               </div>
 
@@ -447,16 +443,17 @@ export function NewOrderPage() {
                       </Field>
 
                       <Field
-                        label="单价（元）"
+                        label="单价（元，不含税）"
                         htmlFor={`price-${item.key}`}
                         required
                         error={errors[`items.${item.key}.unitPrice`]}
-                        hint="不含税，最多两位小数"
                       >
                         <input
                           id={`price-${item.key}`}
                           className="input mono"
                           inputMode="decimal"
+                          step="0.01"
+                          min="0"
                           value={item.unitPrice}
                           onChange={(event) => updateItem(item.key, { unitPrice: event.target.value })}
                           placeholder="12.50"
@@ -488,8 +485,7 @@ export function NewOrderPage() {
         <aside className="form-layout__aside">
           <div className="bezelt">
             <div className="summary">
-              <p className="eyebrow">ORDER SUMMARY</p>
-              <h2 className="summary__title">提交摘要</h2>
+                            <h2 className="summary__title">提交摘要</h2>
 
               <dl className="summary__list">
                 <div>
@@ -510,7 +506,6 @@ export function NewOrderPage() {
                 <span>订单金额</span>
                 <strong className="mono">{formatMoney(total)}</strong>
               </div>
-              <p className="summary__note">金额为订单快照，不代表已收款或已结算。</p>
 
               {submitError ? <InlineNotice tone="error">{submitError}</InlineNotice> : null}
 
@@ -523,9 +518,7 @@ export function NewOrderPage() {
                 {submitting ? '正在提交' : '提交订单'}
               </Button>
 
-              <p className="summary__fineprint">
-                提交后状态进入「待采购」。重复点击或网络重试不会重复建单。
-              </p>
+              <p className="summary__fineprint">重复点击或网络重试不会重复建单。</p>
             </div>
           </div>
         </aside>

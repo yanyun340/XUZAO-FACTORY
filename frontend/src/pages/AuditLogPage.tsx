@@ -165,11 +165,7 @@ export function AuditLogPage() {
     <div className="page">
       <header className="page-head">
         <div className="page-head__copy">
-          <p className="eyebrow">AUDIT / 审计日志</p>
           <h1 className="page-title">审计日志</h1>
-          <p className="page-lede">
-            每一次写操作都在业务事务内留下一条记录：谁、在什么时间、对哪个对象做了什么，改前改后的内容一并保存。
-          </p>
         </div>
         <div className="page-head__action">
           <button

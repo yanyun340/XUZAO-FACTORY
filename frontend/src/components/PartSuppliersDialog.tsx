@@ -95,10 +95,7 @@ export function PartSuppliersDialog({
       >
         <p className="eyebrow">SUPPLIER SET</p>
         <h2 className="modal__title">配件供应商 · {part.name}</h2>
-        <p className="modal__sub">
-          配置后，采购只能从集合里选供应商；同一配件至多一个默认供应商。
-        </p>
-
+        
         {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
 
         {rows.length === 0 ? (

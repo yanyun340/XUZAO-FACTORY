@@ -5,7 +5,7 @@ import type { NotificationSummary } from '../api/types';
 import { useAuth } from '../auth/AuthContext';
 import { ROLE_LABEL } from '../lib/format';
 import { BrandMark } from './BrandMark';
-import { BoxIcon, LogOutIcon } from './Icons';
+import { LogOutIcon } from './Icons';
 
 interface NavItem {
   to: string;
@@ -115,10 +115,6 @@ export function AppShell() {
         </div>
 
         <div className="rail__foot">
-          <div className="rail__hint">
-            <BoxIcon size={15} />
-            <span>一单到底</span>
-          </div>
           <div className="rail__user">
             <span className="rail__avatar" aria-hidden>
               {initials(user.displayName)}

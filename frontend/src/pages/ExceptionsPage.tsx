@@ -119,11 +119,7 @@ export function ExceptionsPage() {
     <div className="page">
       <header className="page-head">
         <div className="page-head__copy">
-          <p className="eyebrow">EXCEPTIONS / 现场异常</p>
           <h1 className="page-title">异常上报</h1>
-          <p className="page-lede">
-            现场人员提交的问题在这里分派、跟踪和关闭。处置只推进状态，不篡改生产数量。
-          </p>
         </div>
       </header>
 

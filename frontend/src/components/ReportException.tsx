@@ -74,8 +74,7 @@ export function ReportException({ orderId }: { orderId: string }) {
           <form ref={cardRef} className="modal__card" onSubmit={(event) => void submit(event)}>
             <p className="eyebrow">INCIDENT REPORT</p>
             <h2 className="modal__title">上报异常</h2>
-            <p className="modal__sub">描述越具体，管理员处理越快。上报会记录你的身份与时间。</p>
-
+            
             <label className="field">
               <span className="field__label">异常分类</span>
               <select

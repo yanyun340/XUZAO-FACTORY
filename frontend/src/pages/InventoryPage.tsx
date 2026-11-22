@@ -184,11 +184,7 @@ export function InventoryPage() {
     <div className="page">
       <header className="page-head">
         <div className="page-head__copy">
-          <p className="eyebrow">STOCK / 库存台账</p>
           <h1 className="page-title">库存</h1>
-          <p className="page-lede">
-            配件与商品库存、手工调整与完整流水。调整带原因、带操作人，并且不允许扣成负数。
-          </p>
         </div>
         {isAdmin && tab === 'products' ? (
           <div className="page-head__action">
@@ -490,7 +486,6 @@ export function InventoryPage() {
             onClick={() => setAdjusting(null)}
           />
           <form ref={cardRef} className="modal__card" onSubmit={(event) => void submitAdjust(event)}>
-            <p className="eyebrow">STOCK ADJUST</p>
             <h2 className="modal__title">调整库存</h2>
             <p className="modal__sub">{adjusting.label}</p>
             <p className="modal__current mono">
