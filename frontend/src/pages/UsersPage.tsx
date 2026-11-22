@@ -182,11 +182,7 @@ export function UsersPage() {
     <div className="page">
       <header className="page-head">
         <div className="page-head__copy">
-          <p className="eyebrow">ACCOUNTS / 账号</p>
           <h1 className="page-title">账号管理</h1>
-          <p className="page-lede">
-            建账号、改角色、停用与重置密码。角色或状态一变，已签发的会话立刻失效，不用等 Cookie 过期。
-          </p>
         </div>
         <div className="page-head__action">
           <Button onClick={openCreate} trailing={<PlusIcon size={16} />}>

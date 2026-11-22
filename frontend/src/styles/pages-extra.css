@@ -454,11 +454,6 @@
   color: var(--muted);
 }
 
-.dash-footnote {
-  margin-top: 14px;
-  font-size: 12px;
-  color: var(--muted);
-}
 
 /* ---------- 利润数字滚动 ----------
    每个数字位是一列 0-9，整列上移到目标位。钱数里的 ¥、千分位、小数点不参与滚动。
