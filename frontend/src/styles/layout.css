@@ -400,7 +400,7 @@ body:has(.landing) {
 }
 
 /* 描边字形。fill: none 让字变空心；stroke 用品牌靛蓝 */
-.wordmark__glyph {
+.wordmark__glyphs text {
   fill: none;
   stroke: var(--pine);
   stroke-width: 2;
@@ -408,9 +408,11 @@ body:has(.landing) {
   font-family: var(--font-body);
   font-size: 118px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  /* 遮罩推进代替 dash：终态由 inset(0) 保证闭合，与字体回退无关。
-     匀速而非 ease-out——绘图机是等速走线的，快进快出就读不出「落笔」 */
+}
+
+/* 两个字一起被遮罩推进；终态由 inset(0) 保证闭合，与字体回退无关。
+   匀速而非 ease-out——绘图机是等速走线的，快进快出就读不出「落笔」 */
+.wordmark__glyphs {
   clip-path: inset(0 100% 0 0);
   animation: wordmarkPlot 1000ms linear 160ms forwards;
 }
@@ -421,7 +423,23 @@ body:has(.landing) {
   }
 }
 
-/* 笔尖：与遮罩前沿同速同位置（字形的左右边界分别落在容器 18.6% / 81.4%） */
+/* 立方体：自家路径带 pathLength=1，可以真逐笔描出，接在字形落笔之后 */
+.wordmark__cube path {
+  fill: none;
+  stroke: var(--pine);
+  stroke-linejoin: miter;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: cubeDraw 520ms var(--ease-out) forwards;
+}
+
+@keyframes cubeDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* 笔尖：与遮罩前沿同速同位置（字形左右边界落在容器 12.6% / 87.4%） */
 .wordmark__pen {
   position: absolute;
   top: 9%;
@@ -436,7 +454,7 @@ body:has(.landing) {
 
 @keyframes penSweep {
   0% {
-    left: 18.6%;
+    left: 12.6%;
     opacity: 0;
   }
   6% {
@@ -446,7 +464,7 @@ body:has(.landing) {
     opacity: 1;
   }
   100% {
-    left: 81.4%;
+    left: 87.4%;
     opacity: 0;
   }
 }
@@ -460,9 +478,14 @@ body:has(.landing) {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .wordmark__glyph {
+  .wordmark__glyphs {
     animation: none;
     clip-path: none;
+  }
+
+  .wordmark__cube path {
+    animation: none;
+    stroke-dashoffset: 0;
   }
 
   .wordmark__pen {
