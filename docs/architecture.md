@@ -1,6 +1,6 @@
 # 架构说明
 
-版本：0.2.0｜基线：Node 24 + TypeScript（ESM）+ Fastify 5 + Prisma 7 + PostgreSQL 18 + React 19 + Vite 6
+版本：0.3.0｜基线：Node 24 + TypeScript（ESM）+ Fastify 5 + Prisma 7 + PostgreSQL 18 + React 19 + Vite 6
 更新时间：2026-11-04
 
 ## 1. 系统上下文

@@ -102,6 +102,9 @@ model AdminUser {
   ordersOwned        Order[]              @relation("OrderOwner")
   purchasesCreated   PurchaseOrder[]      @relation("PurchaseCreatedBy")
   arrivals           ArrivalRecord[]      @relation("ArrivalOperator")
+  platingCreated     PlatingOrder[]       @relation("PlatingCreatedBy")
+  platingSent        PlatingOrder[]       @relation("PlatingSentBy")
+  platingReceived    PlatingOrder[]       @relation("PlatingReceivedBy")
   productionsCreated ProductionOrder[]    @relation("ProductionCreatedBy")
   feedbacks          ProductionFeedback[] @relation("FeedbackOperator")
   qcRecords          QCRecord[]           @relation("QCOperator")
@@ -147,6 +150,13 @@ enum DeviceStatus {
   PENDING
   ACTIVE
   REVOKED
+}
+
+/** R06F 电镀单状态：待发送 → 已发送 → 已收货。 */
+enum PlatingStatus {
+  PENDING
+  SENT
+  RECEIVED
 }
 
 /**
@@ -234,6 +244,7 @@ model Supplier {
 
   purchaseOrders PurchaseOrder[]
   partSuppliers  PartSupplier[]
+  platingOrders  PlatingOrder[]
 
   @@map("suppliers")
 }
@@ -292,6 +303,7 @@ model Order {
 
   items          OrderItem[]
   purchaseOrders PurchaseOrder[]
+  platingOrders  PlatingOrder[]
   productions    ProductionOrder[]
   packingRecords PackingRecord[]
   shipments      ShipmentRecord[]
@@ -353,7 +365,8 @@ model PurchaseItem {
   platingRequired Boolean       @default(false)
   createdAt       DateTime      @default(now())
 
-  arrivals ArrivalRecord[]
+  arrivals      ArrivalRecord[]
+  platingOrders PlatingOrder[]
 
   @@index([purchaseOrderId])
   @@map("purchase_items")
@@ -370,6 +383,35 @@ model ArrivalRecord {
 
   @@index([purchaseItemId])
   @@map("arrival_records")
+}
+
+/** R06F：电镀外协单，挂在采购项上；整件计价，发送后锁定。 */
+model PlatingOrder {
+  id             String        @id @default(uuid()) @db.Uuid
+  orderId        String        @db.Uuid
+  order          Order         @relation(fields: [orderId], references: [id])
+  purchaseItemId String        @db.Uuid
+  purchaseItem   PurchaseItem  @relation(fields: [purchaseItemId], references: [id])
+  supplierId     String        @db.Uuid
+  supplier       Supplier      @relation(fields: [supplierId], references: [id])
+  supplierName   String
+  quantity       Int
+  unitPrice      Decimal       @db.Decimal(12, 2)
+  status         PlatingStatus @default(PENDING)
+  createdById    String        @db.Uuid
+  createdBy      AdminUser     @relation("PlatingCreatedBy", fields: [createdById], references: [id])
+  sentById       String?       @db.Uuid
+  sentBy         AdminUser?    @relation("PlatingSentBy", fields: [sentById], references: [id])
+  sentAt         DateTime?
+  receivedById   String?       @db.Uuid
+  receivedBy     AdminUser?    @relation("PlatingReceivedBy", fields: [receivedById], references: [id])
+  receivedAt     DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([orderId])
+  @@index([purchaseItemId])
+  @@map("plating_orders")
 }
 
 model ProductionOrder {

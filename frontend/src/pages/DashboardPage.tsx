@@ -360,6 +360,16 @@ export function DashboardPage() {
                         />
                       </dd>
                     </div>
+                    <div className="profit__item">
+                      <dt>电镀成本</dt>
+                      <dd className="mono">
+                        <RollingNumber
+                          key={`plating-${reloadToken}`}
+                          value={formatMoney(profit.platingCost)}
+                          delay={225}
+                        />
+                      </dd>
+                    </div>
                     <div className="profit__item profit__item--total">
                       <dt>毛利</dt>
                       <dd className="mono">

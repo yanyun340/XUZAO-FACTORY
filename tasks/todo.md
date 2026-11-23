@@ -9,6 +9,7 @@
 
 ## 0.2.0 已完成（有验证）
 
+- [x] R06F 电镀外协：建单/改删/发送/收货、生产闸门、电镀成本入利润（`plating.test.ts`）
 - [x] R02F 配件多供应商、默认供应商唯一、供应商类型、采购集合校验（`part-suppliers.test.ts`）
 - [x] R08F 工艺价部门/任务开关、变更历史、导出/附件权限断言（`permissions.test.ts`）
 - [x] R17F 五类附件层级、软删除、7 天清理任务（`attachments.test.ts`）

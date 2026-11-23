@@ -1,6 +1,6 @@
 # 数据字典与迁移
 
-版本：0.2.0｜对应：`backend/prisma/schema.prisma` 与迁移 `20261104112845_init`
+版本：0.3.0｜对应：`backend/prisma/schema.prisma` 与迁移 `20261104112845_init`
 更新时间：2026-11-04
 
 ## 1. 全局约定
@@ -141,8 +141,22 @@ M 交付按“单产品”验收，但表结构允许一单多条明细；当前
 | 表 | 关键字段 | 说明 |
 | --- | --- | --- |
 | `purchase_orders` | `orderId`、`supplierId`、`supplierName`（快照）、`createdById` | M 每单最多一张采购单 |
-| `purchase_items` | `purchaseOrderId`、`partId`、`partName`/`partSpec`（快照）、`quantity`、`unitPrice`、`platingRequired`（默认 false） | M 每张采购单一条明细；不启用镀层 |
+| `purchase_items` | `purchaseOrderId`、`partId`、`partName`/`partSpec`（快照）、`quantity`、`unitPrice`、`platingRequired`（默认 false） | 每张采购单一条明细；`platingRequired=true` 时必须建电镀单并收货后才能生产 |
 | `arrival_records` | `purchaseItemId`、`quantity`、`operatorId`、`createdAt` | 累计到货不得超过采购数量；支持多次到货直至到齐 |
+
+### `plating_orders` 电镀外协（R06F）
+
+| 字段 | 类型 / 默认 | 含义 | 约束/索引 |
+| --- | --- | --- | --- |
+| `orderId` / `purchaseItemId` | uuid | 所属订单与采购项 | 索引 |
+| `supplierId` / `supplierName` | uuid / string | 电镀厂商与名称快照 | 厂商必须 `type=ELECTROPLATING` 且启用 |
+| `quantity` / `unitPrice` | int / decimal(12,2) | 整件计价：数量 × 单价 | 数量 ≤ 已到货 − 其他电镀单数量 |
+| `status` | enum `PlatingStatus`，PENDING | PENDING 待发送 / SENT 已发送 / RECEIVED 已收货 | 发送后改删拒绝 |
+| `sentById` / `sentAt` | uuid? / datetime? | 物流发送人与时间 | |
+| `receivedById` / `receivedAt` | uuid? / datetime? | 物流收货人与时间 | |
+| `createdById` / `createdAt` / `updatedAt` | uuid / datetime | 建单人与时间 | |
+
+利润只统计 `RECEIVED` 电镀单；`SENT`/`PENDING` 不计入。
 
 ### `production_orders` / `production_feedbacks`
 

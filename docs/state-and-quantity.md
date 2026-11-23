@@ -1,6 +1,6 @@
 # 订单状态与数量规则
 
-版本：0.2.0｜实现：`backend/src/domain/flow.ts`、`backend/src/routes/flow.ts`
+版本：0.3.0｜实现：`backend/src/domain/flow.ts`、`backend/src/routes/flow.ts`
 更新时间：2026-11-04
 
 本文是订单主链的唯一权威口径。前端只渲染 `allowedActions`，任何提交都会在后端重新校验；文档、接口和测试不一致时以本表与代码为准，并同步修正文档。
@@ -55,6 +55,10 @@ PENDING_PURCHASE ──采购下单──▶ PURCHASING ──生产下发──
 | `orderQty` | Σ `order_items.quantity` | 订单总量 |
 | `purchaseQty` | Σ `purchase_items.quantity` | 采购总量 |
 | `arrivedQty` | Σ `arrival_records.quantity` | 累计到货 |
+| `platingRequiredQty` | Σ `platingRequired=true` 的采购项数量 | 需要电镀的总量 |
+| `platingSentQty` | Σ SENT/RECEIVED 电镀单数量 | 已发出 |
+| `platingReceivedQty` | Σ RECEIVED 电镀单数量 | 已收回 |
+| `platingOutstandingQty` | `max(0, platingRequiredQty − platingReceivedQty)` | 待收回 |
 | `producedQty` | Σ 最新生产任务的 `production_feedbacks.quantity` | 生产反馈累计 |
 | `inspectedQty` | 最新质检记录的 `inspectedQty` | 检验量 |
 | `qualifiedQty` | 最新质检记录的 `qualifiedQty` | 合格量 |
@@ -75,6 +79,8 @@ PENDING_PURCHASE ──采购下单──▶ PURCHASING ──生产下发──
 | 包装 | `packedQty + quantity ≤ releasedQty` | `PACKING_EXCEEDS_REMAINING` | 422 |
 | 发货 | `quantity ≤ min(shippableRemaining, dueRemaining)` | `SHIPMENT_EXCEEDS_LIMIT` | 422 |
 | 库存调整 | `quantity + delta ≥ 0` | `INSUFFICIENT_STOCK` | 409 |
+| 电镀建单/改单 | `quantity ≤ 已到货 − 其他电镀单数量` | `PLATING_EXCEEDS_REMAINING` | 422 |
+| 生产下发（需电镀） | `platingReceivedQty ≥ 1` 且 `任务数量 ≤ platingReceivedQty` | `PLATING_NOT_RECEIVED` / `PLATING_QTY_INSUFFICIENT` | 422 |
 
 发货上限刻意取两个剩余量的较小值：既不能超出已包装（避免发出不存在的货），也不能超出订单应交量（避免超发）。
 
@@ -90,7 +96,7 @@ PENDING_PURCHASE ──采购下单──▶ PURCHASING ──生产下发──
 | --- | --- | --- | --- |
 | `create-purchase` | ADMIN | PENDING_PURCHASE | 尚无采购单 |
 | `record-arrival` | LOGISTICS | PURCHASING | 有采购单且 `arrivedQty < purchaseQty` |
-| `dispatch-production` | ADMIN | PURCHASING | 采购量 >0、已全部到货、尚无生产任务 |
+| `dispatch-production` | ADMIN | PURCHASING | 采购量 >0、已全部到货、尚无生产任务；需电镀时至少已收一批 |
 | `production-feedback` | PRODUCTION | IN_PRODUCTION | 有生产任务、尚未反馈、操作者部门 = 任务部门 |
 | `dispatch-qc` | ADMIN | IN_PRODUCTION | 已有反馈且反馈量 >0、尚无质检记录 |
 | `qc-entry` | QC | PENDING_QC | 有生产任务、尚无质检记录 |
@@ -124,7 +130,8 @@ PENDING_PURCHASE ──采购下单──▶ PURCHASING ──生产下发──
 sales          = Σ(order_item.quantity × order_item.unitPrice)
 purchaseCost   = Σ(purchase_item.quantity × purchase_item.unitPrice)
 productionCost = Σ(生产反馈累计数量 × production_order.unitPrice)
-profit         = sales − purchaseCost − productionCost
+platingCost    = Σ(RECEIVED 电镀单.quantity × unitPrice)
+profit         = sales − purchaseCost − productionCost − platingCost
 marginPercent  = sales = 0 ? 0 : profit / sales × 100
 ```
 

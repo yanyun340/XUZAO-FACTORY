@@ -255,6 +255,7 @@ export type PurchaseItemWhereInput = {
   purchaseOrder?: Prisma.XOR<Prisma.PurchaseOrderScalarRelationFilter, Prisma.PurchaseOrderWhereInput>
   part?: Prisma.XOR<Prisma.PartScalarRelationFilter, Prisma.PartWhereInput>
   arrivals?: Prisma.ArrivalRecordListRelationFilter
+  platingOrders?: Prisma.PlatingOrderListRelationFilter
 }
 
 export type PurchaseItemOrderByWithRelationInput = {
@@ -270,6 +271,7 @@ export type PurchaseItemOrderByWithRelationInput = {
   purchaseOrder?: Prisma.PurchaseOrderOrderByWithRelationInput
   part?: Prisma.PartOrderByWithRelationInput
   arrivals?: Prisma.ArrivalRecordOrderByRelationAggregateInput
+  platingOrders?: Prisma.PlatingOrderOrderByRelationAggregateInput
 }
 
 export type PurchaseItemWhereUniqueInput = Prisma.AtLeast<{
@@ -288,6 +290,7 @@ export type PurchaseItemWhereUniqueInput = Prisma.AtLeast<{
   purchaseOrder?: Prisma.XOR<Prisma.PurchaseOrderScalarRelationFilter, Prisma.PurchaseOrderWhereInput>
   part?: Prisma.XOR<Prisma.PartScalarRelationFilter, Prisma.PartWhereInput>
   arrivals?: Prisma.ArrivalRecordListRelationFilter
+  platingOrders?: Prisma.PlatingOrderListRelationFilter
 }, "id">
 
 export type PurchaseItemOrderByWithAggregationInput = {
@@ -333,6 +336,7 @@ export type PurchaseItemCreateInput = {
   purchaseOrder: Prisma.PurchaseOrderCreateNestedOneWithoutItemsInput
   part: Prisma.PartCreateNestedOneWithoutPurchaseItemsInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutPurchaseItemInput
+  platingOrders?: Prisma.PlatingOrderCreateNestedManyWithoutPurchaseItemInput
 }
 
 export type PurchaseItemUncheckedCreateInput = {
@@ -346,6 +350,7 @@ export type PurchaseItemUncheckedCreateInput = {
   platingRequired?: boolean
   createdAt?: Date | string
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutPurchaseItemInput
+  platingOrders?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutPurchaseItemInput
 }
 
 export type PurchaseItemUpdateInput = {
@@ -359,6 +364,7 @@ export type PurchaseItemUpdateInput = {
   purchaseOrder?: Prisma.PurchaseOrderUpdateOneRequiredWithoutItemsNestedInput
   part?: Prisma.PartUpdateOneRequiredWithoutPurchaseItemsNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutPurchaseItemNestedInput
+  platingOrders?: Prisma.PlatingOrderUpdateManyWithoutPurchaseItemNestedInput
 }
 
 export type PurchaseItemUncheckedUpdateInput = {
@@ -372,6 +378,7 @@ export type PurchaseItemUncheckedUpdateInput = {
   platingRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutPurchaseItemNestedInput
+  platingOrders?: Prisma.PlatingOrderUncheckedUpdateManyWithoutPurchaseItemNestedInput
 }
 
 export type PurchaseItemCreateManyInput = {
@@ -567,6 +574,20 @@ export type PurchaseItemUpdateOneRequiredWithoutArrivalsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PurchaseItemUpdateToOneWithWhereWithoutArrivalsInput, Prisma.PurchaseItemUpdateWithoutArrivalsInput>, Prisma.PurchaseItemUncheckedUpdateWithoutArrivalsInput>
 }
 
+export type PurchaseItemCreateNestedOneWithoutPlatingOrdersInput = {
+  create?: Prisma.XOR<Prisma.PurchaseItemCreateWithoutPlatingOrdersInput, Prisma.PurchaseItemUncheckedCreateWithoutPlatingOrdersInput>
+  connectOrCreate?: Prisma.PurchaseItemCreateOrConnectWithoutPlatingOrdersInput
+  connect?: Prisma.PurchaseItemWhereUniqueInput
+}
+
+export type PurchaseItemUpdateOneRequiredWithoutPlatingOrdersNestedInput = {
+  create?: Prisma.XOR<Prisma.PurchaseItemCreateWithoutPlatingOrdersInput, Prisma.PurchaseItemUncheckedCreateWithoutPlatingOrdersInput>
+  connectOrCreate?: Prisma.PurchaseItemCreateOrConnectWithoutPlatingOrdersInput
+  upsert?: Prisma.PurchaseItemUpsertWithoutPlatingOrdersInput
+  connect?: Prisma.PurchaseItemWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PurchaseItemUpdateToOneWithWhereWithoutPlatingOrdersInput, Prisma.PurchaseItemUpdateWithoutPlatingOrdersInput>, Prisma.PurchaseItemUncheckedUpdateWithoutPlatingOrdersInput>
+}
+
 export type PurchaseItemCreateWithoutPartInput = {
   id?: string
   partName: string
@@ -577,6 +598,7 @@ export type PurchaseItemCreateWithoutPartInput = {
   createdAt?: Date | string
   purchaseOrder: Prisma.PurchaseOrderCreateNestedOneWithoutItemsInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutPurchaseItemInput
+  platingOrders?: Prisma.PlatingOrderCreateNestedManyWithoutPurchaseItemInput
 }
 
 export type PurchaseItemUncheckedCreateWithoutPartInput = {
@@ -589,6 +611,7 @@ export type PurchaseItemUncheckedCreateWithoutPartInput = {
   platingRequired?: boolean
   createdAt?: Date | string
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutPurchaseItemInput
+  platingOrders?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutPurchaseItemInput
 }
 
 export type PurchaseItemCreateOrConnectWithoutPartInput = {
@@ -642,6 +665,7 @@ export type PurchaseItemCreateWithoutPurchaseOrderInput = {
   createdAt?: Date | string
   part: Prisma.PartCreateNestedOneWithoutPurchaseItemsInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutPurchaseItemInput
+  platingOrders?: Prisma.PlatingOrderCreateNestedManyWithoutPurchaseItemInput
 }
 
 export type PurchaseItemUncheckedCreateWithoutPurchaseOrderInput = {
@@ -654,6 +678,7 @@ export type PurchaseItemUncheckedCreateWithoutPurchaseOrderInput = {
   platingRequired?: boolean
   createdAt?: Date | string
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutPurchaseItemInput
+  platingOrders?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutPurchaseItemInput
 }
 
 export type PurchaseItemCreateOrConnectWithoutPurchaseOrderInput = {
@@ -692,6 +717,7 @@ export type PurchaseItemCreateWithoutArrivalsInput = {
   createdAt?: Date | string
   purchaseOrder: Prisma.PurchaseOrderCreateNestedOneWithoutItemsInput
   part: Prisma.PartCreateNestedOneWithoutPurchaseItemsInput
+  platingOrders?: Prisma.PlatingOrderCreateNestedManyWithoutPurchaseItemInput
 }
 
 export type PurchaseItemUncheckedCreateWithoutArrivalsInput = {
@@ -704,6 +730,7 @@ export type PurchaseItemUncheckedCreateWithoutArrivalsInput = {
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   platingRequired?: boolean
   createdAt?: Date | string
+  platingOrders?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutPurchaseItemInput
 }
 
 export type PurchaseItemCreateOrConnectWithoutArrivalsInput = {
@@ -732,6 +759,7 @@ export type PurchaseItemUpdateWithoutArrivalsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   purchaseOrder?: Prisma.PurchaseOrderUpdateOneRequiredWithoutItemsNestedInput
   part?: Prisma.PartUpdateOneRequiredWithoutPurchaseItemsNestedInput
+  platingOrders?: Prisma.PlatingOrderUpdateManyWithoutPurchaseItemNestedInput
 }
 
 export type PurchaseItemUncheckedUpdateWithoutArrivalsInput = {
@@ -744,6 +772,75 @@ export type PurchaseItemUncheckedUpdateWithoutArrivalsInput = {
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   platingRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  platingOrders?: Prisma.PlatingOrderUncheckedUpdateManyWithoutPurchaseItemNestedInput
+}
+
+export type PurchaseItemCreateWithoutPlatingOrdersInput = {
+  id?: string
+  partName: string
+  partSpec: string
+  quantity: number
+  unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  platingRequired?: boolean
+  createdAt?: Date | string
+  purchaseOrder: Prisma.PurchaseOrderCreateNestedOneWithoutItemsInput
+  part: Prisma.PartCreateNestedOneWithoutPurchaseItemsInput
+  arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutPurchaseItemInput
+}
+
+export type PurchaseItemUncheckedCreateWithoutPlatingOrdersInput = {
+  id?: string
+  purchaseOrderId: string
+  partId: string
+  partName: string
+  partSpec: string
+  quantity: number
+  unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  platingRequired?: boolean
+  createdAt?: Date | string
+  arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutPurchaseItemInput
+}
+
+export type PurchaseItemCreateOrConnectWithoutPlatingOrdersInput = {
+  where: Prisma.PurchaseItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.PurchaseItemCreateWithoutPlatingOrdersInput, Prisma.PurchaseItemUncheckedCreateWithoutPlatingOrdersInput>
+}
+
+export type PurchaseItemUpsertWithoutPlatingOrdersInput = {
+  update: Prisma.XOR<Prisma.PurchaseItemUpdateWithoutPlatingOrdersInput, Prisma.PurchaseItemUncheckedUpdateWithoutPlatingOrdersInput>
+  create: Prisma.XOR<Prisma.PurchaseItemCreateWithoutPlatingOrdersInput, Prisma.PurchaseItemUncheckedCreateWithoutPlatingOrdersInput>
+  where?: Prisma.PurchaseItemWhereInput
+}
+
+export type PurchaseItemUpdateToOneWithWhereWithoutPlatingOrdersInput = {
+  where?: Prisma.PurchaseItemWhereInput
+  data: Prisma.XOR<Prisma.PurchaseItemUpdateWithoutPlatingOrdersInput, Prisma.PurchaseItemUncheckedUpdateWithoutPlatingOrdersInput>
+}
+
+export type PurchaseItemUpdateWithoutPlatingOrdersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  partName?: Prisma.StringFieldUpdateOperationsInput | string
+  partSpec?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  platingRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  purchaseOrder?: Prisma.PurchaseOrderUpdateOneRequiredWithoutItemsNestedInput
+  part?: Prisma.PartUpdateOneRequiredWithoutPurchaseItemsNestedInput
+  arrivals?: Prisma.ArrivalRecordUpdateManyWithoutPurchaseItemNestedInput
+}
+
+export type PurchaseItemUncheckedUpdateWithoutPlatingOrdersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  purchaseOrderId?: Prisma.StringFieldUpdateOperationsInput | string
+  partId?: Prisma.StringFieldUpdateOperationsInput | string
+  partName?: Prisma.StringFieldUpdateOperationsInput | string
+  partSpec?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  platingRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutPurchaseItemNestedInput
 }
 
 export type PurchaseItemCreateManyPartInput = {
@@ -767,6 +864,7 @@ export type PurchaseItemUpdateWithoutPartInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   purchaseOrder?: Prisma.PurchaseOrderUpdateOneRequiredWithoutItemsNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutPurchaseItemNestedInput
+  platingOrders?: Prisma.PlatingOrderUpdateManyWithoutPurchaseItemNestedInput
 }
 
 export type PurchaseItemUncheckedUpdateWithoutPartInput = {
@@ -779,6 +877,7 @@ export type PurchaseItemUncheckedUpdateWithoutPartInput = {
   platingRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutPurchaseItemNestedInput
+  platingOrders?: Prisma.PlatingOrderUncheckedUpdateManyWithoutPurchaseItemNestedInput
 }
 
 export type PurchaseItemUncheckedUpdateManyWithoutPartInput = {
@@ -813,6 +912,7 @@ export type PurchaseItemUpdateWithoutPurchaseOrderInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   part?: Prisma.PartUpdateOneRequiredWithoutPurchaseItemsNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutPurchaseItemNestedInput
+  platingOrders?: Prisma.PlatingOrderUpdateManyWithoutPurchaseItemNestedInput
 }
 
 export type PurchaseItemUncheckedUpdateWithoutPurchaseOrderInput = {
@@ -825,6 +925,7 @@ export type PurchaseItemUncheckedUpdateWithoutPurchaseOrderInput = {
   platingRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutPurchaseItemNestedInput
+  platingOrders?: Prisma.PlatingOrderUncheckedUpdateManyWithoutPurchaseItemNestedInput
 }
 
 export type PurchaseItemUncheckedUpdateManyWithoutPurchaseOrderInput = {
@@ -845,10 +946,12 @@ export type PurchaseItemUncheckedUpdateManyWithoutPurchaseOrderInput = {
 
 export type PurchaseItemCountOutputType = {
   arrivals: number
+  platingOrders: number
 }
 
 export type PurchaseItemCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   arrivals?: boolean | PurchaseItemCountOutputTypeCountArrivalsArgs
+  platingOrders?: boolean | PurchaseItemCountOutputTypeCountPlatingOrdersArgs
 }
 
 /**
@@ -868,6 +971,13 @@ export type PurchaseItemCountOutputTypeCountArrivalsArgs<ExtArgs extends runtime
   where?: Prisma.ArrivalRecordWhereInput
 }
 
+/**
+ * PurchaseItemCountOutputType without action
+ */
+export type PurchaseItemCountOutputTypeCountPlatingOrdersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PlatingOrderWhereInput
+}
+
 
 export type PurchaseItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -882,6 +992,7 @@ export type PurchaseItemSelect<ExtArgs extends runtime.Types.Extensions.Internal
   purchaseOrder?: boolean | Prisma.PurchaseOrderDefaultArgs<ExtArgs>
   part?: boolean | Prisma.PartDefaultArgs<ExtArgs>
   arrivals?: boolean | Prisma.PurchaseItem$arrivalsArgs<ExtArgs>
+  platingOrders?: boolean | Prisma.PurchaseItem$platingOrdersArgs<ExtArgs>
   _count?: boolean | Prisma.PurchaseItemCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["purchaseItem"]>
 
@@ -930,6 +1041,7 @@ export type PurchaseItemInclude<ExtArgs extends runtime.Types.Extensions.Interna
   purchaseOrder?: boolean | Prisma.PurchaseOrderDefaultArgs<ExtArgs>
   part?: boolean | Prisma.PartDefaultArgs<ExtArgs>
   arrivals?: boolean | Prisma.PurchaseItem$arrivalsArgs<ExtArgs>
+  platingOrders?: boolean | Prisma.PurchaseItem$platingOrdersArgs<ExtArgs>
   _count?: boolean | Prisma.PurchaseItemCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PurchaseItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -947,6 +1059,7 @@ export type $PurchaseItemPayload<ExtArgs extends runtime.Types.Extensions.Intern
     purchaseOrder: Prisma.$PurchaseOrderPayload<ExtArgs>
     part: Prisma.$PartPayload<ExtArgs>
     arrivals: Prisma.$ArrivalRecordPayload<ExtArgs>[]
+    platingOrders: Prisma.$PlatingOrderPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1355,6 +1468,7 @@ export interface Prisma__PurchaseItemClient<T, Null = never, ExtArgs extends run
   purchaseOrder<T extends Prisma.PurchaseOrderDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PurchaseOrderDefaultArgs<ExtArgs>>): Prisma.Prisma__PurchaseOrderClient<runtime.Types.Result.GetResult<Prisma.$PurchaseOrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   part<T extends Prisma.PartDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PartDefaultArgs<ExtArgs>>): Prisma.Prisma__PartClient<runtime.Types.Result.GetResult<Prisma.$PartPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   arrivals<T extends Prisma.PurchaseItem$arrivalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PurchaseItem$arrivalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ArrivalRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  platingOrders<T extends Prisma.PurchaseItem$platingOrdersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PurchaseItem$platingOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatingOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1815,6 +1929,30 @@ export type PurchaseItem$arrivalsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.ArrivalRecordScalarFieldEnum | Prisma.ArrivalRecordScalarFieldEnum[]
+}
+
+/**
+ * PurchaseItem.platingOrders
+ */
+export type PurchaseItem$platingOrdersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlatingOrder
+   */
+  select?: Prisma.PlatingOrderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlatingOrder
+   */
+  omit?: Prisma.PlatingOrderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlatingOrderInclude<ExtArgs> | null
+  where?: Prisma.PlatingOrderWhereInput
+  orderBy?: Prisma.PlatingOrderOrderByWithRelationInput | Prisma.PlatingOrderOrderByWithRelationInput[]
+  cursor?: Prisma.PlatingOrderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PlatingOrderScalarFieldEnum | Prisma.PlatingOrderScalarFieldEnum[]
 }
 
 /**

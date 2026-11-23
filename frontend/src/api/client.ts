@@ -116,12 +116,19 @@ export async function apiPost<T>(
   return (await request<T>(path, { method: 'POST', body, headers })).data;
 }
 
-export async function apiPatch<T>(path: string, body?: unknown): Promise<T> {
-  return (await request<T>(path, { method: 'PATCH', body })).data;
+export async function apiPatch<T>(
+  path: string,
+  body?: unknown,
+  headers?: Record<string, string>,
+): Promise<T> {
+  return (await request<T>(path, { method: 'PATCH', body, headers })).data;
 }
 
-export async function apiDelete<T>(path: string): Promise<T> {
-  return (await request<T>(path, { method: 'DELETE' })).data;
+export async function apiDelete<T>(
+  path: string,
+  headers?: Record<string, string>,
+): Promise<T> {
+  return (await request<T>(path, { method: 'DELETE', headers })).data;
 }
 
 /** multipart 上传：不设置 Content-Type，交给浏览器补 boundary。 */

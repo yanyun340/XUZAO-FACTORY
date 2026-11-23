@@ -358,6 +358,23 @@ export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDecimalFilter<$PrismaModel>
 }
 
+export type EnumPlatingStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.PlatingStatus | Prisma.EnumPlatingStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.PlatingStatus[] | Prisma.ListEnumPlatingStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PlatingStatus[] | Prisma.ListEnumPlatingStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPlatingStatusFilter<$PrismaModel> | $Enums.PlatingStatus
+}
+
+export type EnumPlatingStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PlatingStatus | Prisma.EnumPlatingStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.PlatingStatus[] | Prisma.ListEnumPlatingStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PlatingStatus[] | Prisma.ListEnumPlatingStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPlatingStatusWithAggregatesFilter<$PrismaModel> | $Enums.PlatingStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPlatingStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPlatingStatusFilter<$PrismaModel>
+}
+
 export type EnumQCDecisionTypeFilter<$PrismaModel = never> = {
   equals?: $Enums.QCDecisionType | Prisma.EnumQCDecisionTypeFieldRefInput<$PrismaModel>
   in?: $Enums.QCDecisionType[] | Prisma.ListEnumQCDecisionTypeFieldRefInput<$PrismaModel>
@@ -845,6 +862,23 @@ export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedDecimalFilter<$PrismaModel>
   _min?: Prisma.NestedDecimalFilter<$PrismaModel>
   _max?: Prisma.NestedDecimalFilter<$PrismaModel>
+}
+
+export type NestedEnumPlatingStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.PlatingStatus | Prisma.EnumPlatingStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.PlatingStatus[] | Prisma.ListEnumPlatingStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PlatingStatus[] | Prisma.ListEnumPlatingStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPlatingStatusFilter<$PrismaModel> | $Enums.PlatingStatus
+}
+
+export type NestedEnumPlatingStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PlatingStatus | Prisma.EnumPlatingStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.PlatingStatus[] | Prisma.ListEnumPlatingStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PlatingStatus[] | Prisma.ListEnumPlatingStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPlatingStatusWithAggregatesFilter<$PrismaModel> | $Enums.PlatingStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPlatingStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPlatingStatusFilter<$PrismaModel>
 }
 
 export type NestedEnumQCDecisionTypeFilter<$PrismaModel = never> = {

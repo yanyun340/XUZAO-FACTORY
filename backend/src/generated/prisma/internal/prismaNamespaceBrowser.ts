@@ -65,6 +65,7 @@ export const ModelName = {
   PurchaseOrder: 'PurchaseOrder',
   PurchaseItem: 'PurchaseItem',
   ArrivalRecord: 'ArrivalRecord',
+  PlatingOrder: 'PlatingOrder',
   ProductionOrder: 'ProductionOrder',
   ProductionFeedback: 'ProductionFeedback',
   QCRecord: 'QCRecord',
@@ -288,6 +289,27 @@ export const ArrivalRecordScalarFieldEnum = {
 } as const
 
 export type ArrivalRecordScalarFieldEnum = (typeof ArrivalRecordScalarFieldEnum)[keyof typeof ArrivalRecordScalarFieldEnum]
+
+
+export const PlatingOrderScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  purchaseItemId: 'purchaseItemId',
+  supplierId: 'supplierId',
+  supplierName: 'supplierName',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  status: 'status',
+  createdById: 'createdById',
+  sentById: 'sentById',
+  sentAt: 'sentAt',
+  receivedById: 'receivedById',
+  receivedAt: 'receivedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlatingOrderScalarFieldEnum = (typeof PlatingOrderScalarFieldEnum)[keyof typeof PlatingOrderScalarFieldEnum]
 
 
 export const ProductionOrderScalarFieldEnum = {

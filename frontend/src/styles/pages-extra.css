@@ -1289,6 +1289,47 @@
   background: rgba(4, 120, 87, 0.1);
 }
 
+.plating-panel {
+  margin-top: 16px;
+}
+
+.plating-create {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: end;
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.plating-create > .btn {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+.input--tiny {
+  width: 76px;
+  padding: 6px 8px;
+  font-size: 12px;
+}
+
+@media (max-width: 900px) {
+  .plating-create {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .plating-create {
+    grid-template-columns: 1fr;
+  }
+
+  .plating-item {
+    flex-wrap: wrap;
+  }
+}
+
 .badge--device-active {
   color: #047857;
   background: rgba(4, 120, 87, 0.1);

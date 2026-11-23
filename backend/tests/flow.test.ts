@@ -258,6 +258,43 @@ describe('订单主链（M 闭环）', () => {
     expect(detail.body.data.flow.profit.profit).toBe('550.00');
   });
 
+  it('M 质检必须整批检验，少检直接拒绝，避免剩余数量永远无法放行', async () => {
+    const order = await createOrder();
+    const purchase = await admin('POST', `/api/v1/orders/${order.id}/purchase`, {
+      supplierId: fx.supplierId,
+      partId: fx.partId,
+      quantity: 100,
+      unitPrice: '5.00',
+    });
+    const purchaseId = purchase.body.data.flow.purchase.id as string;
+    await logistics('POST', `/api/v1/purchases/${purchaseId}/arrivals`, { quantity: 100 });
+
+    const dispatched = await admin('POST', `/api/v1/orders/${order.id}/productions`, {
+      departmentId: fx.departments.PROD,
+      processName: '车削',
+      quantity: 100,
+      unitPrice: '2.00',
+    });
+    const productionId = dispatched.body.data.flow.production.id as string;
+    await production('POST', `/api/v1/productions/${productionId}/feedback`, { quantity: 100 });
+    await admin('POST', `/api/v1/orders/${order.id}/qc-dispatch`);
+
+    const partial = await qcUser('POST', `/api/v1/productions/${productionId}/qc-records`, {
+      inspectedQty: 80,
+      qualifiedQty: 80,
+      unqualifiedQty: 0,
+    });
+    expect(partial.status).toBe(422);
+    expect(partial.body.error?.code).toBe('QC_INSPECTION_INCOMPLETE');
+
+    const full = await qcUser('POST', `/api/v1/productions/${productionId}/qc-records`, {
+      inspectedQty: 100,
+      qualifiedQty: 100,
+      unqualifiedQty: 0,
+    });
+    expect(full.status).toBe(201);
+  });
+
   it('状态不匹配时拒绝越级操作', async () => {
     const order = await createOrder();
     const response = await admin('POST', `/api/v1/orders/${order.id}/packing-dispatch`);

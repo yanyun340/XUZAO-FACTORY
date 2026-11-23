@@ -53,6 +53,8 @@ export const STAGE_LABELS: Record<StageKey, string> = {
 export const ACTION_LABEL: Record<OrderAction, string> = {
   'create-purchase': '创建采购单',
   'record-arrival': '登记到货',
+  'send-plating': '发送电镀',
+  'receive-plating': '电镀收货',
   'dispatch-production': '下发生产',
   'production-feedback': '反馈完成数量',
   'dispatch-qc': '下发质检',
@@ -68,6 +70,8 @@ export const ACTION_LABEL: Record<OrderAction, string> = {
 export const ACTION_HINT: Record<OrderAction, string> = {
   'create-purchase': '选供应商与配件，建立采购单',
   'record-arrival': '按到货批次登记实收数量',
+  'send-plating': '把电镀单发给外协厂商',
+  'receive-plating': '登记电镀件收回厂内',
   'dispatch-production': '到货已齐，指派生产部门',
   'production-feedback': '报工本工序完成数量',
   'dispatch-qc': '完工批次送品控检验',
@@ -86,6 +90,9 @@ export const EVENT_LABEL: Record<string, string> = {
   ARRIVAL_RECORDED: '登记到货',
   PRODUCTION_DISPATCHED: '下发生产',
   PRODUCTION_FEEDBACK: '生产反馈',
+  PLATING_CREATED: '创建电镀单',
+  PLATING_SENT: '电镀发出',
+  PLATING_RECEIVED: '电镀收货',
   QC_DISPATCHED: '下发质检',
   QC_RECORDED: '质检录入',
   QC_PASSED: '质检放行',

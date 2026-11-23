@@ -411,6 +411,7 @@ export const ModelName = {
   PurchaseOrder: 'PurchaseOrder',
   PurchaseItem: 'PurchaseItem',
   ArrivalRecord: 'ArrivalRecord',
+  PlatingOrder: 'PlatingOrder',
   ProductionOrder: 'ProductionOrder',
   ProductionFeedback: 'ProductionFeedback',
   QCRecord: 'QCRecord',
@@ -443,7 +444,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "adminUser" | "session" | "device" | "department" | "employee" | "customer" | "supplier" | "partSupplier" | "part" | "order" | "orderItem" | "purchaseOrder" | "purchaseItem" | "arrivalRecord" | "productionOrder" | "productionFeedback" | "qCRecord" | "qCDecision" | "packingRecord" | "shipmentRecord" | "partInventory" | "productInventory" | "inventoryLog" | "attachment" | "notification" | "auditLog" | "tabletException" | "importBatch" | "timelineEvent" | "idempotencyRequest" | "sequenceCounter"
+    modelProps: "adminUser" | "session" | "device" | "department" | "employee" | "customer" | "supplier" | "partSupplier" | "part" | "order" | "orderItem" | "purchaseOrder" | "purchaseItem" | "arrivalRecord" | "platingOrder" | "productionOrder" | "productionFeedback" | "qCRecord" | "qCDecision" | "packingRecord" | "shipmentRecord" | "partInventory" | "productInventory" | "inventoryLog" | "attachment" | "notification" | "auditLog" | "tabletException" | "importBatch" | "timelineEvent" | "idempotencyRequest" | "sequenceCounter"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1480,6 +1481,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.ArrivalRecordCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ArrivalRecordCountAggregateOutputType> | number
+        }
+      }
+    }
+    PlatingOrder: {
+      payload: Prisma.$PlatingOrderPayload<ExtArgs>
+      fields: Prisma.PlatingOrderFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PlatingOrderFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatingOrderPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PlatingOrderFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatingOrderPayload>
+        }
+        findFirst: {
+          args: Prisma.PlatingOrderFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatingOrderPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PlatingOrderFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatingOrderPayload>
+        }
+        findMany: {
+          args: Prisma.PlatingOrderFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatingOrderPayload>[]
+        }
+        create: {
+          args: Prisma.PlatingOrderCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatingOrderPayload>
+        }
+        createMany: {
+          args: Prisma.PlatingOrderCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PlatingOrderCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatingOrderPayload>[]
+        }
+        delete: {
+          args: Prisma.PlatingOrderDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatingOrderPayload>
+        }
+        update: {
+          args: Prisma.PlatingOrderUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatingOrderPayload>
+        }
+        deleteMany: {
+          args: Prisma.PlatingOrderDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PlatingOrderUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PlatingOrderUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatingOrderPayload>[]
+        }
+        upsert: {
+          args: Prisma.PlatingOrderUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatingOrderPayload>
+        }
+        aggregate: {
+          args: Prisma.PlatingOrderAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePlatingOrder>
+        }
+        groupBy: {
+          args: Prisma.PlatingOrderGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PlatingOrderGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PlatingOrderCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PlatingOrderCountAggregateOutputType> | number
         }
       }
     }
@@ -2970,6 +3045,27 @@ export const ArrivalRecordScalarFieldEnum = {
 export type ArrivalRecordScalarFieldEnum = (typeof ArrivalRecordScalarFieldEnum)[keyof typeof ArrivalRecordScalarFieldEnum]
 
 
+export const PlatingOrderScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  purchaseItemId: 'purchaseItemId',
+  supplierId: 'supplierId',
+  supplierName: 'supplierName',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  status: 'status',
+  createdById: 'createdById',
+  sentById: 'sentById',
+  sentAt: 'sentAt',
+  receivedById: 'receivedById',
+  receivedAt: 'receivedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlatingOrderScalarFieldEnum = (typeof PlatingOrderScalarFieldEnum)[keyof typeof PlatingOrderScalarFieldEnum]
+
+
 export const ProductionOrderScalarFieldEnum = {
   id: 'id',
   orderId: 'orderId',
@@ -3404,6 +3500,20 @@ export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMo
 
 
 /**
+ * Reference to a field of type 'PlatingStatus'
+ */
+export type EnumPlatingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PlatingStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'PlatingStatus[]'
+ */
+export type ListEnumPlatingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PlatingStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'QCDecisionType'
  */
 export type EnumQCDecisionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QCDecisionType'>
@@ -3665,6 +3775,7 @@ export type GlobalOmitConfig = {
   purchaseOrder?: Prisma.PurchaseOrderOmit
   purchaseItem?: Prisma.PurchaseItemOmit
   arrivalRecord?: Prisma.ArrivalRecordOmit
+  platingOrder?: Prisma.PlatingOrderOmit
   productionOrder?: Prisma.ProductionOrderOmit
   productionFeedback?: Prisma.ProductionFeedbackOmit
   qCRecord?: Prisma.QCRecordOmit

@@ -13,6 +13,10 @@ export const flowInclude = {
     orderBy: { createdAt: 'asc' },
     include: { actor: { select: { displayName: true } } },
   },
+  platingOrders: {
+    orderBy: { createdAt: 'asc' },
+    include: { purchaseItem: { select: { partName: true, partSpec: true } } },
+  },
   purchaseOrders: {
     orderBy: { createdAt: 'asc' },
     include: {
@@ -23,6 +27,7 @@ export const flowInclude = {
             orderBy: { createdAt: 'asc' },
             include: { operator: { select: { displayName: true } } },
           },
+          platingOrders: { orderBy: { createdAt: 'asc' } },
         },
       },
     },
@@ -65,7 +70,7 @@ export const listFlowInclude = {
   items: true,
   owner: { select: { displayName: true } },
   purchaseOrders: {
-    include: { items: { include: { arrivals: true } } },
+    include: { items: { include: { arrivals: true, platingOrders: true } } },
   },
   productions: {
     include: { feedbacks: true, qcRecords: { include: { decision: true } } },
@@ -80,7 +85,12 @@ export type OrderListRow = Prisma.OrderGetPayload<{ include: typeof listFlowIncl
 export type QuantitySource = {
   items: ReadonlyArray<{ quantity: number }>;
   purchaseOrders: ReadonlyArray<{
-    items: ReadonlyArray<{ quantity: number; arrivals: ReadonlyArray<{ quantity: number }> }>;
+    items: ReadonlyArray<{
+      quantity: number;
+      platingRequired?: boolean;
+      arrivals: ReadonlyArray<{ quantity: number }>;
+      platingOrders?: ReadonlyArray<{ quantity: number; status: string }>;
+    }>;
   }>;
   productions: ReadonlyArray<{
     feedbacks: ReadonlyArray<{ quantity: number }>;
@@ -99,6 +109,10 @@ export interface FlowQuantities {
   orderQty: number;
   purchaseQty: number;
   arrivedQty: number;
+  platingRequiredQty: number;
+  platingSentQty: number;
+  platingReceivedQty: number;
+  platingOutstandingQty: number;
   producedQty: number;
   inspectedQty: number;
   qualifiedQty: number;
@@ -136,10 +150,33 @@ export function computeQuantities(order: QuantitySource): FlowQuantities {
   const packedQty = sum(order.packingRecords.map((record) => record.quantity));
   const shippedQty = sum(order.shipments.map((record) => record.quantity));
 
+  const purchaseItems = order.purchaseOrders.flatMap((po) => po.items);
+  const platingRequiredQty = sum(
+    purchaseItems.filter((item) => item.platingRequired === true).map((item) => item.quantity),
+  );
+  const platingSentQty = sum(
+    purchaseItems.flatMap((item) =>
+      (item.platingOrders ?? [])
+        .filter((plating) => plating.status === 'SENT' || plating.status === 'RECEIVED')
+        .map((plating) => plating.quantity),
+    ),
+  );
+  const platingReceivedQty = sum(
+    purchaseItems.flatMap((item) =>
+      (item.platingOrders ?? [])
+        .filter((plating) => plating.status === 'RECEIVED')
+        .map((plating) => plating.quantity),
+    ),
+  );
+
   return {
     orderQty,
     purchaseQty,
     arrivedQty,
+    platingRequiredQty,
+    platingSentQty,
+    platingReceivedQty,
+    platingOutstandingQty: Math.max(0, platingRequiredQty - platingReceivedQty),
     producedQty,
     inspectedQty,
     qualifiedQty,
@@ -156,6 +193,7 @@ export interface ProfitSummary {
   sales: string;
   purchaseCost: string;
   productionCost: string;
+  platingCost: string;
   profit: string;
   marginPercent: string;
 }
@@ -177,13 +215,22 @@ export function computeProfit(order: OrderFlowRow): ProfitSummary {
     return total.plus(production.unitPrice.times(completed));
   }, new Prisma.Decimal(0));
 
-  const profit = sales.minus(purchaseCost).minus(productionCost);
+  // R06F：只统计已收货的电镀单；已发送未收回不计入。
+  const platingCost = (order.platingOrders ?? [])
+    .filter((plating) => plating.status === 'RECEIVED')
+    .reduce(
+      (total, plating) => total.plus(plating.unitPrice.times(plating.quantity)),
+      new Prisma.Decimal(0),
+    );
+
+  const profit = sales.minus(purchaseCost).minus(productionCost).minus(platingCost);
   const margin = sales.isZero() ? new Prisma.Decimal(0) : profit.div(sales).times(100);
 
   return {
     sales: sales.toFixed(2),
     purchaseCost: purchaseCost.toFixed(2),
     productionCost: productionCost.toFixed(2),
+    platingCost: platingCost.toFixed(2),
     profit: profit.toFixed(2),
     marginPercent: margin.toDecimalPlaces(2).toFixed(2),
   };
@@ -192,6 +239,8 @@ export function computeProfit(order: OrderFlowRow): ProfitSummary {
 export type OrderAction =
   | 'create-purchase'
   | 'record-arrival'
+  | 'send-plating'
+  | 'receive-plating'
   | 'dispatch-production'
   | 'production-feedback'
   | 'dispatch-qc'
@@ -237,6 +286,7 @@ export function computeAllowedActions(
       purchase &&
       quantities.purchaseQty > 0 &&
       quantities.arrivedQty >= quantities.purchaseQty &&
+      (quantities.platingRequiredQty === 0 || quantities.platingReceivedQty > 0) &&
       !production
     ) {
       actions.push('dispatch-production');
@@ -256,6 +306,17 @@ export function computeAllowedActions(
       quantities.arrivedQty < quantities.purchaseQty
     ) {
       actions.push('record-arrival');
+    }
+    // R06F：物流在采购阶段负责电镀外协的发送与收回。
+    const platingOrders = order.purchaseOrders.flatMap((po) =>
+      po.items.flatMap((item) => item.platingOrders ?? []),
+    );
+    if (order.status === 'PURCHASING') {
+      if (platingOrders.some((plating) => plating.status === 'PENDING')) {
+        actions.push('send-plating');
+      } else if (platingOrders.some((plating) => plating.status === 'SENT')) {
+        actions.push('receive-plating');
+      }
     }
     if (order.status === 'SHIPPING' && quantities.shippableRemaining > 0) {
       actions.push('record-shipment');

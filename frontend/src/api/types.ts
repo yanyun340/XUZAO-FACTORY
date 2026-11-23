@@ -128,6 +128,8 @@ export interface TimelineEntry {
 export type OrderAction =
   | 'create-purchase'
   | 'record-arrival'
+  | 'send-plating'
+  | 'receive-plating'
   | 'dispatch-production'
   | 'production-feedback'
   | 'dispatch-qc'
@@ -148,9 +150,39 @@ export interface FlowQuantities {
   releasedQty: number;
   packedQty: number;
   shippedQty: number;
+  platingRequiredQty: number;
+  platingSentQty: number;
+  platingReceivedQty: number;
+  platingOutstandingQty: number;
   dueRemaining: number;
   packableRemaining: number;
   shippableRemaining: number;
+}
+
+export type PlatingStatus = 'PENDING' | 'SENT' | 'RECEIVED';
+
+export interface PlatingOrderFlow {
+  id: string;
+  purchaseItemId: string;
+  partName: string;
+  partSpec: string;
+  supplierName: string;
+  quantity: number;
+  unitPrice: string | null;
+  amount: string | null;
+  status: PlatingStatus;
+  sentAt: string | null;
+  receivedAt: string | null;
+  createdAt: string;
+}
+
+export interface PlatingSummary {
+  required: boolean;
+  notApplicable: boolean;
+  sentQty: number;
+  receivedQty: number;
+  outstandingQty: number;
+  orders: PlatingOrderFlow[];
 }
 
 export interface ArrivalEntry {
@@ -166,6 +198,9 @@ export interface PurchaseItemFlow {
   partSpec: string;
   quantity: number;
   unitPrice: string | null;
+  platingRequired: boolean;
+  platingQty: number;
+  platingReceivedQty: number;
   arrivedQty: number;
   arrivals: ArrivalEntry[];
 }
@@ -224,6 +259,7 @@ export interface ProfitFlow {
   sales: string;
   purchaseCost: string;
   productionCost: string;
+  platingCost: string;
   profit: string;
   marginPercent: string;
 }
@@ -231,6 +267,7 @@ export interface ProfitFlow {
 export interface OrderFlow {
   quantities: FlowQuantities;
   purchase: PurchaseFlow | null;
+  plating: PlatingSummary | null;
   production: ProductionFlow | null;
   qc: QcFlow | null;
   packing: { dispatched: boolean; records: RecordFlow[] };
@@ -309,6 +346,8 @@ export interface NotificationSummary {
   unread: number;
   total: number;
   byCategory: Record<NotificationCategory, { total: number; unread: number }>;
+  /** 管理员可见：等待批准登录的受控设备数量，批准前一直大于 0。 */
+  pendingDevices: number;
 }
 
 export interface DashboardData {
@@ -340,6 +379,7 @@ export interface DashboardData {
     sales: string;
     purchaseCost: string;
     productionCost: string;
+    platingCost: string;
     profit: string;
     marginPercent: string;
   } | null;
@@ -460,6 +500,7 @@ export interface ManagedUser {
   department: Department | null;
   deviceBindingMode: DeviceBindingMode;
   activeDevices: number;
+  pendingDevices: number;
   activeSessions: number;
   createdAt: string;
 }

@@ -28,7 +28,23 @@ const purchaseSchema = z.object({
   partId: z.string().uuid('配件 ID 不合法'),
   quantity: positiveInt,
   unitPrice: money,
+  /** R06F：该采购项是否需要外协电镀。 */
+  platingRequired: z.boolean().default(false),
 });
+
+const platingCreateSchema = z.object({
+  purchaseItemId: z.string().uuid('采购项 ID 不合法'),
+  supplierId: z.string().uuid('电镀厂商 ID 不合法'),
+  quantity: positiveInt,
+  unitPrice: money,
+});
+
+const platingUpdateSchema = z
+  .object({
+    quantity: positiveInt.optional(),
+    unitPrice: money.optional(),
+  })
+  .refine((value) => Object.keys(value).length > 0, { message: '没有需要修改的字段' });
 
 const arrivalSchema = z.object({ quantity: positiveInt });
 
@@ -151,6 +167,7 @@ export async function flowRoutes(app: FastifyInstance): Promise<void> {
                   partSpec: part.spec,
                   quantity: body.quantity,
                   unitPrice: body.unitPrice,
+                  platingRequired: body.platingRequired,
                 },
               ],
             },
@@ -258,6 +275,327 @@ export async function flowRoutes(app: FastifyInstance): Promise<void> {
     return ok(reply, outcome.data, outcome.replayed ? 200 : 201);
   });
 
+  // ---------- 电镀外协（R06F） ----------
+  async function loadPlating(tx: Tx, id: string) {
+    const plating = await tx.platingOrder.findUnique({ where: { id } });
+    if (!plating) throw Errors.notFound('电镀单不存在', 'PLATING_NOT_FOUND');
+    return plating;
+  }
+
+  async function platingRemaining(tx: Tx, plating: { id: string; purchaseItemId: string }) {
+    const item = await tx.purchaseItem.findUnique({
+      where: { id: plating.purchaseItemId },
+      include: { arrivals: true, platingOrders: true },
+    });
+    if (!item) throw Errors.notFound('采购项不存在', 'PURCHASE_ITEM_NOT_FOUND');
+    const arrived = item.arrivals.reduce((sum, arrival) => sum + arrival.quantity, 0);
+    const others = item.platingOrders
+      .filter((row) => row.id !== plating.id)
+      .reduce((sum, row) => sum + row.quantity, 0);
+    return { item, remaining: Math.max(0, arrived - others) };
+  }
+
+  app.post(
+    '/api/v1/orders/:id/plating-orders',
+    { preHandler: [authenticate, requireAdmin] },
+    async (request, reply) => {
+      const auth = authContext(request);
+      const { id } = idParam.parse(request.params);
+      const body = platingCreateSchema.parse(request.body);
+
+      const outcome = await runIdempotent({
+        actorId: auth.user.id,
+        operation: 'plating.create',
+        key: request.headers['idempotency-key'],
+        body,
+        handler: async (tx) => {
+          const order = await loadOrder(tx, id);
+          if (order.status !== 'PURCHASING') throw statusError(order.status, 'PURCHASING');
+
+          const purchaseItem = order.purchaseOrders
+            .flatMap((purchase) => purchase.items)
+            .find((item) => item.id === body.purchaseItemId);
+          if (!purchaseItem) {
+            throw Errors.notFound('采购项不存在', 'PURCHASE_ITEM_NOT_FOUND');
+          }
+          if (!purchaseItem.platingRequired) {
+            throw Errors.business('该采购项不需要电镀', 'PLATING_NOT_REQUIRED');
+          }
+
+          const supplier = await tx.supplier.findUnique({ where: { id: body.supplierId } });
+          if (!supplier || !supplier.active) {
+            throw Errors.business('电镀厂商不存在或已停用', 'PLATING_SUPPLIER_NOT_FOUND');
+          }
+          if (supplier.type !== 'ELECTROPLATING') {
+            throw Errors.business('只能选择类型为电镀厂商的供应商', 'PLATING_SUPPLIER_REQUIRED');
+          }
+
+          const arrived = purchaseItem.arrivals.reduce((sum, row) => sum + row.quantity, 0);
+          const already = purchaseItem.platingOrders.reduce((sum, row) => sum + row.quantity, 0);
+          const remaining = Math.max(0, arrived - already);
+          if (body.quantity > remaining) {
+            throw Errors.business(
+              `电镀数量 ${body.quantity} 超过可电镀余量 ${remaining}`,
+              'PLATING_EXCEEDS_REMAINING',
+              { remaining },
+            );
+          }
+
+          const plating = await tx.platingOrder.create({
+            data: {
+              orderId: order.id,
+              purchaseItemId: purchaseItem.id,
+              supplierId: supplier.id,
+              supplierName: supplier.name,
+              quantity: body.quantity,
+              unitPrice: body.unitPrice,
+              status: 'PENDING',
+              createdById: auth.user.id,
+            },
+          });
+
+          await recordEvent(tx, {
+            orderId: order.id,
+            type: 'PLATING_CREATED',
+            actorId: auth.user.id,
+            payload: {
+              platingId: plating.id,
+              quantity: plating.quantity,
+              supplierName: plating.supplierName,
+            },
+            notify: {
+              title: `${order.orderNo} 已建电镀单`,
+              body: `${purchaseItem.partName} ${body.quantity} 件 → ${supplier.name}，待发送。`,
+            },
+          });
+
+          await writeAudit(tx, {
+            requestId: request.id,
+            actorId: auth.user.id,
+            action: 'plating.create',
+            resourceType: 'plating_order',
+            resourceId: plating.id,
+            after: {
+              purchaseItemId: purchaseItem.id,
+              supplierId: supplier.id,
+              quantity: plating.quantity,
+              unitPrice: body.unitPrice,
+            },
+          });
+
+          return {
+            ...(await finish(tx, order.id, auth.user.role, auth.user.id, auth.user.departmentId, 201)),
+            resourceId: plating.id,
+          };
+        },
+      });
+
+      reply.headers(replayHeaders(outcome.replayed));
+      return ok(reply, outcome.data, outcome.replayed ? 200 : 201);
+    },
+  );
+
+  app.patch(
+    '/api/v1/plating-orders/:id',
+    { preHandler: [authenticate, requireAdmin] },
+    async (request, reply) => {
+      const auth = authContext(request);
+      const { id } = idParam.parse(request.params);
+      const body = platingUpdateSchema.parse(request.body);
+
+      const outcome = await runIdempotent({
+        actorId: auth.user.id,
+        operation: 'plating.update',
+        key: request.headers['idempotency-key'],
+        body,
+        handler: async (tx) => {
+          const plating = await loadPlating(tx, id);
+          if (plating.status !== 'PENDING') {
+            throw Errors.conflict('PLATING_LOCKED', '电镀单已发送，不能再修改');
+          }
+          const { remaining } = await platingRemaining(tx, plating);
+          if (body.quantity !== undefined && body.quantity > remaining) {
+            throw Errors.business(
+              `电镀数量 ${body.quantity} 超过可电镀余量 ${remaining}`,
+              'PLATING_EXCEEDS_REMAINING',
+              { remaining },
+            );
+          }
+
+          const updated = await tx.platingOrder.update({
+            where: { id },
+            data: {
+              ...(body.quantity !== undefined ? { quantity: body.quantity } : {}),
+              ...(body.unitPrice !== undefined ? { unitPrice: body.unitPrice } : {}),
+            },
+          });
+
+          await writeAudit(tx, {
+            requestId: request.id,
+            actorId: auth.user.id,
+            action: 'plating.update',
+            resourceType: 'plating_order',
+            resourceId: id,
+            before: { quantity: plating.quantity, unitPrice: plating.unitPrice.toFixed(2) },
+            after: { quantity: updated.quantity, unitPrice: updated.unitPrice.toFixed(2) },
+          });
+
+          return {
+            ...(await finish(tx, plating.orderId, auth.user.role, auth.user.id, auth.user.departmentId)),
+            resourceId: id,
+          };
+        },
+      });
+
+      reply.headers(replayHeaders(outcome.replayed));
+      return ok(reply, outcome.data);
+    },
+  );
+
+  app.delete(
+    '/api/v1/plating-orders/:id',
+    { preHandler: [authenticate, requireAdmin] },
+    async (request, reply) => {
+      const auth = authContext(request);
+      const { id } = idParam.parse(request.params);
+
+      const data = await prisma.$transaction(async (tx) => {
+        const plating = await loadPlating(tx, id);
+        if (plating.status !== 'PENDING') {
+          throw Errors.conflict('PLATING_LOCKED', '电镀单已发送，不能删除');
+        }
+        await tx.platingOrder.delete({ where: { id } });
+        await writeAudit(tx, {
+          requestId: request.id,
+          actorId: auth.user.id,
+          action: 'plating.delete',
+          resourceType: 'plating_order',
+          resourceId: id,
+          before: { quantity: plating.quantity, supplierName: plating.supplierName, status: plating.status },
+        });
+        return finish(tx, plating.orderId, auth.user.role, auth.user.id, auth.user.departmentId);
+      });
+
+      return ok(reply, data.data);
+    },
+  );
+
+  app.post(
+    '/api/v1/plating-orders/:id/send',
+    { preHandler: [authenticate, requireRoles('LOGISTICS')] },
+    async (request, reply) => {
+      const auth = authContext(request);
+      const { id } = idParam.parse(request.params);
+
+      const outcome = await runIdempotent({
+        actorId: auth.user.id,
+        operation: 'plating.send',
+        key: request.headers['idempotency-key'],
+        body: { id },
+        handler: async (tx) => {
+          const plating = await loadPlating(tx, id);
+          if (plating.status !== 'PENDING') {
+            throw Errors.conflict(
+              'PLATING_ALREADY_SENT',
+              plating.status === 'RECEIVED' ? '电镀单已收货，不能重复发送' : '电镀单已经发送',
+            );
+          }
+
+          const updated = await tx.platingOrder.update({
+            where: { id },
+            data: { status: 'SENT', sentById: auth.user.id, sentAt: new Date() },
+          });
+
+          await recordEvent(tx, {
+            orderId: plating.orderId,
+            type: 'PLATING_SENT',
+            actorId: auth.user.id,
+            payload: { platingId: id, quantity: plating.quantity, supplierName: plating.supplierName },
+            notify: {
+              title: `电镀已发出 · ${plating.supplierName}`,
+              body: `${plating.quantity} 件已发出，等待厂商回货。`,
+            },
+          });
+          await writeAudit(tx, {
+            requestId: request.id,
+            actorId: auth.user.id,
+            action: 'plating.send',
+            resourceType: 'plating_order',
+            resourceId: id,
+            before: { status: plating.status },
+            after: { status: updated.status, sentAt: updated.sentAt?.toISOString() },
+          });
+
+          return {
+            ...(await finish(tx, plating.orderId, auth.user.role, auth.user.id, auth.user.departmentId)),
+            resourceId: id,
+          };
+        },
+      });
+
+      reply.headers(replayHeaders(outcome.replayed));
+      return ok(reply, outcome.data);
+    },
+  );
+
+  app.post(
+    '/api/v1/plating-orders/:id/receive',
+    { preHandler: [authenticate, requireRoles('LOGISTICS')] },
+    async (request, reply) => {
+      const auth = authContext(request);
+      const { id } = idParam.parse(request.params);
+
+      const outcome = await runIdempotent({
+        actorId: auth.user.id,
+        operation: 'plating.receive',
+        key: request.headers['idempotency-key'],
+        body: { id },
+        handler: async (tx) => {
+          const plating = await loadPlating(tx, id);
+          if (plating.status === 'PENDING') {
+            throw Errors.conflict('PLATING_NOT_SENT', '电镀单尚未发送，不能直接收货');
+          }
+          if (plating.status === 'RECEIVED') {
+            throw Errors.conflict('PLATING_ALREADY_RECEIVED', '电镀单已经收货');
+          }
+
+          const updated = await tx.platingOrder.update({
+            where: { id },
+            data: { status: 'RECEIVED', receivedById: auth.user.id, receivedAt: new Date() },
+          });
+
+          await recordEvent(tx, {
+            orderId: plating.orderId,
+            type: 'PLATING_RECEIVED',
+            actorId: auth.user.id,
+            payload: { platingId: id, quantity: plating.quantity, supplierName: plating.supplierName },
+            notify: {
+              title: `电镀已收货 · ${plating.supplierName}`,
+              body: `${plating.quantity} 件已回厂，可进入生产。`,
+            },
+          });
+          await writeAudit(tx, {
+            requestId: request.id,
+            actorId: auth.user.id,
+            action: 'plating.receive',
+            resourceType: 'plating_order',
+            resourceId: id,
+            before: { status: plating.status },
+            after: { status: updated.status, receivedAt: updated.receivedAt?.toISOString() },
+          });
+
+          return {
+            ...(await finish(tx, plating.orderId, auth.user.role, auth.user.id, auth.user.departmentId)),
+            resourceId: id,
+          };
+        },
+      });
+
+      reply.headers(replayHeaders(outcome.replayed));
+      return ok(reply, outcome.data);
+    },
+  );
+
   // ---------- 生产下发 ----------
   app.post('/api/v1/orders/:id/productions', { preHandler: [authenticate, requireAdmin] }, async (request, reply) => {
     const auth = authContext(request);
@@ -284,6 +622,24 @@ export async function flowRoutes(app: FastifyInstance): Promise<void> {
             'ARRIVAL_INCOMPLETE',
             { arrived: quantities.arrivedQty, purchase: quantities.purchaseQty },
           );
+        }
+
+        // R06F：需电镀的物料必须至少收回一批，才能开始生产。
+        if (quantities.platingRequiredQty > 0) {
+          if (quantities.platingReceivedQty === 0) {
+            throw Errors.business(
+              '需电镀物料尚未收货，不能下发生产',
+              'PLATING_NOT_RECEIVED',
+              { required: quantities.platingRequiredQty },
+            );
+          }
+          if (body.quantity > quantities.platingReceivedQty) {
+            throw Errors.business(
+              `生产数量 ${body.quantity} 超过已收电镀数量 ${quantities.platingReceivedQty}`,
+              'PLATING_QTY_INSUFFICIENT',
+              { requested: body.quantity, received: quantities.platingReceivedQty },
+            );
+          }
         }
 
         const department = await tx.department.findUnique({ where: { id: body.departmentId } });
@@ -515,6 +871,14 @@ export async function flowRoutes(app: FastifyInstance): Promise<void> {
           throw Errors.business(`检验量 ${body.inspectedQty} 超过已生产数量 ${produced}`, 'QC_EXCEEDS_PRODUCED', {
             produced,
           });
+        }
+        // M 版本一单只有一次质检，必须整批检验；少检会让剩余数量永远无法放行。
+        if (body.inspectedQty < produced) {
+          throw Errors.business(
+            `M 版本要求整批检验：检验量必须等于已生产数量 ${produced}；部分检验属于 R09F`,
+            'QC_INSPECTION_INCOMPLETE',
+            { produced, inspected: body.inspectedQty },
+          );
         }
 
         const record = await tx.qCRecord.create({
