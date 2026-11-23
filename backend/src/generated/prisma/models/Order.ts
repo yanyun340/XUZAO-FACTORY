@@ -251,6 +251,7 @@ export type OrderWhereInput = {
   owner?: Prisma.XOR<Prisma.AdminUserNullableScalarRelationFilter, Prisma.AdminUserWhereInput> | null
   items?: Prisma.OrderItemListRelationFilter
   purchaseOrders?: Prisma.PurchaseOrderListRelationFilter
+  platingOrders?: Prisma.PlatingOrderListRelationFilter
   productions?: Prisma.ProductionOrderListRelationFilter
   packingRecords?: Prisma.PackingRecordListRelationFilter
   shipments?: Prisma.ShipmentRecordListRelationFilter
@@ -278,6 +279,7 @@ export type OrderOrderByWithRelationInput = {
   owner?: Prisma.AdminUserOrderByWithRelationInput
   items?: Prisma.OrderItemOrderByRelationAggregateInput
   purchaseOrders?: Prisma.PurchaseOrderOrderByRelationAggregateInput
+  platingOrders?: Prisma.PlatingOrderOrderByRelationAggregateInput
   productions?: Prisma.ProductionOrderOrderByRelationAggregateInput
   packingRecords?: Prisma.PackingRecordOrderByRelationAggregateInput
   shipments?: Prisma.ShipmentRecordOrderByRelationAggregateInput
@@ -308,6 +310,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   owner?: Prisma.XOR<Prisma.AdminUserNullableScalarRelationFilter, Prisma.AdminUserWhereInput> | null
   items?: Prisma.OrderItemListRelationFilter
   purchaseOrders?: Prisma.PurchaseOrderListRelationFilter
+  platingOrders?: Prisma.PlatingOrderListRelationFilter
   productions?: Prisma.ProductionOrderListRelationFilter
   packingRecords?: Prisma.PackingRecordListRelationFilter
   shipments?: Prisma.ShipmentRecordListRelationFilter
@@ -370,6 +373,7 @@ export type OrderCreateInput = {
   owner?: Prisma.AdminUserCreateNestedOneWithoutOrdersOwnedInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   purchaseOrders?: Prisma.PurchaseOrderCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordCreateNestedManyWithoutOrderInput
@@ -394,6 +398,7 @@ export type OrderUncheckedCreateInput = {
   completedAt?: Date | string | null
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
   purchaseOrders?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordUncheckedCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordUncheckedCreateNestedManyWithoutOrderInput
@@ -418,6 +423,7 @@ export type OrderUpdateInput = {
   owner?: Prisma.AdminUserUpdateOneWithoutOrdersOwnedNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUpdateManyWithoutOrderNestedInput
@@ -442,6 +448,7 @@ export type OrderUncheckedUpdateInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUncheckedUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUncheckedUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUncheckedUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUncheckedUpdateManyWithoutOrderNestedInput
@@ -721,6 +728,20 @@ export type OrderUpdateOneRequiredWithoutPurchaseOrdersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutPurchaseOrdersInput, Prisma.OrderUpdateWithoutPurchaseOrdersInput>, Prisma.OrderUncheckedUpdateWithoutPurchaseOrdersInput>
 }
 
+export type OrderCreateNestedOneWithoutPlatingOrdersInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutPlatingOrdersInput, Prisma.OrderUncheckedCreateWithoutPlatingOrdersInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutPlatingOrdersInput
+  connect?: Prisma.OrderWhereUniqueInput
+}
+
+export type OrderUpdateOneRequiredWithoutPlatingOrdersNestedInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutPlatingOrdersInput, Prisma.OrderUncheckedCreateWithoutPlatingOrdersInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutPlatingOrdersInput
+  upsert?: Prisma.OrderUpsertWithoutPlatingOrdersInput
+  connect?: Prisma.OrderWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutPlatingOrdersInput, Prisma.OrderUpdateWithoutPlatingOrdersInput>, Prisma.OrderUncheckedUpdateWithoutPlatingOrdersInput>
+}
+
 export type OrderCreateNestedOneWithoutProductionsInput = {
   create?: Prisma.XOR<Prisma.OrderCreateWithoutProductionsInput, Prisma.OrderUncheckedCreateWithoutProductionsInput>
   connectOrCreate?: Prisma.OrderCreateOrConnectWithoutProductionsInput
@@ -824,6 +845,7 @@ export type OrderCreateWithoutCreatedByInput = {
   owner?: Prisma.AdminUserCreateNestedOneWithoutOrdersOwnedInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   purchaseOrders?: Prisma.PurchaseOrderCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordCreateNestedManyWithoutOrderInput
@@ -847,6 +869,7 @@ export type OrderUncheckedCreateWithoutCreatedByInput = {
   completedAt?: Date | string | null
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
   purchaseOrders?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordUncheckedCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordUncheckedCreateNestedManyWithoutOrderInput
@@ -880,6 +903,7 @@ export type OrderCreateWithoutOwnerInput = {
   createdBy: Prisma.AdminUserCreateNestedOneWithoutOrdersCreatedInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   purchaseOrders?: Prisma.PurchaseOrderCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordCreateNestedManyWithoutOrderInput
@@ -903,6 +927,7 @@ export type OrderUncheckedCreateWithoutOwnerInput = {
   completedAt?: Date | string | null
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
   purchaseOrders?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordUncheckedCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordUncheckedCreateNestedManyWithoutOrderInput
@@ -987,6 +1012,7 @@ export type OrderCreateWithoutCustomerInput = {
   owner?: Prisma.AdminUserCreateNestedOneWithoutOrdersOwnedInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   purchaseOrders?: Prisma.PurchaseOrderCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordCreateNestedManyWithoutOrderInput
@@ -1010,6 +1036,7 @@ export type OrderUncheckedCreateWithoutCustomerInput = {
   completedAt?: Date | string | null
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
   purchaseOrders?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordUncheckedCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordUncheckedCreateNestedManyWithoutOrderInput
@@ -1059,6 +1086,7 @@ export type OrderCreateWithoutItemsInput = {
   createdBy: Prisma.AdminUserCreateNestedOneWithoutOrdersCreatedInput
   owner?: Prisma.AdminUserCreateNestedOneWithoutOrdersOwnedInput
   purchaseOrders?: Prisma.PurchaseOrderCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordCreateNestedManyWithoutOrderInput
@@ -1082,6 +1110,7 @@ export type OrderUncheckedCreateWithoutItemsInput = {
   updatedAt?: Date | string
   completedAt?: Date | string | null
   purchaseOrders?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordUncheckedCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordUncheckedCreateNestedManyWithoutOrderInput
@@ -1121,6 +1150,7 @@ export type OrderUpdateWithoutItemsInput = {
   createdBy?: Prisma.AdminUserUpdateOneRequiredWithoutOrdersCreatedNestedInput
   owner?: Prisma.AdminUserUpdateOneWithoutOrdersOwnedNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUpdateManyWithoutOrderNestedInput
@@ -1144,6 +1174,7 @@ export type OrderUncheckedUpdateWithoutItemsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   purchaseOrders?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUncheckedUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUncheckedUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUncheckedUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUncheckedUpdateManyWithoutOrderNestedInput
@@ -1167,6 +1198,7 @@ export type OrderCreateWithoutPurchaseOrdersInput = {
   createdBy: Prisma.AdminUserCreateNestedOneWithoutOrdersCreatedInput
   owner?: Prisma.AdminUserCreateNestedOneWithoutOrdersOwnedInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordCreateNestedManyWithoutOrderInput
@@ -1190,6 +1222,7 @@ export type OrderUncheckedCreateWithoutPurchaseOrdersInput = {
   updatedAt?: Date | string
   completedAt?: Date | string | null
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordUncheckedCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordUncheckedCreateNestedManyWithoutOrderInput
@@ -1229,6 +1262,7 @@ export type OrderUpdateWithoutPurchaseOrdersInput = {
   createdBy?: Prisma.AdminUserUpdateOneRequiredWithoutOrdersCreatedNestedInput
   owner?: Prisma.AdminUserUpdateOneWithoutOrdersOwnedNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUpdateManyWithoutOrderNestedInput
@@ -1252,6 +1286,119 @@ export type OrderUncheckedUpdateWithoutPurchaseOrdersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUncheckedUpdateManyWithoutOrderNestedInput
+  productions?: Prisma.ProductionOrderUncheckedUpdateManyWithoutOrderNestedInput
+  packingRecords?: Prisma.PackingRecordUncheckedUpdateManyWithoutOrderNestedInput
+  shipments?: Prisma.ShipmentRecordUncheckedUpdateManyWithoutOrderNestedInput
+  timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutOrderNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutOrderNestedInput
+  exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutOrderNestedInput
+}
+
+export type OrderCreateWithoutPlatingOrdersInput = {
+  id?: string
+  orderNo: string
+  customerName: string
+  customerContact?: string | null
+  dueDate: Date | string
+  remark?: string | null
+  status?: $Enums.OrderStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  completedAt?: Date | string | null
+  customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
+  createdBy: Prisma.AdminUserCreateNestedOneWithoutOrdersCreatedInput
+  owner?: Prisma.AdminUserCreateNestedOneWithoutOrdersOwnedInput
+  items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
+  purchaseOrders?: Prisma.PurchaseOrderCreateNestedManyWithoutOrderInput
+  productions?: Prisma.ProductionOrderCreateNestedManyWithoutOrderInput
+  packingRecords?: Prisma.PackingRecordCreateNestedManyWithoutOrderInput
+  shipments?: Prisma.ShipmentRecordCreateNestedManyWithoutOrderInput
+  timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutOrderInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutOrderInput
+  exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutOrderInput
+}
+
+export type OrderUncheckedCreateWithoutPlatingOrdersInput = {
+  id?: string
+  orderNo: string
+  customerId: string
+  customerName: string
+  customerContact?: string | null
+  dueDate: Date | string
+  remark?: string | null
+  status?: $Enums.OrderStatus
+  createdById: string
+  ownerId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  completedAt?: Date | string | null
+  items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
+  purchaseOrders?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutOrderInput
+  productions?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutOrderInput
+  packingRecords?: Prisma.PackingRecordUncheckedCreateNestedManyWithoutOrderInput
+  shipments?: Prisma.ShipmentRecordUncheckedCreateNestedManyWithoutOrderInput
+  timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutOrderInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutOrderInput
+  exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutOrderInput
+}
+
+export type OrderCreateOrConnectWithoutPlatingOrdersInput = {
+  where: Prisma.OrderWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrderCreateWithoutPlatingOrdersInput, Prisma.OrderUncheckedCreateWithoutPlatingOrdersInput>
+}
+
+export type OrderUpsertWithoutPlatingOrdersInput = {
+  update: Prisma.XOR<Prisma.OrderUpdateWithoutPlatingOrdersInput, Prisma.OrderUncheckedUpdateWithoutPlatingOrdersInput>
+  create: Prisma.XOR<Prisma.OrderCreateWithoutPlatingOrdersInput, Prisma.OrderUncheckedCreateWithoutPlatingOrdersInput>
+  where?: Prisma.OrderWhereInput
+}
+
+export type OrderUpdateToOneWithWhereWithoutPlatingOrdersInput = {
+  where?: Prisma.OrderWhereInput
+  data: Prisma.XOR<Prisma.OrderUpdateWithoutPlatingOrdersInput, Prisma.OrderUncheckedUpdateWithoutPlatingOrdersInput>
+}
+
+export type OrderUpdateWithoutPlatingOrdersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderNo?: Prisma.StringFieldUpdateOperationsInput | string
+  customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  customerContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
+  createdBy?: Prisma.AdminUserUpdateOneRequiredWithoutOrdersCreatedNestedInput
+  owner?: Prisma.AdminUserUpdateOneWithoutOrdersOwnedNestedInput
+  items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
+  purchaseOrders?: Prisma.PurchaseOrderUpdateManyWithoutOrderNestedInput
+  productions?: Prisma.ProductionOrderUpdateManyWithoutOrderNestedInput
+  packingRecords?: Prisma.PackingRecordUpdateManyWithoutOrderNestedInput
+  shipments?: Prisma.ShipmentRecordUpdateManyWithoutOrderNestedInput
+  timelineEvents?: Prisma.TimelineEventUpdateManyWithoutOrderNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutOrderNestedInput
+  exceptions?: Prisma.TabletExceptionUpdateManyWithoutOrderNestedInput
+}
+
+export type OrderUncheckedUpdateWithoutPlatingOrdersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderNo?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  customerContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  remark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+  purchaseOrders?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUncheckedUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUncheckedUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUncheckedUpdateManyWithoutOrderNestedInput
@@ -1276,6 +1423,7 @@ export type OrderCreateWithoutProductionsInput = {
   owner?: Prisma.AdminUserCreateNestedOneWithoutOrdersOwnedInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   purchaseOrders?: Prisma.PurchaseOrderCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordCreateNestedManyWithoutOrderInput
   timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutOrderInput
@@ -1299,6 +1447,7 @@ export type OrderUncheckedCreateWithoutProductionsInput = {
   completedAt?: Date | string | null
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
   purchaseOrders?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordUncheckedCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordUncheckedCreateNestedManyWithoutOrderInput
   timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutOrderInput
@@ -1338,6 +1487,7 @@ export type OrderUpdateWithoutProductionsInput = {
   owner?: Prisma.AdminUserUpdateOneWithoutOrdersOwnedNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUpdateManyWithoutOrderNestedInput
   timelineEvents?: Prisma.TimelineEventUpdateManyWithoutOrderNestedInput
@@ -1361,6 +1511,7 @@ export type OrderUncheckedUpdateWithoutProductionsInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUncheckedUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUncheckedUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUncheckedUpdateManyWithoutOrderNestedInput
   timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutOrderNestedInput
@@ -1384,6 +1535,7 @@ export type OrderCreateWithoutPackingRecordsInput = {
   owner?: Prisma.AdminUserCreateNestedOneWithoutOrdersOwnedInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   purchaseOrders?: Prisma.PurchaseOrderCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordCreateNestedManyWithoutOrderInput
   timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutOrderInput
@@ -1407,6 +1559,7 @@ export type OrderUncheckedCreateWithoutPackingRecordsInput = {
   completedAt?: Date | string | null
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
   purchaseOrders?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordUncheckedCreateNestedManyWithoutOrderInput
   timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutOrderInput
@@ -1446,6 +1599,7 @@ export type OrderUpdateWithoutPackingRecordsInput = {
   owner?: Prisma.AdminUserUpdateOneWithoutOrdersOwnedNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUpdateManyWithoutOrderNestedInput
   timelineEvents?: Prisma.TimelineEventUpdateManyWithoutOrderNestedInput
@@ -1469,6 +1623,7 @@ export type OrderUncheckedUpdateWithoutPackingRecordsInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUncheckedUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUncheckedUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUncheckedUpdateManyWithoutOrderNestedInput
   timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutOrderNestedInput
@@ -1492,6 +1647,7 @@ export type OrderCreateWithoutShipmentsInput = {
   owner?: Prisma.AdminUserCreateNestedOneWithoutOrdersOwnedInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   purchaseOrders?: Prisma.PurchaseOrderCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordCreateNestedManyWithoutOrderInput
   timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutOrderInput
@@ -1515,6 +1671,7 @@ export type OrderUncheckedCreateWithoutShipmentsInput = {
   completedAt?: Date | string | null
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
   purchaseOrders?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordUncheckedCreateNestedManyWithoutOrderInput
   timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutOrderInput
@@ -1554,6 +1711,7 @@ export type OrderUpdateWithoutShipmentsInput = {
   owner?: Prisma.AdminUserUpdateOneWithoutOrdersOwnedNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUpdateManyWithoutOrderNestedInput
   timelineEvents?: Prisma.TimelineEventUpdateManyWithoutOrderNestedInput
@@ -1577,6 +1735,7 @@ export type OrderUncheckedUpdateWithoutShipmentsInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUncheckedUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUncheckedUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUncheckedUpdateManyWithoutOrderNestedInput
   timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutOrderNestedInput
@@ -1600,6 +1759,7 @@ export type OrderCreateWithoutNotificationsInput = {
   owner?: Prisma.AdminUserCreateNestedOneWithoutOrdersOwnedInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   purchaseOrders?: Prisma.PurchaseOrderCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordCreateNestedManyWithoutOrderInput
@@ -1623,6 +1783,7 @@ export type OrderUncheckedCreateWithoutNotificationsInput = {
   completedAt?: Date | string | null
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
   purchaseOrders?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordUncheckedCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordUncheckedCreateNestedManyWithoutOrderInput
@@ -1662,6 +1823,7 @@ export type OrderUpdateWithoutNotificationsInput = {
   owner?: Prisma.AdminUserUpdateOneWithoutOrdersOwnedNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUpdateManyWithoutOrderNestedInput
@@ -1685,6 +1847,7 @@ export type OrderUncheckedUpdateWithoutNotificationsInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUncheckedUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUncheckedUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUncheckedUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUncheckedUpdateManyWithoutOrderNestedInput
@@ -1708,6 +1871,7 @@ export type OrderCreateWithoutExceptionsInput = {
   owner?: Prisma.AdminUserCreateNestedOneWithoutOrdersOwnedInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   purchaseOrders?: Prisma.PurchaseOrderCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordCreateNestedManyWithoutOrderInput
@@ -1731,6 +1895,7 @@ export type OrderUncheckedCreateWithoutExceptionsInput = {
   completedAt?: Date | string | null
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
   purchaseOrders?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordUncheckedCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordUncheckedCreateNestedManyWithoutOrderInput
@@ -1770,6 +1935,7 @@ export type OrderUpdateWithoutExceptionsInput = {
   owner?: Prisma.AdminUserUpdateOneWithoutOrdersOwnedNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUpdateManyWithoutOrderNestedInput
@@ -1793,6 +1959,7 @@ export type OrderUncheckedUpdateWithoutExceptionsInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUncheckedUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUncheckedUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUncheckedUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUncheckedUpdateManyWithoutOrderNestedInput
@@ -1816,6 +1983,7 @@ export type OrderCreateWithoutTimelineEventsInput = {
   owner?: Prisma.AdminUserCreateNestedOneWithoutOrdersOwnedInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   purchaseOrders?: Prisma.PurchaseOrderCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordCreateNestedManyWithoutOrderInput
@@ -1839,6 +2007,7 @@ export type OrderUncheckedCreateWithoutTimelineEventsInput = {
   completedAt?: Date | string | null
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
   purchaseOrders?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutOrderInput
+  platingOrders?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutOrderInput
   productions?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutOrderInput
   packingRecords?: Prisma.PackingRecordUncheckedCreateNestedManyWithoutOrderInput
   shipments?: Prisma.ShipmentRecordUncheckedCreateNestedManyWithoutOrderInput
@@ -1878,6 +2047,7 @@ export type OrderUpdateWithoutTimelineEventsInput = {
   owner?: Prisma.AdminUserUpdateOneWithoutOrdersOwnedNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUpdateManyWithoutOrderNestedInput
@@ -1901,6 +2071,7 @@ export type OrderUncheckedUpdateWithoutTimelineEventsInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUncheckedUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUncheckedUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUncheckedUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUncheckedUpdateManyWithoutOrderNestedInput
@@ -1953,6 +2124,7 @@ export type OrderUpdateWithoutCreatedByInput = {
   owner?: Prisma.AdminUserUpdateOneWithoutOrdersOwnedNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUpdateManyWithoutOrderNestedInput
@@ -1976,6 +2148,7 @@ export type OrderUncheckedUpdateWithoutCreatedByInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUncheckedUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUncheckedUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUncheckedUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUncheckedUpdateManyWithoutOrderNestedInput
@@ -2014,6 +2187,7 @@ export type OrderUpdateWithoutOwnerInput = {
   createdBy?: Prisma.AdminUserUpdateOneRequiredWithoutOrdersCreatedNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUpdateManyWithoutOrderNestedInput
@@ -2037,6 +2211,7 @@ export type OrderUncheckedUpdateWithoutOwnerInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUncheckedUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUncheckedUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUncheckedUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUncheckedUpdateManyWithoutOrderNestedInput
@@ -2090,6 +2265,7 @@ export type OrderUpdateWithoutCustomerInput = {
   owner?: Prisma.AdminUserUpdateOneWithoutOrdersOwnedNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUpdateManyWithoutOrderNestedInput
@@ -2113,6 +2289,7 @@ export type OrderUncheckedUpdateWithoutCustomerInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   purchaseOrders?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutOrderNestedInput
+  platingOrders?: Prisma.PlatingOrderUncheckedUpdateManyWithoutOrderNestedInput
   productions?: Prisma.ProductionOrderUncheckedUpdateManyWithoutOrderNestedInput
   packingRecords?: Prisma.PackingRecordUncheckedUpdateManyWithoutOrderNestedInput
   shipments?: Prisma.ShipmentRecordUncheckedUpdateManyWithoutOrderNestedInput
@@ -2144,6 +2321,7 @@ export type OrderUncheckedUpdateManyWithoutCustomerInput = {
 export type OrderCountOutputType = {
   items: number
   purchaseOrders: number
+  platingOrders: number
   productions: number
   packingRecords: number
   shipments: number
@@ -2155,6 +2333,7 @@ export type OrderCountOutputType = {
 export type OrderCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   items?: boolean | OrderCountOutputTypeCountItemsArgs
   purchaseOrders?: boolean | OrderCountOutputTypeCountPurchaseOrdersArgs
+  platingOrders?: boolean | OrderCountOutputTypeCountPlatingOrdersArgs
   productions?: boolean | OrderCountOutputTypeCountProductionsArgs
   packingRecords?: boolean | OrderCountOutputTypeCountPackingRecordsArgs
   shipments?: boolean | OrderCountOutputTypeCountShipmentsArgs
@@ -2185,6 +2364,13 @@ export type OrderCountOutputTypeCountItemsArgs<ExtArgs extends runtime.Types.Ext
  */
 export type OrderCountOutputTypeCountPurchaseOrdersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.PurchaseOrderWhereInput
+}
+
+/**
+ * OrderCountOutputType without action
+ */
+export type OrderCountOutputTypeCountPlatingOrdersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PlatingOrderWhereInput
 }
 
 /**
@@ -2249,6 +2435,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   owner?: boolean | Prisma.Order$ownerArgs<ExtArgs>
   items?: boolean | Prisma.Order$itemsArgs<ExtArgs>
   purchaseOrders?: boolean | Prisma.Order$purchaseOrdersArgs<ExtArgs>
+  platingOrders?: boolean | Prisma.Order$platingOrdersArgs<ExtArgs>
   productions?: boolean | Prisma.Order$productionsArgs<ExtArgs>
   packingRecords?: boolean | Prisma.Order$packingRecordsArgs<ExtArgs>
   shipments?: boolean | Prisma.Order$shipmentsArgs<ExtArgs>
@@ -2319,6 +2506,7 @@ export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   owner?: boolean | Prisma.Order$ownerArgs<ExtArgs>
   items?: boolean | Prisma.Order$itemsArgs<ExtArgs>
   purchaseOrders?: boolean | Prisma.Order$purchaseOrdersArgs<ExtArgs>
+  platingOrders?: boolean | Prisma.Order$platingOrdersArgs<ExtArgs>
   productions?: boolean | Prisma.Order$productionsArgs<ExtArgs>
   packingRecords?: boolean | Prisma.Order$packingRecordsArgs<ExtArgs>
   shipments?: boolean | Prisma.Order$shipmentsArgs<ExtArgs>
@@ -2346,6 +2534,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     owner: Prisma.$AdminUserPayload<ExtArgs> | null
     items: Prisma.$OrderItemPayload<ExtArgs>[]
     purchaseOrders: Prisma.$PurchaseOrderPayload<ExtArgs>[]
+    platingOrders: Prisma.$PlatingOrderPayload<ExtArgs>[]
     productions: Prisma.$ProductionOrderPayload<ExtArgs>[]
     packingRecords: Prisma.$PackingRecordPayload<ExtArgs>[]
     shipments: Prisma.$ShipmentRecordPayload<ExtArgs>[]
@@ -2769,6 +2958,7 @@ export interface Prisma__OrderClient<T, Null = never, ExtArgs extends runtime.Ty
   owner<T extends Prisma.Order$ownerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$ownerArgs<ExtArgs>>): Prisma.Prisma__AdminUserClient<runtime.Types.Result.GetResult<Prisma.$AdminUserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   items<T extends Prisma.Order$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   purchaseOrders<T extends Prisma.Order$purchaseOrdersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$purchaseOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PurchaseOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  platingOrders<T extends Prisma.Order$platingOrdersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$platingOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatingOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   productions<T extends Prisma.Order$productionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$productionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductionOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   packingRecords<T extends Prisma.Order$packingRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$packingRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PackingRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   shipments<T extends Prisma.Order$shipmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$shipmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ShipmentRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3282,6 +3472,30 @@ export type Order$purchaseOrdersArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.PurchaseOrderScalarFieldEnum | Prisma.PurchaseOrderScalarFieldEnum[]
+}
+
+/**
+ * Order.platingOrders
+ */
+export type Order$platingOrdersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlatingOrder
+   */
+  select?: Prisma.PlatingOrderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlatingOrder
+   */
+  omit?: Prisma.PlatingOrderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlatingOrderInclude<ExtArgs> | null
+  where?: Prisma.PlatingOrderWhereInput
+  orderBy?: Prisma.PlatingOrderOrderByWithRelationInput | Prisma.PlatingOrderOrderByWithRelationInput[]
+  cursor?: Prisma.PlatingOrderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PlatingOrderScalarFieldEnum | Prisma.PlatingOrderScalarFieldEnum[]
 }
 
 /**

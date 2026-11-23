@@ -60,6 +60,7 @@ function PurchaseForm({ ctx }: { ctx: Ctx }) {
   const [partSuppliers, setPartSuppliers] = useState<PartSupplier[]>([]);
   const [quantity, setQuantity] = useState(String(ctx.order.flow.quantities.orderQty || 1));
   const [unitPrice, setUnitPrice] = useState('');
+  const [platingRequired, setPlatingRequired] = useState(false);
 
   // R02F：配件配置了供应商集合后，下拉只显示集合内供应商，并预选默认供应商。
   useEffect(() => {
@@ -173,8 +174,18 @@ function PurchaseForm({ ctx }: { ctx: Ctx }) {
           />
         </Field>
       </div>
+      <label className="check-field">
+        <input
+          type="checkbox"
+          checked={platingRequired}
+          onChange={(event) => setPlatingRequired(event.target.checked)}
+        />
+        <span>该采购项需要外协电镀（收货后才能下发生产）</span>
+      </label>
       <p className="flow-form__meta">
-        电镀为 F 项，本项目未启用：采购项不记录镀层，利润也不计镀层成本。
+        {platingRequired
+          ? '到货后管理员建电镀单、物流发送并收货；电镀费按已收数量计入利润。'
+          : '不勾选则不需要电镀，采购到齐后可直接下发生产。'}
       </p>
       {ready ? null : (
         <p className="flow-form__hint" role="status" aria-live="polite">
@@ -191,6 +202,7 @@ function PurchaseForm({ ctx }: { ctx: Ctx }) {
             partId,
             quantity: qty,
             unitPrice: unitPrice.trim(),
+            platingRequired,
           })
         }
       >
@@ -254,7 +266,12 @@ function ProductionDispatchForm({ ctx }: { ctx: Ctx }) {
   );
   const [departmentId, setDepartmentId] = useState('');
   const [processName, setProcessName] = useState('');
-  const [quantity, setQuantity] = useState(String(ctx.order.flow.quantities.orderQty || 1));
+  const platingQty = ctx.order.flow.quantities.platingReceivedQty;
+  const platingRequired = ctx.order.flow.quantities.platingRequiredQty > 0;
+  const maxQty = platingRequired
+    ? platingQty
+    : ctx.order.flow.quantities.orderQty || 1;
+  const [quantity, setQuantity] = useState(String(maxQty));
   const [unitPrice, setUnitPrice] = useState('');
   const [visible, setVisible] = useState(false);
 
@@ -266,11 +283,16 @@ function ProductionDispatchForm({ ctx }: { ctx: Ctx }) {
 
   const qty = toInt(quantity);
   const priceOk = /^(0|[1-9]\d{0,9})(\.\d{1,2})?$/.test(unitPrice.trim());
-  const ready = departmentId !== '' && processName.trim() !== '' && qty !== null && priceOk;
+  const ready =
+    departmentId !== '' && processName.trim() !== '' && qty !== null && qty <= maxQty && priceOk;
 
   return (
     <div className="flow-form">
-      <p className="flow-form__lead">采购已全部到货，选择生产部门与工艺下发任务。</p>
+      <p className="flow-form__lead">
+        {platingRequired
+          ? `电镀已收回 ${platingQty} 件，本次生产不能超过该数量。`
+          : '采购已全部到货，选择生产部门与工艺下发任务。'}
+      </p>
       <Field label="生产部门" htmlFor="flow-department" required>
         <select
           id="flow-department"
@@ -295,7 +317,12 @@ function ProductionDispatchForm({ ctx }: { ctx: Ctx }) {
         />
       </Field>
       <div className="flow-form__row">
-        <Field label="任务数量" htmlFor="flow-production-qty" required>
+        <Field
+          label="任务数量"
+          htmlFor="flow-production-qty"
+          required
+          hint={`本次上限 ${maxQty}`}
+        >
           <input
             id="flow-production-qty"
             className="input mono"
@@ -402,9 +429,16 @@ function QcEntryForm({ ctx }: { ctx: Ctx }) {
 
   return (
     <div className="flow-form">
-      <p className="flow-form__lead">M 版本仅支持全合格质检：合格量自动等于检验量。</p>
+      <p className="flow-form__lead">
+        M 版本要求整批检验：检验数量等于已生产数量，且全部合格。
+      </p>
       <p className="flow-form__meta mono">已生产 {produced}</p>
-      <Field label="检验数量" htmlFor="flow-qc-qty" required>
+      <Field
+        label="检验数量"
+        htmlFor="flow-qc-qty"
+        required
+        hint={`M 版本固定为 ${produced}；部分检验属于 R09F`}
+      >
         <input
           id="flow-qc-qty"
           className="input mono"
@@ -415,12 +449,17 @@ function QcEntryForm({ ctx }: { ctx: Ctx }) {
           onChange={(event) => setQuantity(event.target.value)}
         />
         <span id="flow-qc-qty-constraint" className="sr-only">
-          最多 {produced}
+          必须等于 {produced}
         </span>
       </Field>
+      {qty !== null && qty !== produced ? (
+        <p className="flow-form__hint" role="status">
+          需整批检验：请填 {produced}。少检会让剩余数量无法放行，属于 R09F 的部分检验能力。
+        </p>
+      ) : null}
       <Button
         loading={ctx.pending === 'qc-entry'}
-        disabled={qty === null || qty > produced}
+        disabled={qty === null || qty !== produced}
         trailing={<ArrowRight size={15} />}
         onClick={() =>
           ctx.run('qc-entry', `/productions/${production.id}/qc-records`, {
@@ -537,6 +576,32 @@ function renderAction(action: OrderAction, ctx: Ctx, key: string) {
       return <PurchaseForm key={key} ctx={ctx} />;
     case 'record-arrival':
       return <ArrivalForm key={key} ctx={ctx} />;
+    case 'send-plating': {
+      const target = ctx.order.flow.plating?.orders.find((row) => row.status === 'PENDING');
+      if (!target) return null;
+      return (
+        <ConfirmForm
+          key={key}
+          ctx={ctx}
+          action="send-plating"
+          path={`/plating-orders/${target.id}/send`}
+          text={`把 ${target.quantity} 件 ${target.partName} 发给 ${target.supplierName}，发送后不能再改数量或删除。`}
+        />
+      );
+    }
+    case 'receive-plating': {
+      const target = ctx.order.flow.plating?.orders.find((row) => row.status === 'SENT');
+      if (!target) return null;
+      return (
+        <ConfirmForm
+          key={key}
+          ctx={ctx}
+          action="receive-plating"
+          path={`/plating-orders/${target.id}/receive`}
+          text={`登记 ${target.supplierName} 的 ${target.quantity} 件电镀件已收回，收货后才能下发生产。`}
+        />
+      );
+    }
     case 'dispatch-production':
       return <ProductionDispatchForm key={key} ctx={ctx} />;
     case 'production-feedback':
@@ -662,7 +727,7 @@ export function FlowPanel({ order, onUpdated, focusAction }: PanelProps) {
 
 /* ---------- 流转台账 ---------- */
 export function FlowLedger({ order }: { order: OrderDetail }) {
-  const { purchase, production, qc, packing, shipping, quantities, profit } = order.flow;
+  const { purchase, plating, production, qc, packing, shipping, quantities, profit } = order.flow;
   const rows: Array<{ label: string; value: string; note?: string }> = [];
 
   if (purchase?.items[0]) {
@@ -672,6 +737,16 @@ export function FlowLedger({ order }: { order: OrderDetail }) {
       value: `${item.partName} × ${item.quantity}`,
       note: `${purchase.supplierName} · 已到 ${item.arrivedQty}`,
     });
+    if (plating?.required) {
+      rows.push({
+        label: '电镀',
+        value: `已收 ${plating.receivedQty} / 需 ${quantities.platingRequiredQty}`,
+        note:
+          plating.outstandingQty > 0
+            ? `待收 ${plating.outstandingQty} 件`
+            : '已全部收回',
+      });
+    }
   }
   if (production) {
     rows.push({
@@ -736,6 +811,10 @@ export function FlowLedger({ order }: { order: OrderDetail }) {
               <span>生产成本</span>
               <strong className="mono">{formatMoney(profit.productionCost)}</strong>
             </div>
+            <div className="profit__item">
+              <span>电镀成本</span>
+              <strong className="mono">{formatMoney(profit.platingCost)}</strong>
+            </div>
             <div className="profit__item profit__item--total">
               <span>预计利润</span>
               <strong className="mono">{formatMoney(profit.profit)}</strong>
@@ -767,6 +846,8 @@ export function PriceVisibilityControl({
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // 同一意图重试复用同一个幂等键；成功后换新键。
+  const priceKeyRef = useRef('');
   const [history, setHistory] = useState<PriceHistoryEntry[]>([]);
   const [showHistory, setShowHistory] = useState(false);
 
@@ -782,10 +863,13 @@ export function PriceVisibilityControl({
     setBusy(true);
     setError(null);
     try {
+      if (!priceKeyRef.current) priceKeyRef.current = crypto.randomUUID();
       const result = await apiPatch<{ unitPriceVisible: boolean }>(
         `/productions/${production.id}/price-visibility`,
         { visible: !production.unitPriceVisible },
+        { 'Idempotency-Key': priceKeyRef.current },
       );
+      priceKeyRef.current = '';
       onVisibleChange(result.unitPriceVisible);
       if (showHistory) await loadHistory();
     } catch (caught) {

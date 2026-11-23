@@ -4,7 +4,7 @@ R02 基础数据,M,客户/供应商/配件/部门员工可增查；修改停用�
 R03 业务订单,M,单产品、数量单价规格交期；唯一系统号；列表详情检索,A04、A05,"GET /orders；GET /orders/:id；POST /orders","orders；order_items；sequence_counters","routes/orders.ts；NewOrderPage.tsx；OrderDetailPage.tsx","flow.test.ts",已验收,多产品下游未做
 R04 采购,M,一订单单采购单、单配件、手选供应商；无电镀,A06,POST /orders/:id/purchase,"purchase_orders；purchase_items","routes/flow.ts；FlowPanel.tsx",flow.test.ts,已验收,多采购单/多配件未做
 R05 到货,M,物流登记到货；管理员可查,A07、A08,POST /purchases/:id/arrivals,arrival_records,"routes/flow.ts；FlowPanel.tsx",flow.test.ts,已验收,部分到货投产未做
-R06 电镀,M,不支持并在页面标明未启用或不适用,A09,无（采购表单标注）,purchase_items.platingRequired 恒为 false,"FlowPanel.tsx 采购表单说明；DashboardPage 成本说明",人工核对,已实现（人工核对）,镀层全链路未做
+R06 电镀,M,不支持并在页面标明未启用或不适用,A09,"POST /orders/:id/plating-orders；PATCH/DELETE /plating-orders/:id；POST /plating-orders/:id/send|receive",plating_orders；purchase_items.platingRequired,"routes/flow.ts；domain/flow.ts；PlatingPanel.tsx",plating.test.ts（8 项）,已验收,不新增订单状态
 R07 生产,M,单部门任务、管理员下发、一次反馈、数量受限,A10、A11,"POST /orders/:id/productions；POST /productions/:id/feedback","production_orders；production_feedbacks","routes/flow.ts；FlowPanel.tsx","flow.test.ts；domain.test.ts",已验收,多任务/分批反馈未做
 R08 单价开关,M,管理员控制该生产任务单价可见；其他成本不泄露,A02,"POST /orders/:id/productions；PATCH /productions/:id/price-visibility；PATCH /departments/:id",production_orders.unitPriceVisible；departments.unitPriceVisible,"domain/orders.ts unitPriceForWorker；routes/flow.ts；FlowPanel.tsx",permissions.test.ts（2 项）,已验收,仅生产计件单价
 R09 质检,M,一次质检全合格；录入与 PASS 决策分离,A12、A13,"POST /productions/:id/qc-records；POST /qc-records/:id/decision","qc_records；qc_decisions","routes/flow.ts；FlowPanel.tsx",flow.test.ts,已验收,部分合格/返工/报废未做
@@ -31,7 +31,7 @@ R02F 基础数据,F,完整维护、电镀厂商、多供应商及默认供应商
 R03F 业务订单,F,多产品、外部单号、负责人筛选、组合过滤稳定分页,A05,"POST /orders；GET /orders","orders；order_items",routes/orders.ts；NewOrderPage.tsx,flow.test.ts（单产品）,部分,下游按明细流转未做；不宣称完整
 R04F 采购,F,多采购单、多配件、报价关联、按需电镀,A06,POST /orders/:id/purchase,"purchase_orders；purchase_items",routes/flow.ts,flow.test.ts,未选做,单采购单
 R05F 到货,F,多批次、部分到货投产、超量原因确认,A08,POST /purchases/:id/arrivals,arrival_records,routes/flow.ts,flow.test.ts,部分,多批次已做；部分到货投产未做
-R06F 电镀,F,厂商、关联采购项、整件计价、发送收货状态,A09,无,——,——,——,未选做,全链路未做
+R06F 电镀,F,厂商、关联采购项、整件计价、发送收货状态,A09,"POST /orders/:id/plating-orders；PATCH/DELETE /plating-orders/:id；POST /plating-orders/:id/send|receive",plating_orders；suppliers.type,"routes/flow.ts；domain/flow.ts；PlatingPanel.tsx；FlowPanel.tsx",plating.test.ts（8 项）,已验收,部分电镀受单生产任务限制
 R07F 生产,F,多任务、分批反馈、部门回流、工艺记录,A11,"POST /orders/:id/productions；POST /productions/:id/feedback","production_orders；production_feedbacks",routes/flow.ts,flow.test.ts,未选做,单任务一次反馈
 R08F 单价开关,F,部门/任务范围、历史查询、导出和附件权限,A02,"PATCH /productions/:id/price-visibility；GET /productions/:id/price-visibility-history；PATCH /departments/:id",production_orders.unitPriceVisible；departments.unitPriceVisible；audit_logs,"domain/orders.ts；routes/flow.ts；routes/base-data.ts；FlowPanel.tsx",permissions.test.ts,已验收,仅生产计件单价
 R09F 质检,F,部分合格、阈值、原因、返工/报废、再检,A13,"POST /productions/:id/qc-records；POST /qc-records/:id/decision","qc_records；qc_decisions",routes/flow.ts,flow.test.ts,未选做,仅全合格
@@ -40,7 +40,7 @@ R11F 发货,F,按产品分批、剩余包装闸门、全部足量完成,A16,"POS
 R12F 撤销修正,F,10 分钟安全撤销、超时留痕修正,A17,无,全部业务表,状态守卫,flow.test.ts,未选做,明确拒绝撤销
 R13F 配件库存,F,来源关联、采购辅助搜索、多采购剩余入库、冲突防护,A18、A19、A20,POST /inventory/parts/:id/adjust,inventory_logs；part_inventories,"routes/inventory.ts；lib/inventory.ts",inventory.test.ts,部分,幂等已做；来源关联未做
 R14F 成品库存,F,超产转库、来源余量校验、重试不重复转入,A21,POST /inventory/products/:id/adjust,"product_inventories；inventory_logs","routes/inventory.ts；lib/inventory.ts",inventory.test.ts,未选做,无合法超产来源
-R15F 利润,F,电镀成本、全明细聚合、变动重算、快照版本,A22,订单详情 flow.profit,production_orders；purchase_items,domain/flow.ts computeProfit,domain.test.ts,未选做,依赖 R06F
+R15F 利润,F,电镀成本、全明细聚合、变动重算、快照版本,A22,订单详情 flow.profit,plating_orders；production_orders；purchase_items,domain/flow.ts computeProfit,plating.test.ts,部分,电镀成本已计入；快照/版本未做
 R16F 时间线与状态,F,九阶段投影、电镀不适用、异常/撤销标记、操作汇总,A23,订单详情 flow,timeline_events,domain/orders.ts computeStages,domain.test.ts,部分,八阶段；异常/撤销标记未做
 R17F 附件,F,各订单层级、多类型白名单、大小限制、软删除和清理,A24,"POST/GET /:ownerType/:ownerId/attachments；DELETE /attachments/:id",attachments,"routes/attachments.ts；jobs/attachment-cleanup.ts；AttachmentPanel.tsx",attachments.test.ts,已验收,电镀非独立实体
 R18F 导入,F,客户/供应商/配件/员工 Excel 模板、预检、错误行、重复策略、整批原子,A25,"GET /imports/:entity/template.xlsx；POST /imports/:entity/preflight；POST /imports/:entity/commit",import_batches；基础数据表,"routes/imports.ts；ImportDialog.tsx",imports.test.ts,已验收,≤500 行/2MB

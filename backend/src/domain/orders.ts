@@ -213,8 +213,15 @@ function taskQuantity(
         return quantities.orderQty;
       case 'record-arrival':
         return quantities.purchaseQty - quantities.arrivedQty;
+      case 'send-plating':
+        return quantities.platingOutstandingQty;
+      case 'receive-plating':
+        return Math.max(0, quantities.platingSentQty - quantities.platingReceivedQty);
       case 'dispatch-production':
-        return quantities.arrivedQty;
+        // 需电镀时只能生产已收回的数量；部分电镀会限制本次任务规模。
+        return quantities.platingRequiredQty > 0
+          ? quantities.platingReceivedQty
+          : quantities.arrivedQty;
       case 'production-feedback':
         return productionQty - quantities.producedQty;
       case 'dispatch-qc':
@@ -322,6 +329,11 @@ export function toOrderDetail(
               partSpec: item.partSpec,
               quantity: item.quantity,
               unitPrice: showMoney ? item.unitPrice.toFixed(2) : null,
+              platingRequired: item.platingRequired,
+              platingQty: item.platingOrders.reduce((sum, row) => sum + row.quantity, 0),
+              platingReceivedQty: item.platingOrders
+                .filter((row) => row.status === 'RECEIVED')
+                .reduce((sum, row) => sum + row.quantity, 0),
               arrivedQty: item.arrivals.reduce((sum, arrival) => sum + arrival.quantity, 0),
               arrivals: item.arrivals.map((arrival) => ({
                 id: arrival.id,
@@ -329,6 +341,29 @@ export function toOrderDetail(
                 operatorName: arrival.operator.displayName,
                 createdAt: arrival.createdAt.toISOString(),
               })),
+            })),
+          }
+        : null,
+      plating: purchase
+        ? {
+            required: quantities.platingRequiredQty > 0,
+            notApplicable: quantities.platingRequiredQty === 0,
+            sentQty: quantities.platingSentQty,
+            receivedQty: quantities.platingReceivedQty,
+            outstandingQty: quantities.platingOutstandingQty,
+            orders: order.platingOrders.map((plating) => ({
+              id: plating.id,
+              purchaseItemId: plating.purchaseItemId,
+              partName: plating.purchaseItem.partName,
+              partSpec: plating.purchaseItem.partSpec,
+              supplierName: plating.supplierName,
+              quantity: plating.quantity,
+              unitPrice: showMoney ? plating.unitPrice.toFixed(2) : null,
+              amount: showMoney ? plating.unitPrice.times(plating.quantity).toFixed(2) : null,
+              status: plating.status,
+              sentAt: plating.sentAt?.toISOString() ?? null,
+              receivedAt: plating.receivedAt?.toISOString() ?? null,
+              createdAt: plating.createdAt.toISOString(),
             })),
           }
         : null,

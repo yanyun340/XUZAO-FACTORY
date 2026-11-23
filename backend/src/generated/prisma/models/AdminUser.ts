@@ -271,6 +271,9 @@ export type AdminUserWhereInput = {
   ordersOwned?: Prisma.OrderListRelationFilter
   purchasesCreated?: Prisma.PurchaseOrderListRelationFilter
   arrivals?: Prisma.ArrivalRecordListRelationFilter
+  platingCreated?: Prisma.PlatingOrderListRelationFilter
+  platingSent?: Prisma.PlatingOrderListRelationFilter
+  platingReceived?: Prisma.PlatingOrderListRelationFilter
   productionsCreated?: Prisma.ProductionOrderListRelationFilter
   feedbacks?: Prisma.ProductionFeedbackListRelationFilter
   qcRecords?: Prisma.QCRecordListRelationFilter
@@ -306,6 +309,9 @@ export type AdminUserOrderByWithRelationInput = {
   ordersOwned?: Prisma.OrderOrderByRelationAggregateInput
   purchasesCreated?: Prisma.PurchaseOrderOrderByRelationAggregateInput
   arrivals?: Prisma.ArrivalRecordOrderByRelationAggregateInput
+  platingCreated?: Prisma.PlatingOrderOrderByRelationAggregateInput
+  platingSent?: Prisma.PlatingOrderOrderByRelationAggregateInput
+  platingReceived?: Prisma.PlatingOrderOrderByRelationAggregateInput
   productionsCreated?: Prisma.ProductionOrderOrderByRelationAggregateInput
   feedbacks?: Prisma.ProductionFeedbackOrderByRelationAggregateInput
   qcRecords?: Prisma.QCRecordOrderByRelationAggregateInput
@@ -344,6 +350,9 @@ export type AdminUserWhereUniqueInput = Prisma.AtLeast<{
   ordersOwned?: Prisma.OrderListRelationFilter
   purchasesCreated?: Prisma.PurchaseOrderListRelationFilter
   arrivals?: Prisma.ArrivalRecordListRelationFilter
+  platingCreated?: Prisma.PlatingOrderListRelationFilter
+  platingSent?: Prisma.PlatingOrderListRelationFilter
+  platingReceived?: Prisma.PlatingOrderListRelationFilter
   productionsCreated?: Prisma.ProductionOrderListRelationFilter
   feedbacks?: Prisma.ProductionFeedbackListRelationFilter
   qcRecords?: Prisma.QCRecordListRelationFilter
@@ -414,6 +423,9 @@ export type AdminUserCreateInput = {
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
@@ -448,6 +460,9 @@ export type AdminUserUncheckedCreateInput = {
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -482,6 +497,9 @@ export type AdminUserUpdateInput = {
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
@@ -516,6 +534,9 @@ export type AdminUserUncheckedUpdateInput = {
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -803,6 +824,52 @@ export type AdminUserUpdateOneRequiredWithoutArrivalsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AdminUserUpdateToOneWithWhereWithoutArrivalsInput, Prisma.AdminUserUpdateWithoutArrivalsInput>, Prisma.AdminUserUncheckedUpdateWithoutArrivalsInput>
 }
 
+export type AdminUserCreateNestedOneWithoutPlatingCreatedInput = {
+  create?: Prisma.XOR<Prisma.AdminUserCreateWithoutPlatingCreatedInput, Prisma.AdminUserUncheckedCreateWithoutPlatingCreatedInput>
+  connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutPlatingCreatedInput
+  connect?: Prisma.AdminUserWhereUniqueInput
+}
+
+export type AdminUserCreateNestedOneWithoutPlatingSentInput = {
+  create?: Prisma.XOR<Prisma.AdminUserCreateWithoutPlatingSentInput, Prisma.AdminUserUncheckedCreateWithoutPlatingSentInput>
+  connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutPlatingSentInput
+  connect?: Prisma.AdminUserWhereUniqueInput
+}
+
+export type AdminUserCreateNestedOneWithoutPlatingReceivedInput = {
+  create?: Prisma.XOR<Prisma.AdminUserCreateWithoutPlatingReceivedInput, Prisma.AdminUserUncheckedCreateWithoutPlatingReceivedInput>
+  connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutPlatingReceivedInput
+  connect?: Prisma.AdminUserWhereUniqueInput
+}
+
+export type AdminUserUpdateOneRequiredWithoutPlatingCreatedNestedInput = {
+  create?: Prisma.XOR<Prisma.AdminUserCreateWithoutPlatingCreatedInput, Prisma.AdminUserUncheckedCreateWithoutPlatingCreatedInput>
+  connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutPlatingCreatedInput
+  upsert?: Prisma.AdminUserUpsertWithoutPlatingCreatedInput
+  connect?: Prisma.AdminUserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AdminUserUpdateToOneWithWhereWithoutPlatingCreatedInput, Prisma.AdminUserUpdateWithoutPlatingCreatedInput>, Prisma.AdminUserUncheckedUpdateWithoutPlatingCreatedInput>
+}
+
+export type AdminUserUpdateOneWithoutPlatingSentNestedInput = {
+  create?: Prisma.XOR<Prisma.AdminUserCreateWithoutPlatingSentInput, Prisma.AdminUserUncheckedCreateWithoutPlatingSentInput>
+  connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutPlatingSentInput
+  upsert?: Prisma.AdminUserUpsertWithoutPlatingSentInput
+  disconnect?: Prisma.AdminUserWhereInput | boolean
+  delete?: Prisma.AdminUserWhereInput | boolean
+  connect?: Prisma.AdminUserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AdminUserUpdateToOneWithWhereWithoutPlatingSentInput, Prisma.AdminUserUpdateWithoutPlatingSentInput>, Prisma.AdminUserUncheckedUpdateWithoutPlatingSentInput>
+}
+
+export type AdminUserUpdateOneWithoutPlatingReceivedNestedInput = {
+  create?: Prisma.XOR<Prisma.AdminUserCreateWithoutPlatingReceivedInput, Prisma.AdminUserUncheckedCreateWithoutPlatingReceivedInput>
+  connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutPlatingReceivedInput
+  upsert?: Prisma.AdminUserUpsertWithoutPlatingReceivedInput
+  disconnect?: Prisma.AdminUserWhereInput | boolean
+  delete?: Prisma.AdminUserWhereInput | boolean
+  connect?: Prisma.AdminUserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AdminUserUpdateToOneWithWhereWithoutPlatingReceivedInput, Prisma.AdminUserUpdateWithoutPlatingReceivedInput>, Prisma.AdminUserUncheckedUpdateWithoutPlatingReceivedInput>
+}
+
 export type AdminUserCreateNestedOneWithoutProductionsCreatedInput = {
   create?: Prisma.XOR<Prisma.AdminUserCreateWithoutProductionsCreatedInput, Prisma.AdminUserUncheckedCreateWithoutProductionsCreatedInput>
   connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutProductionsCreatedInput
@@ -1020,6 +1087,9 @@ export type AdminUserCreateWithoutSessionsInput = {
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
@@ -1053,6 +1123,9 @@ export type AdminUserUncheckedCreateWithoutSessionsInput = {
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -1102,6 +1175,9 @@ export type AdminUserUpdateWithoutSessionsInput = {
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
@@ -1135,6 +1211,9 @@ export type AdminUserUncheckedUpdateWithoutSessionsInput = {
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -1168,6 +1247,9 @@ export type AdminUserCreateWithoutDevicesInput = {
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
@@ -1201,6 +1283,9 @@ export type AdminUserUncheckedCreateWithoutDevicesInput = {
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -1250,6 +1335,9 @@ export type AdminUserUpdateWithoutDevicesInput = {
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
@@ -1283,6 +1371,9 @@ export type AdminUserUncheckedUpdateWithoutDevicesInput = {
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -1316,6 +1407,9 @@ export type AdminUserCreateWithoutDepartmentInput = {
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
@@ -1349,6 +1443,9 @@ export type AdminUserUncheckedCreateWithoutDepartmentInput = {
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -1425,6 +1522,9 @@ export type AdminUserCreateWithoutOrdersCreatedInput = {
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
@@ -1458,6 +1558,9 @@ export type AdminUserUncheckedCreateWithoutOrdersCreatedInput = {
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -1496,6 +1599,9 @@ export type AdminUserCreateWithoutOrdersOwnedInput = {
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
@@ -1529,6 +1635,9 @@ export type AdminUserUncheckedCreateWithoutOrdersOwnedInput = {
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -1578,6 +1687,9 @@ export type AdminUserUpdateWithoutOrdersCreatedInput = {
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
@@ -1611,6 +1723,9 @@ export type AdminUserUncheckedUpdateWithoutOrdersCreatedInput = {
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -1655,6 +1770,9 @@ export type AdminUserUpdateWithoutOrdersOwnedInput = {
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
@@ -1688,6 +1806,9 @@ export type AdminUserUncheckedUpdateWithoutOrdersOwnedInput = {
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -1721,6 +1842,9 @@ export type AdminUserCreateWithoutPurchasesCreatedInput = {
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
@@ -1754,6 +1878,9 @@ export type AdminUserUncheckedCreateWithoutPurchasesCreatedInput = {
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -1803,6 +1930,9 @@ export type AdminUserUpdateWithoutPurchasesCreatedInput = {
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
@@ -1836,6 +1966,9 @@ export type AdminUserUncheckedUpdateWithoutPurchasesCreatedInput = {
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -1869,6 +2002,9 @@ export type AdminUserCreateWithoutArrivalsInput = {
   ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
@@ -1902,6 +2038,9 @@ export type AdminUserUncheckedCreateWithoutArrivalsInput = {
   ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -1951,6 +2090,9 @@ export type AdminUserUpdateWithoutArrivalsInput = {
   ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
@@ -1984,6 +2126,489 @@ export type AdminUserUncheckedUpdateWithoutArrivalsInput = {
   ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
+  productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
+  qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  qcDecisions?: Prisma.QCDecisionUncheckedUpdateManyWithoutDecidedByNestedInput
+  packingRecords?: Prisma.PackingRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  shipments?: Prisma.ShipmentRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  inventoryLogs?: Prisma.InventoryLogUncheckedUpdateManyWithoutOperatorNestedInput
+  attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
+  timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
+}
+
+export type AdminUserCreateWithoutPlatingCreatedInput = {
+  id?: string
+  username: string
+  passwordHash: string
+  displayName: string
+  role: $Enums.Role
+  active?: boolean
+  sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
+  ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
+  purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
+  arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
+  productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
+  feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
+  qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
+  qcDecisions?: Prisma.QCDecisionCreateNestedManyWithoutDecidedByInput
+  packingRecords?: Prisma.PackingRecordCreateNestedManyWithoutOperatorInput
+  shipments?: Prisma.ShipmentRecordCreateNestedManyWithoutOperatorInput
+  inventoryLogs?: Prisma.InventoryLogCreateNestedManyWithoutOperatorInput
+  attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
+  timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
+}
+
+export type AdminUserUncheckedCreateWithoutPlatingCreatedInput = {
+  id?: string
+  username: string
+  passwordHash: string
+  displayName: string
+  role: $Enums.Role
+  departmentId?: string | null
+  active?: boolean
+  sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
+  ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
+  purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
+  productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
+  qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
+  qcDecisions?: Prisma.QCDecisionUncheckedCreateNestedManyWithoutDecidedByInput
+  packingRecords?: Prisma.PackingRecordUncheckedCreateNestedManyWithoutOperatorInput
+  shipments?: Prisma.ShipmentRecordUncheckedCreateNestedManyWithoutOperatorInput
+  inventoryLogs?: Prisma.InventoryLogUncheckedCreateNestedManyWithoutOperatorInput
+  attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
+  timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
+}
+
+export type AdminUserCreateOrConnectWithoutPlatingCreatedInput = {
+  where: Prisma.AdminUserWhereUniqueInput
+  create: Prisma.XOR<Prisma.AdminUserCreateWithoutPlatingCreatedInput, Prisma.AdminUserUncheckedCreateWithoutPlatingCreatedInput>
+}
+
+export type AdminUserCreateWithoutPlatingSentInput = {
+  id?: string
+  username: string
+  passwordHash: string
+  displayName: string
+  role: $Enums.Role
+  active?: boolean
+  sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
+  ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
+  purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
+  arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
+  productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
+  feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
+  qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
+  qcDecisions?: Prisma.QCDecisionCreateNestedManyWithoutDecidedByInput
+  packingRecords?: Prisma.PackingRecordCreateNestedManyWithoutOperatorInput
+  shipments?: Prisma.ShipmentRecordCreateNestedManyWithoutOperatorInput
+  inventoryLogs?: Prisma.InventoryLogCreateNestedManyWithoutOperatorInput
+  attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
+  timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
+}
+
+export type AdminUserUncheckedCreateWithoutPlatingSentInput = {
+  id?: string
+  username: string
+  passwordHash: string
+  displayName: string
+  role: $Enums.Role
+  departmentId?: string | null
+  active?: boolean
+  sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
+  ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
+  purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
+  productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
+  qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
+  qcDecisions?: Prisma.QCDecisionUncheckedCreateNestedManyWithoutDecidedByInput
+  packingRecords?: Prisma.PackingRecordUncheckedCreateNestedManyWithoutOperatorInput
+  shipments?: Prisma.ShipmentRecordUncheckedCreateNestedManyWithoutOperatorInput
+  inventoryLogs?: Prisma.InventoryLogUncheckedCreateNestedManyWithoutOperatorInput
+  attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
+  timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
+}
+
+export type AdminUserCreateOrConnectWithoutPlatingSentInput = {
+  where: Prisma.AdminUserWhereUniqueInput
+  create: Prisma.XOR<Prisma.AdminUserCreateWithoutPlatingSentInput, Prisma.AdminUserUncheckedCreateWithoutPlatingSentInput>
+}
+
+export type AdminUserCreateWithoutPlatingReceivedInput = {
+  id?: string
+  username: string
+  passwordHash: string
+  displayName: string
+  role: $Enums.Role
+  active?: boolean
+  sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput
+  ordersCreated?: Prisma.OrderCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
+  purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
+  arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
+  feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
+  qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
+  qcDecisions?: Prisma.QCDecisionCreateNestedManyWithoutDecidedByInput
+  packingRecords?: Prisma.PackingRecordCreateNestedManyWithoutOperatorInput
+  shipments?: Prisma.ShipmentRecordCreateNestedManyWithoutOperatorInput
+  inventoryLogs?: Prisma.InventoryLogCreateNestedManyWithoutOperatorInput
+  attachments?: Prisma.AttachmentCreateNestedManyWithoutUploadedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  exceptions?: Prisma.TabletExceptionCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchCreateNestedManyWithoutCreatedByInput
+  timelineEvents?: Prisma.TimelineEventCreateNestedManyWithoutActorInput
+}
+
+export type AdminUserUncheckedCreateWithoutPlatingReceivedInput = {
+  id?: string
+  username: string
+  passwordHash: string
+  displayName: string
+  role: $Enums.Role
+  departmentId?: string | null
+  active?: boolean
+  sessionVersion?: number
+  deviceBindingMode?: $Enums.DeviceBindingMode
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput
+  ordersCreated?: Prisma.OrderUncheckedCreateNestedManyWithoutCreatedByInput
+  ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
+  purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
+  qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
+  qcDecisions?: Prisma.QCDecisionUncheckedCreateNestedManyWithoutDecidedByInput
+  packingRecords?: Prisma.PackingRecordUncheckedCreateNestedManyWithoutOperatorInput
+  shipments?: Prisma.ShipmentRecordUncheckedCreateNestedManyWithoutOperatorInput
+  inventoryLogs?: Prisma.InventoryLogUncheckedCreateNestedManyWithoutOperatorInput
+  attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUploadedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  exceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutReporterInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedCreateNestedManyWithoutHandlerInput
+  importBatches?: Prisma.ImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
+  timelineEvents?: Prisma.TimelineEventUncheckedCreateNestedManyWithoutActorInput
+}
+
+export type AdminUserCreateOrConnectWithoutPlatingReceivedInput = {
+  where: Prisma.AdminUserWhereUniqueInput
+  create: Prisma.XOR<Prisma.AdminUserCreateWithoutPlatingReceivedInput, Prisma.AdminUserUncheckedCreateWithoutPlatingReceivedInput>
+}
+
+export type AdminUserUpsertWithoutPlatingCreatedInput = {
+  update: Prisma.XOR<Prisma.AdminUserUpdateWithoutPlatingCreatedInput, Prisma.AdminUserUncheckedUpdateWithoutPlatingCreatedInput>
+  create: Prisma.XOR<Prisma.AdminUserCreateWithoutPlatingCreatedInput, Prisma.AdminUserUncheckedCreateWithoutPlatingCreatedInput>
+  where?: Prisma.AdminUserWhereInput
+}
+
+export type AdminUserUpdateToOneWithWhereWithoutPlatingCreatedInput = {
+  where?: Prisma.AdminUserWhereInput
+  data: Prisma.XOR<Prisma.AdminUserUpdateWithoutPlatingCreatedInput, Prisma.AdminUserUncheckedUpdateWithoutPlatingCreatedInput>
+}
+
+export type AdminUserUpdateWithoutPlatingCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
+  ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
+  purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
+  arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
+  productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
+  feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
+  qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
+  qcDecisions?: Prisma.QCDecisionUpdateManyWithoutDecidedByNestedInput
+  packingRecords?: Prisma.PackingRecordUpdateManyWithoutOperatorNestedInput
+  shipments?: Prisma.ShipmentRecordUpdateManyWithoutOperatorNestedInput
+  inventoryLogs?: Prisma.InventoryLogUpdateManyWithoutOperatorNestedInput
+  attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
+  timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
+}
+
+export type AdminUserUncheckedUpdateWithoutPlatingCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
+  ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
+  purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
+  productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
+  qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  qcDecisions?: Prisma.QCDecisionUncheckedUpdateManyWithoutDecidedByNestedInput
+  packingRecords?: Prisma.PackingRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  shipments?: Prisma.ShipmentRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  inventoryLogs?: Prisma.InventoryLogUncheckedUpdateManyWithoutOperatorNestedInput
+  attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
+  timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
+}
+
+export type AdminUserUpsertWithoutPlatingSentInput = {
+  update: Prisma.XOR<Prisma.AdminUserUpdateWithoutPlatingSentInput, Prisma.AdminUserUncheckedUpdateWithoutPlatingSentInput>
+  create: Prisma.XOR<Prisma.AdminUserCreateWithoutPlatingSentInput, Prisma.AdminUserUncheckedCreateWithoutPlatingSentInput>
+  where?: Prisma.AdminUserWhereInput
+}
+
+export type AdminUserUpdateToOneWithWhereWithoutPlatingSentInput = {
+  where?: Prisma.AdminUserWhereInput
+  data: Prisma.XOR<Prisma.AdminUserUpdateWithoutPlatingSentInput, Prisma.AdminUserUncheckedUpdateWithoutPlatingSentInput>
+}
+
+export type AdminUserUpdateWithoutPlatingSentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
+  ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
+  purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
+  arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
+  productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
+  feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
+  qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
+  qcDecisions?: Prisma.QCDecisionUpdateManyWithoutDecidedByNestedInput
+  packingRecords?: Prisma.PackingRecordUpdateManyWithoutOperatorNestedInput
+  shipments?: Prisma.ShipmentRecordUpdateManyWithoutOperatorNestedInput
+  inventoryLogs?: Prisma.InventoryLogUpdateManyWithoutOperatorNestedInput
+  attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
+  timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
+}
+
+export type AdminUserUncheckedUpdateWithoutPlatingSentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
+  ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
+  purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
+  productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
+  qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  qcDecisions?: Prisma.QCDecisionUncheckedUpdateManyWithoutDecidedByNestedInput
+  packingRecords?: Prisma.PackingRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  shipments?: Prisma.ShipmentRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  inventoryLogs?: Prisma.InventoryLogUncheckedUpdateManyWithoutOperatorNestedInput
+  attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  exceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUncheckedUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
+  timelineEvents?: Prisma.TimelineEventUncheckedUpdateManyWithoutActorNestedInput
+}
+
+export type AdminUserUpsertWithoutPlatingReceivedInput = {
+  update: Prisma.XOR<Prisma.AdminUserUpdateWithoutPlatingReceivedInput, Prisma.AdminUserUncheckedUpdateWithoutPlatingReceivedInput>
+  create: Prisma.XOR<Prisma.AdminUserCreateWithoutPlatingReceivedInput, Prisma.AdminUserUncheckedCreateWithoutPlatingReceivedInput>
+  where?: Prisma.AdminUserWhereInput
+}
+
+export type AdminUserUpdateToOneWithWhereWithoutPlatingReceivedInput = {
+  where?: Prisma.AdminUserWhereInput
+  data: Prisma.XOR<Prisma.AdminUserUpdateWithoutPlatingReceivedInput, Prisma.AdminUserUncheckedUpdateWithoutPlatingReceivedInput>
+}
+
+export type AdminUserUpdateWithoutPlatingReceivedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput
+  ordersCreated?: Prisma.OrderUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
+  purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
+  arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
+  feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
+  qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
+  qcDecisions?: Prisma.QCDecisionUpdateManyWithoutDecidedByNestedInput
+  packingRecords?: Prisma.PackingRecordUpdateManyWithoutOperatorNestedInput
+  shipments?: Prisma.ShipmentRecordUpdateManyWithoutOperatorNestedInput
+  inventoryLogs?: Prisma.InventoryLogUpdateManyWithoutOperatorNestedInput
+  attachments?: Prisma.AttachmentUpdateManyWithoutUploadedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  exceptions?: Prisma.TabletExceptionUpdateManyWithoutReporterNestedInput
+  handledExceptions?: Prisma.TabletExceptionUpdateManyWithoutHandlerNestedInput
+  importBatches?: Prisma.ImportBatchUpdateManyWithoutCreatedByNestedInput
+  timelineEvents?: Prisma.TimelineEventUpdateManyWithoutActorNestedInput
+}
+
+export type AdminUserUncheckedUpdateWithoutPlatingReceivedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  deviceBindingMode?: Prisma.EnumDeviceBindingModeFieldUpdateOperationsInput | $Enums.DeviceBindingMode
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput
+  ordersCreated?: Prisma.OrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
+  purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -2018,6 +2643,9 @@ export type AdminUserCreateWithoutProductionsCreatedInput = {
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
   qcDecisions?: Prisma.QCDecisionCreateNestedManyWithoutDecidedByInput
@@ -2051,6 +2679,9 @@ export type AdminUserUncheckedCreateWithoutProductionsCreatedInput = {
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
   qcDecisions?: Prisma.QCDecisionUncheckedCreateNestedManyWithoutDecidedByInput
@@ -2100,6 +2731,9 @@ export type AdminUserUpdateWithoutProductionsCreatedInput = {
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
   qcDecisions?: Prisma.QCDecisionUpdateManyWithoutDecidedByNestedInput
@@ -2133,6 +2767,9 @@ export type AdminUserUncheckedUpdateWithoutProductionsCreatedInput = {
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
   qcDecisions?: Prisma.QCDecisionUncheckedUpdateManyWithoutDecidedByNestedInput
@@ -2166,6 +2803,9 @@ export type AdminUserCreateWithoutFeedbacksInput = {
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
   qcDecisions?: Prisma.QCDecisionCreateNestedManyWithoutDecidedByInput
@@ -2199,6 +2839,9 @@ export type AdminUserUncheckedCreateWithoutFeedbacksInput = {
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
   qcDecisions?: Prisma.QCDecisionUncheckedCreateNestedManyWithoutDecidedByInput
@@ -2248,6 +2891,9 @@ export type AdminUserUpdateWithoutFeedbacksInput = {
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
   qcDecisions?: Prisma.QCDecisionUpdateManyWithoutDecidedByNestedInput
@@ -2281,6 +2927,9 @@ export type AdminUserUncheckedUpdateWithoutFeedbacksInput = {
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
   qcDecisions?: Prisma.QCDecisionUncheckedUpdateManyWithoutDecidedByNestedInput
@@ -2314,6 +2963,9 @@ export type AdminUserCreateWithoutQcRecordsInput = {
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcDecisions?: Prisma.QCDecisionCreateNestedManyWithoutDecidedByInput
@@ -2347,6 +2999,9 @@ export type AdminUserUncheckedCreateWithoutQcRecordsInput = {
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcDecisions?: Prisma.QCDecisionUncheckedCreateNestedManyWithoutDecidedByInput
@@ -2396,6 +3051,9 @@ export type AdminUserUpdateWithoutQcRecordsInput = {
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcDecisions?: Prisma.QCDecisionUpdateManyWithoutDecidedByNestedInput
@@ -2429,6 +3087,9 @@ export type AdminUserUncheckedUpdateWithoutQcRecordsInput = {
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcDecisions?: Prisma.QCDecisionUncheckedUpdateManyWithoutDecidedByNestedInput
@@ -2462,6 +3123,9 @@ export type AdminUserCreateWithoutQcDecisionsInput = {
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
@@ -2495,6 +3159,9 @@ export type AdminUserUncheckedCreateWithoutQcDecisionsInput = {
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -2544,6 +3211,9 @@ export type AdminUserUpdateWithoutQcDecisionsInput = {
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
@@ -2577,6 +3247,9 @@ export type AdminUserUncheckedUpdateWithoutQcDecisionsInput = {
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -2610,6 +3283,9 @@ export type AdminUserCreateWithoutPackingRecordsInput = {
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
@@ -2643,6 +3319,9 @@ export type AdminUserUncheckedCreateWithoutPackingRecordsInput = {
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -2692,6 +3371,9 @@ export type AdminUserUpdateWithoutPackingRecordsInput = {
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
@@ -2725,6 +3407,9 @@ export type AdminUserUncheckedUpdateWithoutPackingRecordsInput = {
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -2758,6 +3443,9 @@ export type AdminUserCreateWithoutShipmentsInput = {
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
@@ -2791,6 +3479,9 @@ export type AdminUserUncheckedCreateWithoutShipmentsInput = {
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -2840,6 +3531,9 @@ export type AdminUserUpdateWithoutShipmentsInput = {
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
@@ -2873,6 +3567,9 @@ export type AdminUserUncheckedUpdateWithoutShipmentsInput = {
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -2906,6 +3603,9 @@ export type AdminUserCreateWithoutInventoryLogsInput = {
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
@@ -2939,6 +3639,9 @@ export type AdminUserUncheckedCreateWithoutInventoryLogsInput = {
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -2988,6 +3691,9 @@ export type AdminUserUpdateWithoutInventoryLogsInput = {
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
@@ -3021,6 +3727,9 @@ export type AdminUserUncheckedUpdateWithoutInventoryLogsInput = {
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -3054,6 +3763,9 @@ export type AdminUserCreateWithoutAttachmentsInput = {
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
@@ -3087,6 +3799,9 @@ export type AdminUserUncheckedCreateWithoutAttachmentsInput = {
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -3136,6 +3851,9 @@ export type AdminUserUpdateWithoutAttachmentsInput = {
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
@@ -3169,6 +3887,9 @@ export type AdminUserUncheckedUpdateWithoutAttachmentsInput = {
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -3202,6 +3923,9 @@ export type AdminUserCreateWithoutNotificationsInput = {
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
@@ -3235,6 +3959,9 @@ export type AdminUserUncheckedCreateWithoutNotificationsInput = {
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -3284,6 +4011,9 @@ export type AdminUserUpdateWithoutNotificationsInput = {
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
@@ -3317,6 +4047,9 @@ export type AdminUserUncheckedUpdateWithoutNotificationsInput = {
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -3350,6 +4083,9 @@ export type AdminUserCreateWithoutAuditLogsInput = {
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
@@ -3383,6 +4119,9 @@ export type AdminUserUncheckedCreateWithoutAuditLogsInput = {
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -3432,6 +4171,9 @@ export type AdminUserUpdateWithoutAuditLogsInput = {
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
@@ -3465,6 +4207,9 @@ export type AdminUserUncheckedUpdateWithoutAuditLogsInput = {
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -3498,6 +4243,9 @@ export type AdminUserCreateWithoutExceptionsInput = {
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
@@ -3531,6 +4279,9 @@ export type AdminUserUncheckedCreateWithoutExceptionsInput = {
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -3569,6 +4320,9 @@ export type AdminUserCreateWithoutHandledExceptionsInput = {
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
@@ -3602,6 +4356,9 @@ export type AdminUserUncheckedCreateWithoutHandledExceptionsInput = {
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -3651,6 +4408,9 @@ export type AdminUserUpdateWithoutExceptionsInput = {
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
@@ -3684,6 +4444,9 @@ export type AdminUserUncheckedUpdateWithoutExceptionsInput = {
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -3728,6 +4491,9 @@ export type AdminUserUpdateWithoutHandledExceptionsInput = {
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
@@ -3761,6 +4527,9 @@ export type AdminUserUncheckedUpdateWithoutHandledExceptionsInput = {
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -3794,6 +4563,9 @@ export type AdminUserCreateWithoutImportBatchesInput = {
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
@@ -3827,6 +4599,9 @@ export type AdminUserUncheckedCreateWithoutImportBatchesInput = {
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -3876,6 +4651,9 @@ export type AdminUserUpdateWithoutImportBatchesInput = {
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
@@ -3909,6 +4687,9 @@ export type AdminUserUncheckedUpdateWithoutImportBatchesInput = {
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -3942,6 +4723,9 @@ export type AdminUserCreateWithoutTimelineEventsInput = {
   ordersOwned?: Prisma.OrderCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordCreateNestedManyWithoutOperatorInput
@@ -3975,6 +4759,9 @@ export type AdminUserUncheckedCreateWithoutTimelineEventsInput = {
   ordersOwned?: Prisma.OrderUncheckedCreateNestedManyWithoutOwnerInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedCreateNestedManyWithoutCreatedByInput
   arrivals?: Prisma.ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput
+  platingCreated?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutCreatedByInput
+  platingSent?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutSentByInput
+  platingReceived?: Prisma.PlatingOrderUncheckedCreateNestedManyWithoutReceivedByInput
   productionsCreated?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutCreatedByInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput
   qcRecords?: Prisma.QCRecordUncheckedCreateNestedManyWithoutOperatorInput
@@ -4024,6 +4811,9 @@ export type AdminUserUpdateWithoutTimelineEventsInput = {
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
@@ -4057,6 +4847,9 @@ export type AdminUserUncheckedUpdateWithoutTimelineEventsInput = {
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -4102,6 +4895,9 @@ export type AdminUserUpdateWithoutDepartmentInput = {
   ordersOwned?: Prisma.OrderUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUpdateManyWithoutOperatorNestedInput
@@ -4135,6 +4931,9 @@ export type AdminUserUncheckedUpdateWithoutDepartmentInput = {
   ordersOwned?: Prisma.OrderUncheckedUpdateManyWithoutOwnerNestedInput
   purchasesCreated?: Prisma.PurchaseOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   arrivals?: Prisma.ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput
+  platingCreated?: Prisma.PlatingOrderUncheckedUpdateManyWithoutCreatedByNestedInput
+  platingSent?: Prisma.PlatingOrderUncheckedUpdateManyWithoutSentByNestedInput
+  platingReceived?: Prisma.PlatingOrderUncheckedUpdateManyWithoutReceivedByNestedInput
   productionsCreated?: Prisma.ProductionOrderUncheckedUpdateManyWithoutCreatedByNestedInput
   feedbacks?: Prisma.ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput
   qcRecords?: Prisma.QCRecordUncheckedUpdateManyWithoutOperatorNestedInput
@@ -4176,6 +4975,9 @@ export type AdminUserCountOutputType = {
   ordersOwned: number
   purchasesCreated: number
   arrivals: number
+  platingCreated: number
+  platingSent: number
+  platingReceived: number
   productionsCreated: number
   feedbacks: number
   qcRecords: number
@@ -4199,6 +5001,9 @@ export type AdminUserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensi
   ordersOwned?: boolean | AdminUserCountOutputTypeCountOrdersOwnedArgs
   purchasesCreated?: boolean | AdminUserCountOutputTypeCountPurchasesCreatedArgs
   arrivals?: boolean | AdminUserCountOutputTypeCountArrivalsArgs
+  platingCreated?: boolean | AdminUserCountOutputTypeCountPlatingCreatedArgs
+  platingSent?: boolean | AdminUserCountOutputTypeCountPlatingSentArgs
+  platingReceived?: boolean | AdminUserCountOutputTypeCountPlatingReceivedArgs
   productionsCreated?: boolean | AdminUserCountOutputTypeCountProductionsCreatedArgs
   feedbacks?: boolean | AdminUserCountOutputTypeCountFeedbacksArgs
   qcRecords?: boolean | AdminUserCountOutputTypeCountQcRecordsArgs
@@ -4265,6 +5070,27 @@ export type AdminUserCountOutputTypeCountPurchasesCreatedArgs<ExtArgs extends ru
  */
 export type AdminUserCountOutputTypeCountArrivalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ArrivalRecordWhereInput
+}
+
+/**
+ * AdminUserCountOutputType without action
+ */
+export type AdminUserCountOutputTypeCountPlatingCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PlatingOrderWhereInput
+}
+
+/**
+ * AdminUserCountOutputType without action
+ */
+export type AdminUserCountOutputTypeCountPlatingSentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PlatingOrderWhereInput
+}
+
+/**
+ * AdminUserCountOutputType without action
+ */
+export type AdminUserCountOutputTypeCountPlatingReceivedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PlatingOrderWhereInput
 }
 
 /**
@@ -4385,6 +5211,9 @@ export type AdminUserSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   ordersOwned?: boolean | Prisma.AdminUser$ordersOwnedArgs<ExtArgs>
   purchasesCreated?: boolean | Prisma.AdminUser$purchasesCreatedArgs<ExtArgs>
   arrivals?: boolean | Prisma.AdminUser$arrivalsArgs<ExtArgs>
+  platingCreated?: boolean | Prisma.AdminUser$platingCreatedArgs<ExtArgs>
+  platingSent?: boolean | Prisma.AdminUser$platingSentArgs<ExtArgs>
+  platingReceived?: boolean | Prisma.AdminUser$platingReceivedArgs<ExtArgs>
   productionsCreated?: boolean | Prisma.AdminUser$productionsCreatedArgs<ExtArgs>
   feedbacks?: boolean | Prisma.AdminUser$feedbacksArgs<ExtArgs>
   qcRecords?: boolean | Prisma.AdminUser$qcRecordsArgs<ExtArgs>
@@ -4455,6 +5284,9 @@ export type AdminUserInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   ordersOwned?: boolean | Prisma.AdminUser$ordersOwnedArgs<ExtArgs>
   purchasesCreated?: boolean | Prisma.AdminUser$purchasesCreatedArgs<ExtArgs>
   arrivals?: boolean | Prisma.AdminUser$arrivalsArgs<ExtArgs>
+  platingCreated?: boolean | Prisma.AdminUser$platingCreatedArgs<ExtArgs>
+  platingSent?: boolean | Prisma.AdminUser$platingSentArgs<ExtArgs>
+  platingReceived?: boolean | Prisma.AdminUser$platingReceivedArgs<ExtArgs>
   productionsCreated?: boolean | Prisma.AdminUser$productionsCreatedArgs<ExtArgs>
   feedbacks?: boolean | Prisma.AdminUser$feedbacksArgs<ExtArgs>
   qcRecords?: boolean | Prisma.AdminUser$qcRecordsArgs<ExtArgs>
@@ -4488,6 +5320,9 @@ export type $AdminUserPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     ordersOwned: Prisma.$OrderPayload<ExtArgs>[]
     purchasesCreated: Prisma.$PurchaseOrderPayload<ExtArgs>[]
     arrivals: Prisma.$ArrivalRecordPayload<ExtArgs>[]
+    platingCreated: Prisma.$PlatingOrderPayload<ExtArgs>[]
+    platingSent: Prisma.$PlatingOrderPayload<ExtArgs>[]
+    platingReceived: Prisma.$PlatingOrderPayload<ExtArgs>[]
     productionsCreated: Prisma.$ProductionOrderPayload<ExtArgs>[]
     feedbacks: Prisma.$ProductionFeedbackPayload<ExtArgs>[]
     qcRecords: Prisma.$QCRecordPayload<ExtArgs>[]
@@ -4919,6 +5754,9 @@ export interface Prisma__AdminUserClient<T, Null = never, ExtArgs extends runtim
   ordersOwned<T extends Prisma.AdminUser$ordersOwnedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$ordersOwnedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   purchasesCreated<T extends Prisma.AdminUser$purchasesCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$purchasesCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PurchaseOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   arrivals<T extends Prisma.AdminUser$arrivalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$arrivalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ArrivalRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  platingCreated<T extends Prisma.AdminUser$platingCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$platingCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatingOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  platingSent<T extends Prisma.AdminUser$platingSentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$platingSentArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatingOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  platingReceived<T extends Prisma.AdminUser$platingReceivedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$platingReceivedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatingOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   productionsCreated<T extends Prisma.AdminUser$productionsCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$productionsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductionOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   feedbacks<T extends Prisma.AdminUser$feedbacksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$feedbacksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductionFeedbackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   qcRecords<T extends Prisma.AdminUser$qcRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$qcRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QCRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5534,6 +6372,78 @@ export type AdminUser$arrivalsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.ArrivalRecordScalarFieldEnum | Prisma.ArrivalRecordScalarFieldEnum[]
+}
+
+/**
+ * AdminUser.platingCreated
+ */
+export type AdminUser$platingCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlatingOrder
+   */
+  select?: Prisma.PlatingOrderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlatingOrder
+   */
+  omit?: Prisma.PlatingOrderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlatingOrderInclude<ExtArgs> | null
+  where?: Prisma.PlatingOrderWhereInput
+  orderBy?: Prisma.PlatingOrderOrderByWithRelationInput | Prisma.PlatingOrderOrderByWithRelationInput[]
+  cursor?: Prisma.PlatingOrderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PlatingOrderScalarFieldEnum | Prisma.PlatingOrderScalarFieldEnum[]
+}
+
+/**
+ * AdminUser.platingSent
+ */
+export type AdminUser$platingSentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlatingOrder
+   */
+  select?: Prisma.PlatingOrderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlatingOrder
+   */
+  omit?: Prisma.PlatingOrderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlatingOrderInclude<ExtArgs> | null
+  where?: Prisma.PlatingOrderWhereInput
+  orderBy?: Prisma.PlatingOrderOrderByWithRelationInput | Prisma.PlatingOrderOrderByWithRelationInput[]
+  cursor?: Prisma.PlatingOrderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PlatingOrderScalarFieldEnum | Prisma.PlatingOrderScalarFieldEnum[]
+}
+
+/**
+ * AdminUser.platingReceived
+ */
+export type AdminUser$platingReceivedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlatingOrder
+   */
+  select?: Prisma.PlatingOrderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlatingOrder
+   */
+  omit?: Prisma.PlatingOrderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlatingOrderInclude<ExtArgs> | null
+  where?: Prisma.PlatingOrderWhereInput
+  orderBy?: Prisma.PlatingOrderOrderByWithRelationInput | Prisma.PlatingOrderOrderByWithRelationInput[]
+  cursor?: Prisma.PlatingOrderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PlatingOrderScalarFieldEnum | Prisma.PlatingOrderScalarFieldEnum[]
 }
 
 /**

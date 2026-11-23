@@ -117,3 +117,12 @@ export const DeviceStatus = {
 } as const
 
 export type DeviceStatus = (typeof DeviceStatus)[keyof typeof DeviceStatus]
+
+
+export const PlatingStatus = {
+  PENDING: 'PENDING',
+  SENT: 'SENT',
+  RECEIVED: 'RECEIVED'
+} as const
+
+export type PlatingStatus = (typeof PlatingStatus)[keyof typeof PlatingStatus]

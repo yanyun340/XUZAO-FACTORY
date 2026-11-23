@@ -115,6 +115,11 @@ export type PurchaseItem = Prisma.PurchaseItemModel
  */
 export type ArrivalRecord = Prisma.ArrivalRecordModel
 /**
+ * Model PlatingOrder
+ * * R06F：电镀外协单，挂在采购项上；整件计价，发送后锁定。
+ */
+export type PlatingOrder = Prisma.PlatingOrderModel
+/**
  * Model ProductionOrder
  * 
  */

@@ -96,7 +96,16 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
       byCategory[row.category] = { total: Number(row.total), unread: Number(row.unread) };
     }
 
-    return ok(reply, { unread, total, byCategory });
+    // 设备审批与通知角标是两条线：通知点过「已读」后，设备仍可能停在待批准。
+    // 所以这里以设备表为准，管理员批准前一直可见；排除自己的设备，避免自扰。
+    const pendingDevices =
+      auth.user.role === 'ADMIN'
+        ? await prisma.device.count({
+            where: { status: 'PENDING', userId: { not: auth.user.id } },
+          })
+        : 0;
+
+    return ok(reply, { unread, total, byCategory, pendingDevices });
   });
 
   app.post('/api/v1/notifications/:id/read', { preHandler: authenticate }, async (request, reply) => {
@@ -160,6 +169,7 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
       orderItems,
       purchaseItems,
       feedbacks,
+      platingOrders,
       createdRecent,
       createdPrevious,
       completedRecent,
@@ -193,6 +203,10 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
       prisma.productionFeedback.findMany({
         where: { productionOrder: { order: where } },
         select: { quantity: true, productionOrder: { select: { unitPrice: true } } },
+      }),
+      prisma.platingOrder.findMany({
+        where: { order: where, status: 'RECEIVED' },
+        select: { quantity: true, unitPrice: true },
       }),
       prisma.order.count({ where: { AND: [where, { createdAt: { gte: sevenDaysAgo } }] } }),
       prisma.order.count({
@@ -237,7 +251,11 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
         sum + Number(feedback.productionOrder.unitPrice) * feedback.quantity,
       0,
     );
-    const profit = sales - purchaseCost - productionCost;
+    const platingCost = platingOrders.reduce(
+      (sum, plating) => sum + Number(plating.unitPrice) * plating.quantity,
+      0,
+    );
+    const profit = sales - purchaseCost - productionCost - platingCost;
 
     const percentDelta = (recent: number, previous: number): number | null =>
       previous === 0 ? null : Math.round(((recent - previous) / previous) * 100);
@@ -300,6 +318,7 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
             sales: sales.toFixed(2),
             purchaseCost: purchaseCost.toFixed(2),
             productionCost: productionCost.toFixed(2),
+            platingCost: platingCost.toFixed(2),
             profit: profit.toFixed(2),
             marginPercent: sales === 0 ? '0.00' : ((profit / sales) * 100).toFixed(2),
           }

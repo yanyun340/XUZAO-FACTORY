@@ -1,6 +1,6 @@
 # API 契约
 
-版本：0.2.0｜Base URL：`/api/v1`
+版本：0.3.0｜Base URL：`/api/v1`
 更新时间：2026-11-04
 实现：`backend/src/routes/*.ts`；前端封装：`frontend/src/api/client.ts`
 
@@ -74,6 +74,8 @@
 | 422 | 业务码，如 `ARRIVAL_EXCEEDS_REMAINING`、`QC_QTY_MISMATCH`、`PACKING_EXCEEDS_REMAINING`、`SHIPMENT_EXCEEDS_LIMIT` | 业务规则拒绝 |
 | 422 | `IMPORT_HAS_ERRORS` / `IMPORT_DEPARTMENT_INVALID` | 预检有错误行 / 部门无效 |
 | 422 | `SUPPLIER_NOT_IN_PART_SET` | 配件配置了供应商集合，但采购选了集合外供应商 |
+| 422 | `PLATING_NOT_REQUIRED` / `PLATING_SUPPLIER_REQUIRED` / `PLATING_EXCEEDS_REMAINING` | 采购项不需电镀 / 厂商类型不对 / 超过已到货余量 |
+| 422 | `PLATING_NOT_RECEIVED` / `PLATING_QTY_INSUFFICIENT` | 未电镀收货 / 生产数量超过已收数量 |
 | 422 | `SUPPLIER_NOT_FOUND` / `PART_NOT_FOUND` / `CUSTOMER_NOT_FOUND` / `DEPARTMENT_NOT_FOUND` / `EMPLOYEE_NOT_FOUND` | 引用了不存在或已停用的主数据 |
 | 404 | `OWNER_NOT_FOUND` / `IMPORT_BATCH_NOT_FOUND` / `EXCEPTION_NOT_FOUND` | 附件层级、导入批次、异常记录不存在 |
 | 503 | `DATABASE_UNAVAILABLE` / `NOT_READY` | 数据库不可用 / 就绪检查未通过 |
@@ -131,7 +133,7 @@
 | `POST /orders` | ADMIN | `{customerId, customerContact?, dueDate, remark?, ownerId?, items:[{productName,spec,quantity,unitPrice}]}` | 201 订单详情；`ownerId` 缺省为创建人 | 422 客户停用；400 校验 |
 | `GET /orders/export.xlsx` | ADMIN | `status,keyword,customerId` | 200 xlsx 附件（≤10000 行） | 403 |
 
-订单详情结构：`summary + createdByName + items + flow + timeline`。`flow` 包含 `quantities`、`purchase`、`production`、`qc`、`packing`、`shipping`、`profit`（非管理员为 null）。`allowedActions` 由后端按角色/状态/数量计算，前端不得自行推断。
+订单详情结构：`summary + createdByName + items + flow + timeline`。`flow` 包含 `quantities`、`purchase`、`plating`、`production`、`qc`、`packing`、`shipping`、`profit`（非管理员为 null）。`plating` 含 `required/notApplicable/sentQty/receivedQty/outstandingQty/orders`。`allowedActions` 由后端按角色/状态/数量计算，前端不得自行推断。
 
 ### 4.2 流转动作
 
@@ -148,6 +150,11 @@
 | `POST /orders/:id/packing-records` | PACKING | `{quantity}` | PACKING | 写包装记录，累计 ≤ 放行量 | `PACKING_EXCEEDS_REMAINING` |
 | `POST /orders/:id/shipping-trigger` | ADMIN | 空对象 | PACKING 且已包装 >0 | 状态→SHIPPING | `NO_PACKED_QTY` |
 | `POST /orders/:id/shipment-records` | LOGISTICS | `{quantity}` | SHIPPING | 写发货记录；累计 ≥ 订单量→COMPLETED | `SHIPMENT_EXCEEDS_LIMIT`（上限 `min(可发货剩余, 应交剩余)`） |
+| `POST /orders/:id/plating-orders` | ADMIN | `{purchaseItemId, supplierId, quantity, unitPrice}` | PURCHASING，采购项 `platingRequired=true`，厂商 `type=ELECTROPLATING` | 建电镀单，状态 PENDING | `PLATING_NOT_REQUIRED`、`PLATING_SUPPLIER_REQUIRED`、`PLATING_EXCEEDS_REMAINING` |
+| `PATCH /plating-orders/:id` | ADMIN | `{quantity?, unitPrice?}` | 仅 PENDING | 改数量/单价 | 409 `PLATING_LOCKED` |
+| `DELETE /plating-orders/:id` | ADMIN | — | 仅 PENDING | 删除电镀单 | 409 `PLATING_LOCKED` |
+| `POST /plating-orders/:id/send` | LOGISTICS | — | 仅 PENDING | PENDING→SENT，写发送人/时间 | 409 `PLATING_ALREADY_SENT` |
+| `POST /plating-orders/:id/receive` | LOGISTICS | — | 仅 SENT | SENT→RECEIVED，写收货人/时间 | 409 `PLATING_NOT_SENT` / `PLATING_ALREADY_RECEIVED` |
 | `PATCH /productions/:id/price-visibility` | ADMIN | `{visible: boolean}` | 生产任务存在 | 200 `{id,unitPriceVisible}`；写审计 | 404 `PRODUCTION_NOT_FOUND` |
 | `GET /productions/:id/price-visibility-history` | ADMIN | — | 200 开关变更历史（来自审计） | 404 |
 

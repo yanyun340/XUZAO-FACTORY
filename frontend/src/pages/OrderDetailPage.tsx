@@ -6,6 +6,7 @@ import { useAuth } from '../auth/AuthContext';
 import { AttachmentScopes } from '../components/AttachmentPanel';
 import { DataTable } from '../components/DataTable';
 import { FlowLedger, FlowPanel, PriceVisibilityControl } from '../components/FlowPanel';
+import { PlatingPanel } from '../components/PlatingPanel';
 import { ReportException } from '../components/ReportException';
 import { ArrowLeft, CheckIcon } from '../components/Icons';
 import {
@@ -28,7 +29,7 @@ import {
 
 /** 下一步按真实记录推导，而不是只看状态：同一状态下是否已到货、已反馈，下一步责任人不同。 */
 function nextStep(order: OrderDetail): { owner: string; text: string } {
-  const { quantities, purchase, production, qc, packing } = order.flow;
+  const { quantities, purchase, plating, production, qc, packing } = order.flow;
   switch (order.status) {
     case 'PENDING_PURCHASE':
       return { owner: '管理员', text: '创建采购单，选择供应商与配件' };
@@ -36,7 +37,14 @@ function nextStep(order: OrderDetail): { owner: string; text: string } {
       if (purchase && quantities.arrivedQty < quantities.purchaseQty) {
         return { owner: '物流', text: '登记采购到货数量' };
       }
-      return { owner: '管理员', text: '采购已全部到货，下发生产任务' };
+      if (plating?.required && plating.outstandingQty > 0) {
+        const sent = plating.orders.some((row) => row.status === 'SENT');
+        const pending = plating.orders.some((row) => row.status === 'PENDING');
+        if (sent) return { owner: '物流', text: '电镀已发出，等待物流登记收货' };
+        if (pending) return { owner: '物流', text: '电镀单已建，等待物流发送' };
+        return { owner: '管理员', text: '需电镀：先建电镀单，再交给物流发送' };
+      }
+      return { owner: '管理员', text: '采购与电镀已就绪，下发生产任务' };
     case 'IN_PRODUCTION':
       if (production && !production.feedback) {
         return { owner: '生产', text: '反馈本工序完成数量' };
@@ -292,6 +300,7 @@ export function OrderDetailPage() {
           </section>
 
           <FlowLedger order={order} />
+          <PlatingPanel order={order} onUpdated={setOrder} />
         </div>
 
         <aside className="detail-grid__aside">

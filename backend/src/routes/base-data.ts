@@ -101,9 +101,12 @@ export async function baseDataRoutes(app: FastifyInstance): Promise<void> {
 
   // ---------- 供应商 ----------
   app.get('/api/v1/suppliers', { preHandler: authenticate }, async (request, reply) => {
-    const query = pageSchema.parse(request.query);
+    const query = pageSchema
+      .extend({ type: z.nativeEnum(SupplierType).optional() })
+      .parse(request.query);
     const where: Prisma.SupplierWhereInput = {
       ...(query.active === undefined ? {} : { active: query.active }),
+      ...(query.type ? { type: query.type } : {}),
       ...(query.keyword
         ? {
             OR: [
