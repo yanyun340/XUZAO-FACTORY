@@ -86,6 +86,18 @@ export async function userRoutes(app: FastifyInstance): Promise<void> {
       }),
     ]);
 
+    // Prisma 的 _count 对同一关系只能带一个过滤条件，待批准数单独聚合。
+    // 只显示 ACTIVE 数量时，管理员必须逐个打开弹窗才知道有人在等审批。
+    const pendingRows =
+      rows.length === 0
+        ? []
+        : await prisma.device.groupBy({
+            by: ['userId'],
+            where: { userId: { in: rows.map((row) => row.id) }, status: 'PENDING' },
+            _count: { _all: true },
+          });
+    const pendingByUser = new Map(pendingRows.map((row) => [row.userId, row._count._all]));
+
     return ok(
       reply,
       rows.map((row) => ({
@@ -97,6 +109,7 @@ export async function userRoutes(app: FastifyInstance): Promise<void> {
         department: row.department,
         deviceBindingMode: row.deviceBindingMode,
         activeDevices: row._count.devices,
+        pendingDevices: pendingByUser.get(row.id) ?? 0,
         activeSessions: row._count.sessions,
         createdAt: row.createdAt.toISOString(),
       })),

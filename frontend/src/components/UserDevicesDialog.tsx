@@ -41,8 +41,13 @@ export function UserDevicesDialog({
     }
   }, [user.id]);
 
+  // 弹窗开着时轮询：管理员停在这一页，新提交的登录申请也会自动出现
   useEffect(() => {
     void load();
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === 'visible') void load();
+    }, 8_000);
+    return () => window.clearInterval(timer);
   }, [load]);
 
   const act = async (fn: () => Promise<unknown>, success?: string) => {
