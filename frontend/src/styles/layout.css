@@ -356,31 +356,18 @@ body:has(.landing) {
 
 /* ---------- 主视觉 ---------- */
 /* 只剩标题、一行副题与 CTA；原先靠 badge / lede 撑的纵向留白改由这是自身留白承担 */
-/* 左文案 + 右流程沙盘；窄屏回到单列（见下一条媒体查询） */
 .landing__hero {
   position: relative;
   z-index: 1;
   flex: 1;
   width: 100%;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: clamp(24px, 4vw, 64px);
-  text-align: left;
-  padding: clamp(16px, 3vh, 40px) clamp(20px, 4vw, 48px) clamp(16px, 2.6vh, 32px);
-  animation: riseIn 220ms var(--ease-out) backwards;
-}
-
-.landing__copy {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  min-width: 0;
-}
-
-/* 两列之后字标不再占满整行 */
-.landing__copy .wordmark__svg {
-  width: min(420px, 42vw);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: clamp(32px, 7vh, 96px) clamp(20px, 4vw, 48px) clamp(24px, 4.4vh, 52px);
+  animation: riseIn 220ms var(--ease-out) backwards;
 }
 
 /* ---------- 主字标：蓝图描边 + 绘图机落笔 ---------- */
@@ -514,23 +501,6 @@ body:has(.landing) {
   color: #7c8798;
 }
 
-/* ≤1080：单列居中，沙盘排在 CTA 之后 */
-@media (max-width: 1080px) {
-  .landing__hero {
-    grid-template-columns: minmax(0, 1fr);
-    justify-items: center;
-    text-align: center;
-    gap: 28px;
-  }
-
-  .landing__copy {
-    align-items: center;
-  }
-
-  .landing__copy .wordmark__svg {
-    width: min(420px, 72vw);
-  }
-}
 
 /* 白色胶囊按钮：参考图里唯一的高亮面，不抢导航里的实心登录键 */
 .landing__hero-cta {

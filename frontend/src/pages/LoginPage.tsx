@@ -290,24 +290,21 @@ export function LoginPage() {
       </header>
 
       <main className="landing__hero">
-        <div className="landing__copy">
-          <h1 className="sr-only">序造</h1>
-          <BrandWordmark />
-          <p className="landing__tagline">一单到底 · 全厂协同</p>
-          <button type="button" className="landing__hero-cta" onClick={handleEnter}>
-            进入系统
-          </button>
-          {user ? (
-            <p className="landing__signed-in" role="status">
-              已登录 · {user.displayName}
-            </p>
-          ) : null}
-        </div>
-
-        <LandingFlowSandbox />
+        <h1 className="sr-only">序造</h1>
+        <BrandWordmark />
+        <p className="landing__tagline">一单到底 · 全厂协同</p>
+        <button type="button" className="landing__hero-cta" onClick={handleEnter}>
+          进入系统
+        </button>
+        {user ? (
+          <p className="landing__signed-in" role="status">
+            已登录 · {user.displayName}
+          </p>
+        ) : null}
       </main>
 
       <section className="landing__stage" aria-label="订单流转演示">
+        <LandingFlowSandbox active={active} onSelect={selectStep} />
         <div className="landing__demo">
           <div className="login__flowbar">
             <div className="flow" role="group" aria-label="订单流程演示，点击任意节点查看该环节">
