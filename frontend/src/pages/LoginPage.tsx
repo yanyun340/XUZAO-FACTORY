@@ -38,7 +38,12 @@ export function LoginPage() {
   const [deviceCode, setDeviceCode] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [active, setActive] = useState(0);
-  const [playing, setPlaying] = useState(true);
+  // 系统要求减少动态效果时不自动播放，避免每 1.8s 直接闪一下
+  const [playing, setPlaying] = useState(
+    () =>
+      typeof window === 'undefined' ||
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  );
   const [loginOpen, setLoginOpen] = useState(false);
   const activeRef = useRef(0);
   const dialogRef = useRef<HTMLDialogElement>(null);

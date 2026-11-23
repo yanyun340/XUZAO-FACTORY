@@ -423,23 +423,7 @@ body:has(.landing) {
   }
 }
 
-/* 立方体：自家路径带 pathLength=1，可以真逐笔描出，接在字形落笔之后 */
-.wordmark__cube path {
-  fill: none;
-  stroke: var(--pine);
-  stroke-linejoin: miter;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: cubeDraw 520ms var(--ease-out) forwards;
-}
-
-@keyframes cubeDraw {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-/* 笔尖：与遮罩前沿同速同位置（字形左右边界落在容器 12.6% / 87.4%） */
+/* 笔尖：与遮罩前沿同速同位置（字形左右边界落在容器 25.5% / 74.5%） */
 .wordmark__pen {
   position: absolute;
   top: 9%;
@@ -454,7 +438,7 @@ body:has(.landing) {
 
 @keyframes penSweep {
   0% {
-    left: 12.6%;
+    left: 25.5%;
     opacity: 0;
   }
   6% {
@@ -464,7 +448,7 @@ body:has(.landing) {
     opacity: 1;
   }
   100% {
-    left: 87.4%;
+    left: 74.5%;
     opacity: 0;
   }
 }

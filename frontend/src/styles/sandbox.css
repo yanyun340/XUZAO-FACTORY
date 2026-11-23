@@ -3,12 +3,16 @@
    状态由页面持有（底部进度条是主入口），这里只负责画与翻面。
    ============================================================ */
 
-.sandbox {
+/* 立方体尺寸挂在舞台上：卡片要复用同一个值画接触阴影 */
+.landing__stage {
   --cube: clamp(110px, 10.5vw, 138px);
+}
+
+.sandbox {
   --half: calc(var(--cube) / 2);
-  --sandbox-line: rgba(99, 102, 241, 0.38);
+  --sandbox-line: rgba(15, 23, 42, 0.1);
   --sandbox-line-strong: var(--pine);
-  --sandbox-spark: #22d3ee;
+  --sandbox-spark: var(--cyan);
 
   position: relative;
   z-index: 2;
@@ -25,7 +29,66 @@
   display: grid;
   place-items: center;
   min-height: calc(var(--cube) * 1.32);
-  perspective: 620px;
+}
+
+/* 立方体的容器层：承载透视 */
+.sandbox__plot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--cube) * 1.9);
+  height: calc(var(--cube) * 1.7);
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  /* 透视距离按边长取固定倍数（138px 时即 900px）：
+     入场线稿是按这个投影烘焙的，换个尺寸也不会跑偏 */
+  perspective: calc(var(--cube) * 6.52);
+  /* 面本身不透明且背面剔除，短促淡入只会透出页面底色，不会露出内部 */
+  opacity: 0;
+  animation: sandboxSolidIn 200ms var(--ease-out) 620ms both;
+}
+
+@keyframes sandboxSolidIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* 入场草图：直接复用字标那枚小方块的落笔（mark-draw / mark-land），
+   画完即退场，再把实体方块淡入——先描线，后成物 */
+.sandbox__draft {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  /* viewBox 100 里画的是 1.423 边长宽的投影，折算成屏幕尺寸 */
+  width: calc(var(--cube) * 1.724);
+  height: auto;
+  transform: translate(-50%, -50%);
+  overflow: visible;
+  pointer-events: none;
+  /* 实体在 560ms 就开始填，线稿 620ms 才退；两套轮廓重合，叠着也不脏 */
+  animation: sandboxDraftOut 200ms var(--ease-out) 640ms both;
+}
+
+.sandbox__draft path {
+  fill: none;
+  stroke: var(--pine);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0.9;
+  /* 每条棱 240ms 落笔，相邻 55ms —— 总长约 680ms */
+  animation: mark-draw 240ms var(--ease-out) both;
+}
+
+@keyframes sandboxDraftOut {
+  to {
+    opacity: 0;
+  }
 }
 
 
@@ -34,47 +97,213 @@
   width: var(--cube);
   height: var(--cube);
   transform-style: preserve-3d;
-  transition: transform 480ms var(--ease-out);
+  /* 光点先走 100ms，立方体再跟上；ease-in-out 是「屏幕内位移」的曲线 */
+  transition: transform var(--turn-ms, 520ms) var(--ease-in-out) 100ms;
   pointer-events: auto;
 }
 
 .sandbox__face {
+  --face-hi: #ffffff;
+  --face-mid: #f8fbff;
+  --face-lo: #eef4ff;
+
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
   padding: 0;
   overflow: hidden;
-  border: 1px solid var(--sandbox-line);
-  border-radius: 4px;
-  /* 不透的话六个面会互相透出来，读成一个玻璃盒子 */
-  background: #fff;
+  /* 阳极氧化细边：idle 压暗，active 提亮 */
+  border: 1px solid rgba(79, 70, 229, 0.22);
+  border-radius: 10px;
+  /* 不透明底色，保证任何阶段都不会看到内部面；
+     陶瓷渐变叠在 ::before 上，入场时从素坯过渡到成品 */
+  background: #e9f1fd;
   color: var(--k-ink-2, #374151);
   font: inherit;
   cursor: pointer;
   backface-visibility: hidden;
+  /* 倒角：内圈 1px 白线 + 上缘高光 + 下缘暗线 */
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(30, 42, 90, 0.09),
+    /* 面底部一点环境遮蔽，让方块落在光里而不是浮着 */
+    inset 0 -22px 28px -24px rgba(30, 42, 90, 0.16);
   transition:
     border-color 300ms var(--ease-out),
     color 300ms var(--ease-out),
-    background-color 300ms var(--ease-out),
     box-shadow 300ms var(--ease-out);
 }
 
-/* 立方体基部：一层白色渐隐，把卡片上沿的边框线在方块下方洗掉，
-   让「方块插进卡片」看不出接缝（z-index -1 仍在卡片之上） */
-.sandbox__stage::after {
+/* 固定的左上光源：每个面按朝向拿一档明度，旋转后明暗随角度变化 */
+.sandbox__face--front,
+.sandbox__face--top {
+  --face-hi: #ffffff;
+  --face-mid: #f9fcff;
+  --face-lo: #edf4ff;
+}
+
+.sandbox__face--right {
+  --face-hi: #fbfdff;
+  --face-mid: #eef4fd;
+  --face-lo: #dfe9f8;
+}
+
+.sandbox__face--back,
+.sandbox__face--left {
+  --face-hi: #f9fbff;
+  --face-mid: #edf3fd;
+  --face-lo: #dbe6f6;
+}
+
+.sandbox__face--bottom {
+  --face-hi: #f4f8ff;
+  --face-mid: #e8effb;
+  --face-lo: #d7e2f2;
+}
+
+/* 陶瓷颗粒：静态噪点，压在底部，不参与任何动画 */
+.sandbox__face::after {
   content: "";
   position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/></svg>");
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.sandbox__face-index {
+  position: absolute;
+  top: 7px;
+  left: 9px;
+  z-index: 1;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: rgba(30, 42, 90, 0.35);
+}
+
+.sandbox__face-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  /* 线框阶段不显示图标与文字，等填色落定再显出 */
+  opacity: 0;
+  animation: sandboxInk 220ms var(--ease-out)
+    calc(860ms + var(--face-i, 0) * 20ms) both;
+}
+
+@keyframes sandboxInk {
+  to {
+    opacity: 1;
+  }
+}
+
+/* 六个面按顺序填色，读作方块一瓣一瓣合上 */
+.sandbox__face:nth-child(1) {
+  --face-i: 0;
+}
+.sandbox__face:nth-child(2) {
+  --face-i: 1;
+}
+.sandbox__face:nth-child(3) {
+  --face-i: 2;
+}
+.sandbox__face:nth-child(4) {
+  --face-i: 3;
+}
+.sandbox__face:nth-child(5) {
+  --face-i: 4;
+}
+.sandbox__face:nth-child(6) {
+  --face-i: 5;
+}
+
+.sandbox__face::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    var(--face-hi),
+    var(--face-mid) 55%,
+    var(--face-lo)
+  );
+  opacity: 0;
+  animation: sandboxFill 420ms var(--ease-out)
+    calc(560ms + var(--face-i, 0) * 40ms) both;
+}
+
+/* 素坯上色：只动 ::before 的不透明度，面本身始终不透明，不会透出背面 */
+@keyframes sandboxFill {
+  to {
+    opacity: 1;
+  }
+}
+
+/* 入场期间先按蓝图描边显线，落定后回到结构灰 */
+.sandbox:not(.sandbox--entered) .sandbox__face {
+  border-color: rgba(79, 70, 229, 0.6);
+}
+
+/* 立方体基部：只留一层贴地的接触阴影，画在卡片表面（z 低于方块），
+   这样不会溢到蓝色页面上；卡片上沿的 1px 边框本来就被不透明的方块压住，
+   不需要再洗白——之前那块白色径向渐变会在卡片上留下更亮的斑。 */
+.landing__demo::before {
+  content: "";
+  position: absolute;
+  top: 2px;
   left: 50%;
-  bottom: -18px;
   z-index: -1;
-  width: calc(var(--cube) * 1.55);
-  height: calc(var(--cube) * 0.42);
+  /* 要宽于立方体的投影轮廓（约 1.45×边长），否则阴影整个被方块盖住 */
+  width: calc(var(--cube) * 1.9);
+  height: calc(var(--cube) * 0.32);
   transform: translateX(-50%);
-  background: radial-gradient(closest-side, #fff 58%, rgba(255, 255, 255, 0) 100%);
+  background: radial-gradient(
+    closest-side,
+    rgba(30, 42, 90, 0.24) 0 45%,
+    rgba(30, 42, 90, 0.08) 62%,
+    rgba(30, 42, 90, 0) 100%
+  );
+  /* 阴影跟着填色一起落地，否则线框阶段会先出现一团灰 */
+  opacity: 0;
+  animation: sandboxShadowIn 300ms var(--ease-out) 600ms both;
+  pointer-events: none;
+}
+
+@keyframes sandboxShadowIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* 地面微反射：方块基部往下一小段靛蓝，只落在卡片上 */
+.landing__demo::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: -1;
+  width: calc(var(--cube) * 1.05);
+  height: 22px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    180deg,
+    rgba(79, 70, 229, 0.1),
+    rgba(79, 70, 229, 0) 100%
+  );
+  opacity: 0;
+  animation: sandboxShadowIn 320ms var(--ease-out) 600ms both;
   pointer-events: none;
 }
 
@@ -98,23 +327,44 @@
   transform: rotateX(-90deg) translateZ(var(--half));
 }
 
-/* 未选中：边框和文字压暗，但不整体降透明度——那样线框会一起消失 */
+/* 未选中：只压文字，不整体降透明度——否则线框和明暗一起消失 */
 .sandbox__face[data-state='idle'] {
-  border-color: rgba(99, 102, 241, 0.2);
-  background: rgba(252, 253, 255, 0.97);
-  color: #9aa3af;
+  color: #5b6b8c;
 }
 
 .sandbox__face[data-state='active'] {
-  border-color: var(--sandbox-line-strong);
-  background: #fff;
-  color: var(--pine);
-  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.18);
+  border-color: rgba(79, 70, 229, 0.75);
+  color: var(--ink);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.7),
+    inset 0 1px 0 #fff,
+    0 0 0 1px rgba(79, 70, 229, 0.18);
+}
+
+.sandbox__face[data-state='active'] .sandbox__face-label {
+  font-weight: 600;
+}
+
+/* 翻到当前面时内容落定：比方块停稳晚 80ms，读作「面到位，字才亮」 */
+@keyframes sandboxFaceIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.sandbox__face[data-state='active'] .sandbox__icon,
+.sandbox__face[data-state='active'] .sandbox__face-label {
+  animation: sandboxFaceIn 220ms var(--ease-out) 80ms both;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .sandbox__face:hover {
-    border-color: var(--sandbox-line-strong);
+    border-color: rgba(79, 70, 229, 0.45);
   }
 }
 
@@ -129,9 +379,11 @@
 }
 
 .sandbox__face-label {
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
+  /* 文字压印：只在下方留一条白色反光 */
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
 /* 光带：贴着面的上边缘走，随面的 3D 变换一起透视 */
@@ -140,7 +392,25 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
+  height: 1.5px;
+  overflow: hidden;
+  /* 六个面都挂着（保留相位），但不参与当前态的面一律不显示，
+     免得暂停动画停在半路，在侧面上亮出一条青线 */
+  opacity: 0;
+  transition: opacity 200ms var(--ease-out);
+  pointer-events: none;
+}
+
+.sandbox--entered .sandbox__face[data-state='active'] .sandbox__spark {
+  opacity: 1;
+}
+
+/* 只动 transform（合成层），不再每帧重绘 background-position；5.2s 慢慢扫 */
+.sandbox__spark i {
+  display: block;
+  width: 38%;
+  height: 100%;
+  opacity: 0.7;
   background-image: linear-gradient(
     90deg,
     transparent 0%,
@@ -148,18 +418,22 @@
     var(--sandbox-spark) 55%,
     transparent 100%
   );
-  background-repeat: no-repeat;
-  background-size: 38% 100%;
-  animation: sandboxFlow 2.4s linear infinite;
-  pointer-events: none;
+  animation: sandboxFlow 5.2s linear infinite;
+  animation-delay: var(--spark-phase, 0s);
+  animation-play-state: paused;
+}
+
+/* 只让当前面那条光带跑起来：翻面时既不会重头闪，也没有五条空转 */
+.sandbox__face[data-state='active'] .sandbox__spark i {
+  animation-play-state: running;
 }
 
 @keyframes sandboxFlow {
   from {
-    background-position: -40% 0;
+    transform: translateX(-120%);
   }
   to {
-    background-position: 140% 0;
+    transform: translateX(320%);
   }
 }
 
@@ -170,7 +444,7 @@
 }
 
 @media (max-width: 640px) {
-  .sandbox {
+  .landing__stage {
     --cube: 104px;
   }
 }
@@ -188,5 +462,31 @@
 
   .sandbox__face {
     transition: none;
+  }
+
+  .sandbox__face[data-state='active'] .sandbox__icon,
+  .sandbox__face[data-state='active'] .sandbox__face-label {
+    animation: none;
+  }
+
+  .sandbox__plot {
+    animation: none;
+    opacity: 1;
+  }
+
+  .sandbox__face::before {
+    animation: none;
+    opacity: 1;
+  }
+
+  .sandbox__draft {
+    display: none;
+  }
+
+  .sandbox__face::before,
+  .sandbox__face-inner,
+  .landing__demo::before {
+    animation: none;
+    opacity: 1;
   }
 }

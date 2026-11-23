@@ -102,7 +102,7 @@
   line-height: 1;
   letter-spacing: 0.08em;
   color: #64748b;
-  transition: color 380ms var(--ease-out) 150ms;
+  transition: color 390ms var(--ease-out) 170ms;
 }
 
 .flow__mark {
@@ -112,18 +112,18 @@
   border-radius: 50%;
   border: 1px solid #cbd5e1;
   background: #ffffff;
-  /* 节点状态比光点晚 150ms 点亮、380ms 完成，正好在光点抵达时落定 */
+  /* 节点状态晚 170ms 点亮、390ms 完成：560ms 落定 = 光点到站，不多不少 */
   transition:
-    background-color 380ms var(--ease-out) 150ms,
-    border-color 380ms var(--ease-out) 150ms,
-    box-shadow 380ms var(--ease-out) 150ms;
+    background-color 390ms var(--ease-out) 170ms,
+    border-color 390ms var(--ease-out) 170ms,
+    box-shadow 390ms var(--ease-out) 170ms;
 }
 
 .flow__label {
   margin-top: 10px;
   font-size: 12.5px;
   color: #4b5563;
-  transition: color 380ms var(--ease-out) 150ms;
+  transition: color 390ms var(--ease-out) 170ms;
 }
 
 .flow__node.is-done .flow__num {
