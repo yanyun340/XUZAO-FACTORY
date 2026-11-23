@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import {
   CartIcon,
   GaugeIcon,
@@ -69,7 +70,7 @@ export function LandingFlowSandbox({
   const view = CUBE_VIEW[stage.face];
 
   return (
-    <div className="sandbox">
+    <div className="sandbox" style={{ '--step': active } as CSSProperties}>
       <div className="sandbox__stage">
         <div
           className="sandbox__cube"

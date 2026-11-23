@@ -14,17 +14,20 @@
   z-index: 2;
   display: grid;
   place-items: center;
-  /* 负边距把下面的流程卡拉上来，让立方体压在卡片上沿 */
-  margin-bottom: calc(var(--cube) * -0.72);
+  width: min(760px, 100%);
+  /* 始终居中；负边距把立方体下半截压进卡片，靠白底相接消除割裂 */
+  margin-bottom: -46px;
   pointer-events: none;
 }
 
 .sandbox__stage {
+  position: relative;
   display: grid;
   place-items: center;
-  min-height: calc(var(--cube) * 1.5);
+  min-height: calc(var(--cube) * 1.32);
   perspective: 620px;
 }
+
 
 .sandbox__cube {
   position: relative;
@@ -58,6 +61,21 @@
     color 300ms var(--ease-out),
     background-color 300ms var(--ease-out),
     box-shadow 300ms var(--ease-out);
+}
+
+/* 立方体基部：一层白色渐隐，把卡片上沿的边框线在方块下方洗掉，
+   让「方块插进卡片」看不出接缝（z-index -1 仍在卡片之上） */
+.sandbox__stage::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -18px;
+  z-index: -1;
+  width: calc(var(--cube) * 1.55);
+  height: calc(var(--cube) * 0.42);
+  transform: translateX(-50%);
+  background: radial-gradient(closest-side, #fff 58%, rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
 }
 
 /* 六个面的摆位：先转到面朝方向，再沿法线推出半个边长 */
