@@ -12,6 +12,7 @@ import { useAuth } from '../auth/AuthContext';
 import { DropdownNav, type NavMenu } from '../components/DropdownNav';
 import { BrandMark } from '../components/BrandMark';
 import { BrandWordmark } from '../components/BrandWordmark';
+import { LandingFlowSandbox } from '../components/LandingFlowSandbox';
 import { Field, InlineNotice } from '../components/ui';
 import { ArrowUpRight, CloseIcon } from '../components/Icons';
 
@@ -289,17 +290,21 @@ export function LoginPage() {
       </header>
 
       <main className="landing__hero">
-        <h1 className="sr-only">序造</h1>
-        <BrandWordmark />
-        <p className="landing__tagline">一单到底 · 全厂协同</p>
-        <button type="button" className="landing__hero-cta" onClick={handleEnter}>
-          进入系统
-        </button>
-        {user ? (
-          <p className="landing__signed-in" role="status">
-            已登录 · {user.displayName}
-          </p>
-        ) : null}
+        <div className="landing__copy">
+          <h1 className="sr-only">序造</h1>
+          <BrandWordmark />
+          <p className="landing__tagline">一单到底 · 全厂协同</p>
+          <button type="button" className="landing__hero-cta" onClick={handleEnter}>
+            进入系统
+          </button>
+          {user ? (
+            <p className="landing__signed-in" role="status">
+              已登录 · {user.displayName}
+            </p>
+          ) : null}
+        </div>
+
+        <LandingFlowSandbox />
       </main>
 
       <section className="landing__stage" aria-label="订单流转演示">

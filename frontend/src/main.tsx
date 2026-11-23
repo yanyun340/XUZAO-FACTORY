@@ -12,6 +12,7 @@ import './styles/responsive.css';
 import './styles/pages-extra.css';
 import './styles/flow.css';
 import './styles/brand-mark.css';
+import './styles/sandbox.css';
 
 const root = document.getElementById('root');
 if (!root) throw new Error('找不到 #root 挂载点');

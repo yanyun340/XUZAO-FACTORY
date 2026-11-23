@@ -133,3 +133,64 @@ export function BoxIcon(props: IconProps) {
     </svg>
   );
 }
+
+/* ---------- 流程沙盘用的六个工序图标，与上面同一套线宽与端点 ---------- */
+
+export function CartIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M3 4h2.2l2.1 10.2h9.9l2-7.2H6.2" />
+      <circle cx="9" cy="18.5" r="1.4" />
+      <circle cx="17" cy="18.5" r="1.4" />
+    </svg>
+  );
+}
+
+export function InboxIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M4 13h4l1.6 2.4h4.8L16 13h4" />
+      <path d="M4 13 6.2 5.4h11.6L20 13v5.4H4V13Z" />
+    </svg>
+  );
+}
+
+export function GearIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="12" cy="12" r="3.1" />
+      <path d="M12 3.2v2.4M12 18.4v2.4M4.8 12h2.4M16.8 12h2.4M6.9 6.9l1.7 1.7M15.4 15.4l1.7 1.7M17.1 6.9l-1.7 1.7M8.6 15.4l-1.7 1.7" />
+    </svg>
+  );
+}
+
+export function GaugeIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M4.5 16.5a8 8 0 0 1 15 0" />
+      <path d="m12 13.4 3.4-3.8" />
+      <circle cx="12" cy="14.2" r="1.1" />
+    </svg>
+  );
+}
+
+export function PackageIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M4.5 8.2h15v10.3h-15z" />
+      <path d="M4.5 8.2 6.8 4.5h10.4l2.3 3.7" />
+      <path d="M9.4 11.4h5.2" />
+    </svg>
+  );
+}
+
+export function TruckIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M3 7h10v8H3z" />
+      <path d="M13 10h4l3 3.2V15h-7z" />
+      <circle cx="7" cy="17.4" r="1.3" />
+      <circle cx="16.4" cy="17.4" r="1.3" />
+    </svg>
+  );
+}

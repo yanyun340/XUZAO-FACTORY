@@ -1,0 +1,341 @@
+/* ============================================================
+   sandbox.css · 落地页「流程沙盘」：立方体六面 × 六道工序
+   纯 CSS 3D + 过渡，不依赖动画库。尺寸统一走 --cube，方便响应式。
+   ============================================================ */
+
+.sandbox {
+  --cube: clamp(170px, 15vw, 205px);
+  --half: calc(var(--cube) / 2);
+  --sandbox-line: rgba(99, 102, 241, 0.38);
+  --sandbox-line-strong: var(--pine);
+  --sandbox-spark: #22d3ee;
+
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: min(100%, 420px);
+}
+
+.sandbox__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--k-muted, #6b7280);
+}
+
+.sandbox__eyebrow-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--pine);
+}
+
+.sandbox__hint {
+  margin-left: auto;
+  font-size: 11px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--k-muted, #6b7280);
+  opacity: 0.75;
+}
+
+/* ---------- 立方体 ---------- */
+
+.sandbox__stage {
+  display: grid;
+  place-items: center;
+  min-height: calc(var(--cube) * 1.75);
+  perspective: 720px;
+}
+
+.sandbox__cube {
+  position: relative;
+  width: var(--cube);
+  height: var(--cube);
+  transform-style: preserve-3d;
+  transition: transform 480ms var(--ease-out);
+}
+
+.sandbox__face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--sandbox-line);
+  border-radius: 6px;
+  /* 不透的话六个面会互相透出来，读成一个玻璃盒子 */
+  background: #fff;
+  color: var(--k-ink-2, #374151);
+  font: inherit;
+  cursor: pointer;
+  backface-visibility: hidden;
+  transition:
+    border-color 300ms var(--ease-out),
+    color 300ms var(--ease-out),
+    background-color 300ms var(--ease-out),
+    opacity 300ms var(--ease-out),
+    box-shadow 300ms var(--ease-out);
+}
+
+/* 六个面的摆位：先转到面朝方向，再沿法线推出半个边长 */
+.sandbox__face--front {
+  transform: translateZ(var(--half));
+}
+.sandbox__face--back {
+  transform: rotateY(180deg) translateZ(var(--half));
+}
+.sandbox__face--right {
+  transform: rotateY(90deg) translateZ(var(--half));
+}
+.sandbox__face--left {
+  transform: rotateY(-90deg) translateZ(var(--half));
+}
+.sandbox__face--top {
+  transform: rotateX(90deg) translateZ(var(--half));
+}
+.sandbox__face--bottom {
+  transform: rotateX(-90deg) translateZ(var(--half));
+}
+
+/* 未选中：边框和文字压暗，但不整体降透明度——那样线框会一起消失 */
+.sandbox__face[data-state='idle'] {
+  border-color: rgba(99, 102, 241, 0.22);
+  background: rgba(252, 253, 255, 0.96);
+  color: #9aa3af;
+}
+
+.sandbox__face[data-state='active'] {
+  border-color: var(--sandbox-line-strong);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--pine);
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.22);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sandbox__face:hover {
+    border-color: var(--sandbox-line-strong);
+    opacity: 0.8;
+  }
+}
+
+.sandbox__face:focus-visible {
+  outline: 2px solid var(--focus, #6366f1);
+  outline-offset: -3px;
+}
+
+.sandbox__icon {
+  display: grid;
+  place-items: center;
+}
+
+.sandbox__face-label {
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+/* 光带：贴着面的上边缘走，随面的 3D 变换一起透视 */
+.sandbox__spark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--sandbox-spark) 45%,
+    var(--sandbox-spark) 55%,
+    transparent 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 38% 100%;
+  animation: sandboxFlow 2.4s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes sandboxFlow {
+  from {
+    background-position: -40% 0;
+  }
+  to {
+    background-position: 140% 0;
+  }
+}
+
+/* ---------- 进度条 ---------- */
+
+.sandbox__tabs {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 2px;
+  padding: 4px;
+  border: 1px solid var(--line, #e5e7eb);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.sandbox__tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--k-muted, #6b7280);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    background-color 240ms var(--ease-out),
+    color 240ms var(--ease-out);
+}
+
+.sandbox__tab[data-state='active'] {
+  background: var(--pine);
+  color: #fff;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sandbox__tab:hover:not([data-state='active']) {
+    background: rgba(99, 102, 241, 0.08);
+    color: var(--pine);
+  }
+}
+
+.sandbox__tab:focus-visible {
+  outline: 2px solid var(--focus, #6366f1);
+  outline-offset: 2px;
+}
+
+.sandbox__tab-index {
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+}
+
+.sandbox__tab-label {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ---------- 信息卡 ---------- */
+
+.sandbox__card {
+  padding: 12px 14px 14px;
+  border: 1px solid var(--line, #e5e7eb);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.78);
+  animation: sandboxCardIn 320ms var(--ease-out) both;
+}
+
+@keyframes sandboxCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.sandbox__card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sandbox__card-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--k-ink, #111827);
+}
+
+.sandbox__card-note {
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  color: var(--k-muted, #6b7280);
+}
+
+.sandbox__card-detail {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--k-ink-2, #374151);
+}
+
+/* ---------- 响应式 ---------- */
+
+@media (max-width: 1080px) {
+  .sandbox {
+    --cube: clamp(180px, 34vw, 220px);
+    width: min(100%, 460px);
+  }
+}
+
+@media (max-width: 640px) {
+  .sandbox {
+    --cube: 180px;
+    width: 100%;
+    gap: 14px;
+  }
+
+  /* 窄屏把节点条变成横滑，不压缩成 6 个看不清的小格 */
+  .sandbox__tabs {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    border-radius: 12px;
+    scrollbar-width: none;
+  }
+
+  .sandbox__tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sandbox__tab {
+    flex: 0 0 auto;
+    scroll-snap-align: center;
+    min-width: 64px;
+    border-radius: 10px;
+  }
+
+  .sandbox__hint {
+    display: none;
+  }
+}
+
+/* ---------- 减少动态效果 ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .sandbox__cube {
+    transition: none;
+  }
+
+  .sandbox__spark {
+    display: none;
+  }
+
+  .sandbox__card {
+    animation: none;
+  }
+
+  .sandbox__face,
+  .sandbox__tab {
+    transition: none;
+  }
+}
