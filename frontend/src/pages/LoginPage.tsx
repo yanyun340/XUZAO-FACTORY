@@ -298,14 +298,18 @@ export function LoginPage() {
         <h1 className="sr-only">序造</h1>
         <BrandWordmark />
         <p className="landing__tagline">一单到底 · 全厂协同</p>
-        <button type="button" className="landing__hero-cta" onClick={handleEnter}>
-          进入系统
-        </button>
-        {user ? (
-          <p className="landing__signed-in" role="status">
-            已登录 · {user.displayName}
-          </p>
-        ) : null}
+        {/* 身份提示绝对定位在 CTA 下方：登录前后不改变 hero 高度，
+            否则整块舞台（方块 + 进度条）会被顶下去 35px */}
+        <div className="landing__cta">
+          <button type="button" className="landing__hero-cta" onClick={handleEnter}>
+            进入系统
+          </button>
+          {user ? (
+            <p className="landing__signed-in" role="status">
+              已登录 · {user.displayName}
+            </p>
+          ) : null}
+        </div>
       </main>
 
       <section className="landing__stage" aria-label="订单流转演示">

@@ -510,8 +510,23 @@ body:has(.landing) {
 }
 
 /* 登录成功后停在首页：告诉用户下一步是上面那颗「进入系统」 */
+/* CTA 与身份提示共用一个锚点：提示脱离文档流，登录不改变主视觉高度 */
+.landing__cta {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
 .landing__signed-in {
-  margin-top: 14px;
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  margin: 0;
+  transform: translateX(-50%);
+  max-width: min(80vw, 320px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 12.5px;
   letter-spacing: 0.01em;
   color: var(--k-muted);
