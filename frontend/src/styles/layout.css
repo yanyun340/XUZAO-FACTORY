@@ -1280,6 +1280,7 @@ body:has(.boot) {
   font-size: 16px;
   line-height: 1;
   padding: 2px 4px;
+  transition: transform 120ms var(--ease-out);
 }
 
 .filter-bar__right {
@@ -1299,7 +1300,7 @@ body:has(.boot) {
   background: var(--surface);
   color: var(--ink-2);
   transition: border-color 150ms var(--ease-out), color 150ms var(--ease-out),
-    background-color 150ms var(--ease-out);
+    background-color 150ms var(--ease-out), transform 120ms var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {

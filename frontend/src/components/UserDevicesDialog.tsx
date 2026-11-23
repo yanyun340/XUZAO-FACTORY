@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import { ApiError, apiDelete, apiGet, apiPatch } from '../api/client';
 import type { DeviceItem, DeviceStatus, ManagedUser } from '../api/types';
 import { useModalFocus } from '../hooks/useModalFocus';
+import { useExitClose } from '../hooks/useExitClose';
 import { formatDateTime } from '../lib/format';
-import { Button, InlineNotice } from './ui';
+import { Button, InlineNotice, LoadingBlock } from './ui';
+import { toast } from './Toast';
 
 const STATUS_LABEL: Record<DeviceStatus, string> = {
   PENDING: '待批准',
@@ -31,7 +33,10 @@ export function UserDevicesDialog({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const cardRef = useModalFocus(true, onClose, { canClose: () => !busy });
+  /* 首次拉取期间先给骨架，避免先闪“还没有设备记录” */
+  const [initialLoading, setInitialLoading] = useState(true);
+  const { leaving, requestClose } = useExitClose(onClose);
+  const cardRef = useModalFocus(true, requestClose, { canClose: () => !busy });
 
   const load = useCallback(async () => {
     try {
@@ -42,7 +47,7 @@ export function UserDevicesDialog({
   }, [user.id]);
 
   useEffect(() => {
-    void load();
+    void load().finally(() => setInitialLoading(false));
   }, [load]);
 
   const act = async (fn: () => Promise<unknown>, success?: string) => {
@@ -51,7 +56,10 @@ export function UserDevicesDialog({
     setNotice(null);
     try {
       await fn();
-      if (success) setNotice(success);
+      if (success) {
+        setNotice(success);
+        toast(success);
+      }
       await load();
       onChanged();
     } catch (caught) {
@@ -88,8 +96,13 @@ export function UserDevicesDialog({
   const activeCount = devices.filter((device) => device.status === 'ACTIVE').length;
 
   return createPortal(
-    <div className="modal" role="dialog" aria-modal="true" aria-label="受控设备">
-      <button type="button" className="modal__backdrop" aria-label="关闭" onClick={onClose} />
+    <div
+      className={`modal${leaving ? ' modal--leaving' : ''}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label="受控设备"
+    >
+      <button type="button" className="modal__backdrop" aria-label="关闭" onClick={requestClose} />
       <form
         ref={cardRef}
         className="modal__card modal__card--wide"
@@ -128,14 +141,20 @@ export function UserDevicesDialog({
           </p>
         ) : null}
 
-        {devices.length === 0 ? (
+        {initialLoading ? (
+          <LoadingBlock lines={3} />
+        ) : devices.length === 0 ? (
           <p className="detail-card__empty">
             还没有设备记录。让该账号在新设备上登录一次，系统会生成待批准设备。
           </p>
         ) : (
           <ul className="attach-list">
-            {devices.map((device) => (
-              <li key={device.id} className="attach-item">
+            {devices.map((device, index) => (
+              <li
+                key={device.id}
+                className="attach-item"
+                style={{ '--row-i': Math.min(index, 5) } as CSSProperties}
+              >
                 <span className="attach-item__name">
                   <span className="attach-item__title">
                     {device.label}
@@ -184,7 +203,7 @@ export function UserDevicesDialog({
         )}
 
         <div className="modal__actions">
-          <button type="button" className="text-btn" onClick={onClose}>
+          <button type="button" className="text-btn" onClick={requestClose}>
             关闭
           </button>
         </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState, type CSSProperties, type FormEvent } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ApiError, apiDownload, apiGetPage } from '../api/client';
 import type { OrderStatus, OrderSummary, PageMeta } from '../api/types';
@@ -242,7 +242,7 @@ export function OrdersPage() {
           </span>
         </div>
 
-        {loading ? (
+        {orders.length === 0 && loading ? (
           <LoadingBlock lines={5} />
         ) : orders.length === 0 ? (
           <EmptyState
@@ -270,7 +270,11 @@ export function OrdersPage() {
             }
           />
         ) : (
-          <div className="order-table">
+          /* 翻页/筛选时保留上一页的行，只压暗——避免整块塌陷再弹回 */
+          <div
+            className={`order-table${loading ? ' is-refreshing' : ''}`}
+            aria-busy={loading}
+          >
             <div className="order-table__head" aria-hidden>
               <span>订单 / 客户</span>
               <span>产品</span>
@@ -284,13 +288,14 @@ export function OrdersPage() {
               <span />
             </div>
 
-            {orders.map((order) => {
+            {orders.map((order, index) => {
               const hint = dueHint(order.dueDate);
               return (
                 <Link
                   key={order.id}
                   to={`/orders/${order.id}`}
                   className="order-row"
+                  style={{ '--row-i': Math.min(index, 5) } as CSSProperties}
                   aria-label={`查看订单 ${order.orderNo}`}
                 >
                   <span className="order-row__primary">

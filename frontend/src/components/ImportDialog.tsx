@@ -1,9 +1,11 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { ApiError, apiDownload, apiPost, apiPostForm } from '../api/client';
 import { useModalFocus } from '../hooks/useModalFocus';
+import { usePresence } from '../hooks/usePresence';
 import { Button, InlineNotice } from './ui';
 import { announce } from './LiveAnnouncer';
+import { toast } from './Toast';
 
 type Entity = 'customer' | 'supplier' | 'part' | 'employee';
 
@@ -42,11 +44,18 @@ export function ImportDialog({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const cardRef = useModalFocus(open, onClose, { canClose: () => !busy });
+  const { mounted, leaving } = usePresence(open, 160);
 
   const reset = () => {
     setResult(null);
     setError(null);
   };
+
+  // 重开时清空上一次的预检结果；退场期间保留内容，避免淡出中途变空卡
+  useEffect(() => {
+    if (open) reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   const downloadTemplate = async () => {
     setError(null);
@@ -88,9 +97,9 @@ export function ImportDialog({
     try {
       await apiPost(`/imports/${entity}/commit`, { batchId: result.batchId });
       announce(`已导入 ${result.rowCount} 行`);
+      toast(`已导入 ${result.rowCount} 行`);
       onImported();
       onClose();
-      reset();
     } catch (caught) {
       setError(caught instanceof ApiError ? caught.message : '提交失败，请稍后重试');
     } finally {
@@ -98,10 +107,15 @@ export function ImportDialog({
     }
   };
 
-  if (!open) return null;
+  if (!mounted) return null;
 
   return createPortal(
-    <div className="modal" role="dialog" aria-modal="true" aria-label="Excel 导入">
+    <div
+      className={`modal${leaving ? ' modal--leaving' : ''}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Excel 导入"
+    >
       <button type="button" className="modal__backdrop" aria-label="关闭" onClick={onClose} />
       <form ref={cardRef} className="modal__card modal__card--wide" onSubmit={(event) => void commit(event)}>
         <p className="eyebrow">BULK IMPORT</p>

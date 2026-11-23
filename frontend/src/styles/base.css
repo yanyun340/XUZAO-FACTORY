@@ -125,7 +125,8 @@ button:disabled {
   font-weight: 500;
   color: var(--muted);
   border-bottom: 1px solid transparent;
-  transition: color 150ms var(--ease-out), border-color 150ms var(--ease-out);
+  transition: color 150ms var(--ease-out), border-color 150ms var(--ease-out),
+    transform 120ms var(--ease-out);
 }
 
 .text-btn--danger {

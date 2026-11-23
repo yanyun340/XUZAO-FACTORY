@@ -88,6 +88,8 @@
 }
 
 .item-row {
+  /* 新增行项目从下方 4px 淡入；backwards 不覆盖 hover/后续状态 */
+  animation: orderRowIn 160ms var(--ease-out) backwards;
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: 16px;
@@ -117,7 +119,8 @@
   border-radius: 8px;
   background: transparent;
   color: var(--muted);
-  transition: background-color 160ms var(--ease-out), color 160ms var(--ease-out);
+  transition: background-color 160ms var(--ease-out), color 160ms var(--ease-out),
+    transform 120ms var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -215,6 +218,23 @@
   font-size: 30px;
   font-weight: 600;
   letter-spacing: -0.02em;
+  /* 金额变化时换一个元素重挂，给一次 140ms 的落定 */
+  animation: totalTick 140ms var(--ease-out) both;
+}
+
+@keyframes totalTick {
+  from {
+    opacity: 0.55;
+    transform: translateY(2px);
+  }
+}
+
+.item-row.is-removing {
+  opacity: 0;
+  transform: translateY(-2px);
+  transition:
+    opacity 140ms var(--ease-out),
+    transform 140ms var(--ease-out);
 }
 
 .summary__note {
@@ -297,6 +317,7 @@
   flex: 1;
   min-width: 78px;
   color: var(--muted);
+  transition: color 160ms var(--ease-out);
 }
 
 .progress__step::after {
@@ -307,10 +328,31 @@
   right: 6px;
   height: 1px;
   background: var(--line-strong);
+  transition: background-color 180ms var(--ease-out);
 }
 
-.progress__step:last-child::after {
+/* 已完成段的填充：叠在同一条轨道上走 scaleX，不动宽度 */
+.progress__step::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  left: 30px;
+  right: 6px;
+  z-index: 0;
+  height: 1px;
+  background: rgba(99, 102, 241, 0.55);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 200ms var(--ease-out);
+}
+
+.progress__step:last-child::after,
+.progress__step:last-child::before {
   display: none;
+}
+
+.progress__step.is-done::before {
+  transform: scaleX(1);
 }
 
 .progress__marker {
@@ -326,6 +368,10 @@
   background: var(--paper);
   font-family: var(--font-mono);
   font-size: 9.5px;
+  transition:
+    background-color 180ms var(--ease-out),
+    border-color 180ms var(--ease-out),
+    color 180ms var(--ease-out);
 }
 
 .progress__label {
