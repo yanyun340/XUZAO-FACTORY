@@ -437,7 +437,7 @@ export function DashboardPage() {
                         aria-valuemax={100}
                         aria-label={`${row.departmentName}完成进度`}
                       >
-                        <span className="qbar__fill" style={{ width: `${percent}%` }} />
+                        <span className="qbar__fill" style={{ transform: `scaleX(${percent / 100})` }} />
                       </div>
                     </div>
                   );

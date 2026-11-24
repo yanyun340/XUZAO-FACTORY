@@ -5,6 +5,7 @@ import type { NotificationSummary } from '../api/types';
 import { useAuth } from '../auth/AuthContext';
 import { ROLE_LABEL } from '../lib/format';
 import { BrandMark } from './BrandMark';
+import { ToastHost } from './Toast';
 import { LogOutIcon } from './Icons';
 
 interface NavItem {
@@ -142,6 +143,8 @@ export function AppShell() {
       <main className="main">
         <Outlet />
       </main>
+
+      <ToastHost />
     </div>
   );
 }

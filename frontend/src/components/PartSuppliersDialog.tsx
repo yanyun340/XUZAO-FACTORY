@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { ApiError, apiDelete, apiGet, apiGetPage, apiPatch, apiPost } from '../api/client';
 import type { Part, PartSupplier, Supplier } from '../api/types';
 import { useModalFocus } from '../hooks/useModalFocus';
+import { useExitClose } from '../hooks/useExitClose';
 import { SUPPLIER_TYPE_LABEL } from '../lib/format';
 import { Button, InlineNotice } from './ui';
 
@@ -19,7 +20,8 @@ export function PartSuppliersDialog({
   const [makeDefault, setMakeDefault] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const cardRef = useModalFocus(true, onClose, { canClose: () => !busy });
+  const { leaving, requestClose } = useExitClose(onClose);
+  const cardRef = useModalFocus(true, requestClose, { canClose: () => !busy });
 
   const load = useCallback(async () => {
     try {
@@ -86,8 +88,10 @@ export function PartSuppliersDialog({
   );
 
   return createPortal(
-    <div className="modal" role="dialog" aria-modal="true" aria-label="配件供应商">
-      <button type="button" className="modal__backdrop" aria-label="关闭" onClick={onClose} />
+    <div
+      className={`modal${leaving ? ' modal--leaving' : ''}`}
+      role="dialog" aria-modal="true" aria-label="配件供应商">
+      <button type="button" className="modal__backdrop" aria-label="关闭" onClick={requestClose} />
       <form
         ref={cardRef}
         className="modal__card modal__card--wide"
@@ -169,7 +173,7 @@ export function PartSuppliersDialog({
         </div>
 
         <div className="modal__actions">
-          <button type="button" className="text-btn" onClick={onClose}>
+          <button type="button" className="text-btn" onClick={requestClose}>
             关闭
           </button>
         </div>

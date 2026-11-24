@@ -169,6 +169,17 @@ export function NewOrderPage() {
     setSubmitError(null);
   };
 
+  const [removingKey, setRemovingKey] = useState<string | null>(null);
+
+  const requestRemove = (key: string) => {
+    if (removingKey) return;
+    setRemovingKey(key);
+    window.setTimeout(() => {
+      removeItem(key);
+      setRemovingKey(null);
+    }, 140);
+  };
+
   const removeItem = (key: string) => {
     setDraft((current) => ({
       ...current,
@@ -380,14 +391,18 @@ export function NewOrderPage() {
 
               <div className="items">
                 {draft.items.map((item, index) => (
-                  <div className="item-row" key={item.key}>
+                  <div
+                    className={`item-row${removingKey === item.key ? ' is-removing' : ''}`}
+                    key={item.key}
+                  >
                     <div className="item-row__head">
                       <span className="item-row__index mono">明细 {String(index + 1).padStart(2, '0')}</span>
                       {draft.items.length > 1 ? (
                         <button
                           type="button"
                           className="item-row__remove"
-                          onClick={() => removeItem(item.key)}
+                          disabled={removingKey === item.key}
+                          onClick={() => requestRemove(item.key)}
                           aria-label={`删除明细 ${index + 1}`}
                         >
                           <CloseIcon size={15} />
@@ -504,7 +519,7 @@ export function NewOrderPage() {
 
               <div className="summary__total">
                 <span>订单金额</span>
-                <strong className="mono">{formatMoney(total)}</strong>
+                <strong className="mono" key={total}>{formatMoney(total)}</strong>
               </div>
 
               {submitError ? <InlineNotice tone="error">{submitError}</InlineNotice> : null}

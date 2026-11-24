@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { ApiError, apiPost } from '../api/client';
 import type { ExceptionCategory } from '../api/types';
 import { useModalFocus } from '../hooks/useModalFocus';
+import { useExitClose } from '../hooks/useExitClose';
 import { EXCEPTION_CATEGORY_LABEL } from '../lib/format';
 import { AlertIcon } from './Icons';
 import { announce } from './LiveAnnouncer';
@@ -17,7 +18,8 @@ export function ReportException({ orderId }: { orderId: string }) {
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
-  const cardRef = useModalFocus(open, () => setOpen(false), { canClose: () => !busy });
+  const { leaving, requestClose } = useExitClose(() => setOpen(false));
+  const cardRef = useModalFocus(open, requestClose, { canClose: () => !busy });
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -36,7 +38,7 @@ export function ReportException({ orderId }: { orderId: string }) {
       });
       setDescription('');
       setDone(true);
-      setOpen(false);
+      requestClose();
       announce('异常已上报');
     } catch (caught) {
       setError(caught instanceof ApiError ? caught.message : '上报失败，请稍后重试');
@@ -64,12 +66,17 @@ export function ReportException({ orderId }: { orderId: string }) {
       {open
         ? createPortal(
             // portal 到 body：页面入场动画的 transform 会让 fixed 弹窗偏位
-            <div className="modal" role="dialog" aria-modal="true" aria-label="上报异常">
+            <div
+              className={`modal${leaving ? ' modal--leaving' : ''}`}
+              role="dialog"
+              aria-modal="true"
+              aria-label="上报异常"
+            >
           <button
             type="button"
             className="modal__backdrop"
             aria-label="关闭"
-            onClick={() => setOpen(false)}
+            onClick={requestClose}
           />
           <form ref={cardRef} className="modal__card" onSubmit={(event) => void submit(event)}>
             <p className="eyebrow">INCIDENT REPORT</p>

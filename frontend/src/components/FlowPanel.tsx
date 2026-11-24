@@ -10,6 +10,7 @@ import type {
   Supplier,
 } from '../api/types';
 import { ACTION_LABEL, formatDateTime, formatMoney } from '../lib/format';
+import { toast } from './Toast';
 import { ArrowRight, CheckIcon } from './Icons';
 import { Button, Field, InlineNotice } from './ui';
 
@@ -693,6 +694,7 @@ export function FlowPanel({ order, onUpdated, focusAction }: PanelProps) {
       });
       keyRef.current = null;
       onUpdated(next);
+      toast(`${ACTION_LABEL[action]}已完成`);
     } catch (caught) {
       if (caught instanceof ApiError && caught.code === 'NETWORK_ERROR') {
         setError('网络中断，写入结果未知。可直接重试：本次沿用同一幂等键，不会重复写入。');

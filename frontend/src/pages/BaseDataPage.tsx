@@ -17,6 +17,7 @@ import {
   SectionHeading,
 } from '../components/ui';
 import { useModalFocus } from '../hooks/useModalFocus';
+import { useExitClose } from '../hooks/useExitClose';
 import {
   SUPPLIER_TYPE_LABEL,
   SUPPLIER_TYPE_OPTIONS,
@@ -281,11 +282,17 @@ function EditDialog({
     setValues((current) => ({ ...current, [key]: value }));
 
   // 锁滚动、Esc 关闭（提交中不关，避免丢输入）、焦点陷阱与归还，统一由原语处理。
-  const cardRef = useModalFocus(true, onClose, { canClose: () => !busy });
+  const { leaving, requestClose } = useExitClose(onClose);
+  const cardRef = useModalFocus(true, requestClose, { canClose: () => !busy });
 
   return createPortal(
-    <div className="modal" role="dialog" aria-modal="true" aria-label={title}>
-      <button type="button" className="modal__backdrop" aria-label="关闭" onClick={onClose} />
+    <div
+      className={`modal${leaving ? ' modal--leaving' : ''}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+    >
+      <button type="button" className="modal__backdrop" aria-label="关闭" onClick={requestClose} />
       <form
         ref={cardRef}
         className="modal__card"
@@ -349,7 +356,7 @@ function EditDialog({
           <Button type="submit" loading={busy}>
             保存
           </Button>
-          <button type="button" className="text-btn" onClick={onClose}>
+          <button type="button" className="text-btn" onClick={requestClose}>
             取消
           </button>
         </div>
