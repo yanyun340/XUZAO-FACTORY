@@ -363,7 +363,8 @@ export interface DashboardData {
     completedQty: number;
   }>;
   inventory: { parts: number; products: number };
-  shipping: { orderQty: number; shippedQty: number; completionPercent: number };
+  /** completionPercent 是一位小数字符串，如 "9.3"；避免前端再格式化一次。 */
+  shipping: { orderQty: number; shippedQty: number; completionPercent: string };
   /** 近 7 天 vs 前 7 天的真实流量，用于 KPI 变化率芯片；前 7 天为 0 时变化率不可比。 */
   inflow: {
     createdRecent7d: number;

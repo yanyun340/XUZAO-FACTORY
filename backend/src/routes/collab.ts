@@ -302,7 +302,9 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
       shipping: {
         orderQty,
         shippedQty,
-        completionPercent: orderQty === 0 ? 0 : Math.round((shippedQty / orderQty) * 100),
+        // 保留一位小数：整数四舍五入会把 9.25% 显示成 9%，看起来像算错。
+        completionPercent:
+          orderQty === 0 ? '0.0' : ((shippedQty / orderQty) * 100).toFixed(1),
       },
       inflow: {
         createdRecent7d: createdRecent,

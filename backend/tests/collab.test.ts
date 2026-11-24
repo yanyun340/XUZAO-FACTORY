@@ -209,9 +209,13 @@ describe('看板筛选与指标（R21F）', () => {
     expect(dashboard.body.data.shipping).toMatchObject({
       orderQty: 5,
       shippedQty: 0,
-      completionPercent: 0,
+      completionPercent: '0.0',
     });
     expect(Array.isArray(dashboard.body.data.productionBoard)).toBe(true);
+
+    // 口径：一位小数字符串；1 件应交、0 件已发 → "0.0"，不能是整数四舍五入的 0
+    expect(dashboard.body.data.shipping.completionPercent).toBe('0.0');
+    expect(typeof dashboard.body.data.shipping.completionPercent).toBe('string');
 
     const list = await admin('GET', `/api/v1/orders?ownerId=${ownerId}`);
     expect(list.status).toBe(200);
