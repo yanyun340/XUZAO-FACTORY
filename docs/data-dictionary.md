@@ -169,8 +169,8 @@ M 交付按“单产品”验收，但表结构允许一单多条明细；当前
 
 | 表 | 关键字段 | 说明 |
 | --- | --- | --- |
-| `qc_records` | `productionOrderId`、`inspectedQty`、`qualifiedQty`、`unqualifiedQty`、`operatorId` | 合格 + 不合格必须等于检验量；M 不合格必须为 0 |
-| `qc_decisions` | `qcRecordId`（UNIQUE）、`decision`、`releasedQty`、`decidedById` | M 只允许 PASS，`releasedQty = qualifiedQty`；一条质检记录只有一条决策 |
+| `qc_records` | `productionOrderId`、`inspectedQty`、`qualifiedQty`、`unqualifiedQty`、`round`、`parentQcRecordId`、`operatorId` | 合格 + 不合格必须等于检验量；`round=1` 为首检（可分批，累计 ≤ 生产量），`>1` 为返工复检且必须有父记录；原记录不被覆盖 |
+| `qc_decisions` | `qcRecordId`（UNIQUE）、`decision`、`releasedQty`、`scrapQty`、`decidedById` | `PASS` 要求不合格 = 0；`REWORK`/`SCRAP` 要求不合格 > 0；三种决策都设 `releasedQty = qualifiedQty`，`scrapQty` 仅 `SCRAP` 非 0；一条记录只有一条决策 |
 
 ### `packing_records` / `shipment_records`
 
@@ -259,9 +259,11 @@ M 交付按“单产品”验收，但表结构允许一单多条明细；当前
 | `reporterId` | uuid | 上报人（认证身份） |
 | `category` | string，OTHER | QUALITY/MATERIAL/EQUIPMENT/SCHEDULE/OTHER |
 | `description` | string | 4–500 字 |
-| `status` | string，OPEN | OPEN → IN_PROGRESS → RESOLVED → CLOSED；允许 OPEN/IN_PROGRESS 直接 CLOSED |
+| `status` | string，OPEN | OPEN → IN_PROGRESS → WAITING_QC → RESOLVED → CLOSED；允许 OPEN/IN_PROGRESS 直接 CLOSED；`WAITING_QC` 只能由复核接口写入 |
 | `handlerId` / `expectedAt` | uuid? / datetime? | 处理人与预计完成时间 |
 | `resolvedAt` / `resolution` | datetime? / string? | 标记解决时写入；解决必须有说明 |
+| `qcRecordId` | uuid? UNIQUE | 下发复核后由品控录入的质检记录；`RESOLVED` 前该记录必须 PASS |
+| `qcWaived` | boolean，false | 质量异常未走质检、管理员显式留痕豁免时置真，同时要求填写处理说明 |
 | `updatedAt` | datetime | 每次处置更新时间 |
 
 ### `timeline_events` 时间线

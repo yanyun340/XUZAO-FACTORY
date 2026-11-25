@@ -95,9 +95,13 @@ export type QuantitySource = {
   productions: ReadonlyArray<{
     feedbacks: ReadonlyArray<{ quantity: number }>;
     qcRecords: ReadonlyArray<{
+      id: string;
       inspectedQty: number;
       qualifiedQty: number;
-      decision: { releasedQty: number } | null;
+      unqualifiedQty: number;
+      round: number;
+      parentQcRecordId: string | null;
+      decision: { decision: string; releasedQty: number; scrapQty: number } | null;
     }>;
   }>;
   packingRecords: ReadonlyArray<{ quantity: number }>;
@@ -117,6 +121,11 @@ export interface FlowQuantities {
   inspectedQty: number;
   qualifiedQty: number;
   releasedQty: number;
+  scrappedQty: number;
+  /** R09F：已判返工、尚未复检的数量。 */
+  reworkPendingQty: number;
+  /** 已录入但管理员尚未决策的检验量；此时不能再录入新一轮。 */
+  undecidedQty: number;
   packedQty: number;
   shippedQty: number;
   dueRemaining: number;
@@ -141,11 +150,30 @@ export function computeQuantities(order: QuantitySource): FlowQuantities {
   const production = order.productions.at(-1);
   const producedQty = sum((production?.feedbacks ?? []).map((feedback) => feedback.quantity));
 
-  const qc = production?.qcRecords.at(-1) ?? null;
-  const inspectedQty = qc?.inspectedQty ?? 0;
-  const qualifiedQty = qc?.qualifiedQty ?? 0;
+  const qcRecords = order.productions.flatMap((p) => p.qcRecords);
+  // R09F：首检可能分多批；复检记录单独成轮，不影响首检累计。
+  const inspectedQty = sum(qcRecords.filter((record) => record.round === 1).map((record) => record.inspectedQty));
+  const qualifiedQty = sum(qcRecords.map((record) => record.qualifiedQty));
   const releasedQty = sum(
-    order.productions.flatMap((p) => p.qcRecords.flatMap((record) => (record.decision ? [record.decision.releasedQty] : []))),
+    qcRecords.flatMap((record) => (record.decision ? [record.decision.releasedQty] : [])),
+  );
+  const scrappedQty = sum(
+    qcRecords.flatMap((record) => (record.decision ? [record.decision.scrapQty] : [])),
+  );
+  const undecidedQty = sum(
+    qcRecords.filter((record) => !record.decision).map((record) => record.inspectedQty),
+  );
+  // 每张返工决策的可复检量 = 不合格量 − 已复检量；累计到仍未复检的返工量。
+  const reworkPendingQty = sum(
+    qcRecords.flatMap((record) => {
+      if (record.decision?.decision !== 'REWORK') return [0];
+      const reinspected = sum(
+        qcRecords
+          .filter((child) => child.parentQcRecordId === record.id)
+          .map((child) => child.inspectedQty),
+      );
+      return [Math.max(0, record.unqualifiedQty - reinspected)];
+    }),
   );
   const packedQty = sum(order.packingRecords.map((record) => record.quantity));
   const shippedQty = sum(order.shipments.map((record) => record.quantity));
@@ -181,6 +209,9 @@ export function computeQuantities(order: QuantitySource): FlowQuantities {
     inspectedQty,
     qualifiedQty,
     releasedQty,
+    scrappedQty,
+    reworkPendingQty,
+    undecidedQty,
     packedQty,
     shippedQty,
     dueRemaining: Math.max(0, orderQty - shippedQty),
@@ -277,7 +308,7 @@ export function computeAllowedActions(
   const purchase = order.purchaseOrders[0] ?? null;
   const production = order.productions.at(-1) ?? null;
   const feedback = production?.feedbacks.at(-1) ?? null;
-  const qc = production?.qcRecords.at(-1) ?? null;
+  const hasInitialQc = production?.qcRecords.some((record) => record.round === 1) ?? false;
 
   if (role === 'ADMIN') {
     if (order.status === 'PENDING_PURCHASE' && !purchase) actions.push('create-purchase');
@@ -291,10 +322,10 @@ export function computeAllowedActions(
     ) {
       actions.push('dispatch-production');
     }
-    if (order.status === 'IN_PRODUCTION' && feedback && feedback.quantity > 0 && !qc) {
+    if (order.status === 'IN_PRODUCTION' && feedback && feedback.quantity > 0 && !hasInitialQc) {
       actions.push('dispatch-qc');
     }
-    if (order.status === 'PENDING_QC' && qc && !qc.decision) actions.push('qc-decision');
+    if (order.status === 'PENDING_QC' && quantities.undecidedQty > 0) actions.push('qc-decision');
     if (order.status === 'QC_DONE' && quantities.packableRemaining > 0) actions.push('dispatch-packing');
     if (order.status === 'PACKING' && quantities.packedQty > 0) actions.push('trigger-shipping');
   }
@@ -335,7 +366,15 @@ export function computeAllowedActions(
     }
   }
 
-  if (role === 'QC' && order.status === 'PENDING_QC' && production && !qc) {
+  // R09F：首检可分多批（检验完剩余产量），返工量也可继续复检；
+  // 但只要上一轮结果还没被管理员决策，就不能再录新一轮。
+  if (
+    role === 'QC' &&
+    order.status === 'PENDING_QC' &&
+    production &&
+    quantities.undecidedQty === 0 &&
+    (quantities.inspectedQty < quantities.producedQty || quantities.reworkPendingQty > 0)
+  ) {
     actions.push('qc-entry');
   }
 

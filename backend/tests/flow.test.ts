@@ -61,6 +61,41 @@ async function createOrder(): Promise<{ id: string; orderNo: string }> {
   return response.body.data;
 }
 
+/** 建一张已到货、已生产反馈、已下发质检的订单，供 R09F 用例直接从质检开始。 */
+async function createOrderAtQc(): Promise<{ orderId: string; productionId: string }> {
+  const order = await createOrder();
+  const purchase = await admin('POST', `/api/v1/orders/${order.id}/purchase`, {
+    supplierId: fx.supplierId,
+    partId: fx.partId,
+    quantity: 100,
+    unitPrice: '5.00',
+  });
+  expect(purchase.status, JSON.stringify(purchase.body)).toBe(201);
+  const purchaseId = purchase.body.data.flow.purchase.id as string;
+  const arrival = await logistics('POST', `/api/v1/purchases/${purchaseId}/arrivals`, {
+    quantity: 100,
+  });
+  expect(arrival.status, JSON.stringify(arrival.body)).toBe(201);
+
+  const dispatched = await admin('POST', `/api/v1/orders/${order.id}/productions`, {
+    departmentId: fx.departments.PROD,
+    processName: '车削',
+    quantity: 100,
+    unitPrice: '2.00',
+  });
+  expect(dispatched.status, JSON.stringify(dispatched.body)).toBe(201);
+  const productionId = dispatched.body.data.flow.production.id as string;
+
+  const feedback = await production('POST', `/api/v1/productions/${productionId}/feedback`, {
+    quantity: 100,
+  });
+  expect(feedback.status, JSON.stringify(feedback.body)).toBe(201);
+  const qcDispatch = await admin('POST', `/api/v1/orders/${order.id}/qc-dispatch`);
+  expect(qcDispatch.status, JSON.stringify(qcDispatch.body)).toBe(201);
+
+  return { orderId: order.id, productionId };
+}
+
 describe('订单主链（M 闭环）', () => {
   it('现场角色不能创建订单', async () => {
     const response = await production('POST', '/api/v1/orders', {
@@ -192,14 +227,14 @@ describe('订单主链（M 闭环）', () => {
     expect(mismatch.status).toBe(422);
     expect(mismatch.body.error?.code).toBe('QC_QTY_MISMATCH');
 
-    // M 版本不支持部分合格
-    const partial = await qcUser('POST', `/api/v1/productions/${productionId}/qc-records`, {
-      inspectedQty: 100,
-      qualifiedQty: 90,
-      unqualifiedQty: 10,
+    // 超过已生产数量直接拒绝
+    const overInspected = await qcUser('POST', `/api/v1/productions/${productionId}/qc-records`, {
+      inspectedQty: 120,
+      qualifiedQty: 120,
+      unqualifiedQty: 0,
     });
-    expect(partial.status).toBe(422);
-    expect(partial.body.error?.code).toBe('QC_PARTIAL_NOT_SUPPORTED');
+    expect(overInspected.status).toBe(422);
+    expect(overInspected.body.error?.code).toBe('QC_EXCEEDS_PRODUCED');
 
     // 全合格
     const record = await qcUser('POST', `/api/v1/productions/${productionId}/qc-records`, {
@@ -258,41 +293,147 @@ describe('订单主链（M 闭环）', () => {
     expect(detail.body.data.flow.profit.profit).toBe('550.00');
   });
 
-  it('M 质检必须整批检验，少检直接拒绝，避免剩余数量永远无法放行', async () => {
-    const order = await createOrder();
-    const purchase = await admin('POST', `/api/v1/orders/${order.id}/purchase`, {
-      supplierId: fx.supplierId,
-      partId: fx.partId,
-      quantity: 100,
-      unitPrice: '5.00',
-    });
-    const purchaseId = purchase.body.data.flow.purchase.id as string;
-    await logistics('POST', `/api/v1/purchases/${purchaseId}/arrivals`, { quantity: 100 });
+  it('F 首检可分多批，累计检验量不能超过生产量', async () => {
+    const { orderId, productionId } = await createOrderAtQc();
 
-    const dispatched = await admin('POST', `/api/v1/orders/${order.id}/productions`, {
-      departmentId: fx.departments.PROD,
-      processName: '车削',
-      quantity: 100,
-      unitPrice: '2.00',
-    });
-    const productionId = dispatched.body.data.flow.production.id as string;
-    await production('POST', `/api/v1/productions/${productionId}/feedback`, { quantity: 100 });
-    await admin('POST', `/api/v1/orders/${order.id}/qc-dispatch`);
-
-    const partial = await qcUser('POST', `/api/v1/productions/${productionId}/qc-records`, {
+    const first = await qcUser('POST', `/api/v1/productions/${productionId}/qc-records`, {
       inspectedQty: 80,
       qualifiedQty: 80,
       unqualifiedQty: 0,
     });
-    expect(partial.status).toBe(422);
-    expect(partial.body.error?.code).toBe('QC_INSPECTION_INCOMPLETE');
+    expect(first.status).toBe(201);
+    const firstId = first.body.data.flow.qc.id as string;
 
-    const full = await qcUser('POST', `/api/v1/productions/${productionId}/qc-records`, {
-      inspectedQty: 100,
-      qualifiedQty: 100,
+    // 上一批未决策前不能录下一批
+    const beforeDecision = await qcUser('POST', `/api/v1/productions/${productionId}/qc-records`, {
+      inspectedQty: 20,
+      qualifiedQty: 20,
       unqualifiedQty: 0,
     });
-    expect(full.status).toBe(201);
+    expect(beforeDecision.status).toBe(409);
+    expect(beforeDecision.body.error?.code).toBe('QC_DECISION_PENDING');
+
+    const firstPass = await admin('POST', `/api/v1/qc-records/${firstId}/decision`, {
+      decision: 'PASS',
+    });
+    expect(firstPass.status).toBe(201);
+    // 还有 20 件未检，订单不能进入质检完成
+    expect(firstPass.body.data.status).toBe('PENDING_QC');
+
+    // 累计超过未检数量被拒
+    const over = await qcUser('POST', `/api/v1/productions/${productionId}/qc-records`, {
+      inspectedQty: 30,
+      qualifiedQty: 30,
+      unqualifiedQty: 0,
+    });
+    expect(over.status).toBe(422);
+    expect(over.body.error?.code).toBe('QC_EXCEEDS_PRODUCED');
+
+    const second = await qcUser('POST', `/api/v1/productions/${productionId}/qc-records`, {
+      inspectedQty: 20,
+      qualifiedQty: 20,
+      unqualifiedQty: 0,
+    });
+    expect(second.status).toBe(201);
+    const secondPass = await admin(
+      'POST',
+      `/api/v1/qc-records/${second.body.data.flow.qc.id}/decision`,
+      { decision: 'PASS' },
+    );
+    expect(secondPass.status).toBe(201);
+    expect(secondPass.body.data.status).toBe('QC_DONE');
+    expect(secondPass.body.data.flow.quantities.releasedQty).toBe(100);
+
+    void orderId;
+  });
+
+  it('F 返工复检：原不合格结果保留，复检合格后累计放行且不重复计数', async () => {
+    const { productionId } = await createOrderAtQc();
+
+    const initial = await qcUser('POST', `/api/v1/productions/${productionId}/qc-records`, {
+      inspectedQty: 100,
+      qualifiedQty: 90,
+      unqualifiedQty: 10,
+    });
+    expect(initial.status).toBe(201);
+    const initialId = initial.body.data.flow.qc.id as string;
+
+    const passWithUnqualified = await admin('POST', `/api/v1/qc-records/${initialId}/decision`, {
+      decision: 'PASS',
+    });
+    expect(passWithUnqualified.status).toBe(422);
+    expect(passWithUnqualified.body.error?.code).toBe('QC_PASS_WITH_UNQUALIFIED');
+
+    const rework = await admin('POST', `/api/v1/qc-records/${initialId}/decision`, {
+      decision: 'REWORK',
+    });
+    expect(rework.status).toBe(201);
+    expect(rework.body.data.status).toBe('PENDING_QC');
+    expect(rework.body.data.flow.quantities.releasedQty).toBe(90);
+    expect(rework.body.data.flow.quantities.reworkPendingQty).toBe(10);
+
+    // 复检量不能超过返工量
+    const overReinspect = await qcUser('POST', `/api/v1/productions/${productionId}/qc-records`, {
+      inspectedQty: 11,
+      qualifiedQty: 11,
+      unqualifiedQty: 0,
+      parentQcRecordId: initialId,
+    });
+    expect(overReinspect.status).toBe(422);
+    expect(overReinspect.body.error?.code).toBe('QC_EXCEEDS_REWORK');
+
+    const reinspect = await qcUser('POST', `/api/v1/productions/${productionId}/qc-records`, {
+      inspectedQty: 10,
+      qualifiedQty: 10,
+      unqualifiedQty: 0,
+      parentQcRecordId: initialId,
+    });
+    expect(reinspect.status).toBe(201);
+    const records = reinspect.body.data.flow.qc.records as Array<Record<string, unknown>>;
+    expect(records).toHaveLength(2);
+    // 原不合格记录保留，不被复检结果覆盖
+    expect(records[0]).toMatchObject({ round: 1, unqualifiedQty: 10, parentQcRecordId: null });
+    expect(records[1]).toMatchObject({ round: 2, parentQcRecordId: initialId });
+
+    const reinspectId = reinspect.body.data.flow.qc.id as string;
+    const finalPass = await admin('POST', `/api/v1/qc-records/${reinspectId}/decision`, {
+      decision: 'PASS',
+    });
+    expect(finalPass.status).toBe(201);
+    expect(finalPass.body.data.status).toBe('QC_DONE');
+    expect(finalPass.body.data.flow.quantities.releasedQty).toBe(100);
+    expect(finalPass.body.data.flow.quantities.reworkPendingQty).toBe(0);
+
+    // 只有放行量可供包装
+    expect(
+      (await admin('POST', `/api/v1/orders/${reinspect.body.data.id}/packing-dispatch`)).status,
+    ).toBe(201);
+  });
+
+  it('F 报废决策结算不合格量，只有合格量放行', async () => {
+    const { orderId, productionId } = await createOrderAtQc();
+
+    const initial = await qcUser('POST', `/api/v1/productions/${productionId}/qc-records`, {
+      inspectedQty: 100,
+      qualifiedQty: 95,
+      unqualifiedQty: 5,
+    });
+    expect(initial.status).toBe(201);
+    const scrap = await admin(
+      'POST',
+      `/api/v1/qc-records/${initial.body.data.flow.qc.id}/decision`,
+      { decision: 'SCRAP' },
+    );
+    expect(scrap.status).toBe(201);
+    expect(scrap.body.data.status).toBe('QC_DONE');
+    expect(scrap.body.data.flow.quantities.releasedQty).toBe(95);
+    expect(scrap.body.data.flow.quantities.scrappedQty).toBe(5);
+
+    expect((await admin('POST', `/api/v1/orders/${orderId}/packing-dispatch`)).status).toBe(201);
+    const overPack = await packing('POST', `/api/v1/orders/${orderId}/packing-records`, {
+      quantity: 96,
+    });
+    expect(overPack.status).toBe(422);
   });
 
   it('状态不匹配时拒绝越级操作', async () => {

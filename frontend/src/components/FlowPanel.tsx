@@ -420,79 +420,162 @@ function FeedbackForm({ ctx }: { ctx: Ctx }) {
   );
 }
 
-/* ---------- 质检录入 ---------- */
+/* ---------- 质检录入（首检分批 / 返工复检） ---------- */
 function QcEntryForm({ ctx }: { ctx: Ctx }) {
   const production = ctx.order.flow.production;
-  const produced = ctx.order.flow.quantities.producedQty;
-  const [quantity, setQuantity] = useState(String(produced || 1));
+  const qc = ctx.order.flow.qc;
+  const { producedQty, inspectedQty, reworkPendingQty } = ctx.order.flow.quantities;
+  const pendingReinspection = qc?.pendingReinspection ?? null;
+  const max = pendingReinspection ? pendingReinspection.quantity : producedQty - inspectedQty;
+
+  const [quantity, setQuantity] = useState(String(max || 1));
+  const [qualified, setQualified] = useState(String(max || 1));
   const qty = toInt(quantity);
+  const ok = toIntOrZero(qualified);
+  const bad = qty === null || !Number.isFinite(ok) ? null : qty - ok;
+  const qualifiedInvalid = bad !== null && bad < 0;
+
   if (!production) return null;
+
+  const isReinspect = pendingReinspection !== null;
 
   return (
     <div className="flow-form">
       <p className="flow-form__lead">
-        M 版本要求整批检验：检验数量等于已生产数量，且全部合格。
+        {isReinspect
+          ? `返工复检：原质检判返工 ${reworkPendingQty} 件，本轮最多复检 ${max} 件。`
+          : `首检：已生产 ${producedQty}，已检 ${inspectedQty}，本轮最多检验 ${max} 件。`}
       </p>
-      <p className="flow-form__meta mono">已生产 {produced}</p>
-      <Field
-        label="检验数量"
-        htmlFor="flow-qc-qty"
-        required
-        hint={`M 版本固定为 ${produced}；部分检验属于 R09F`}
-      >
-        <input
-          id="flow-qc-qty"
-          className="input mono"
-          inputMode="numeric"
-          max={produced}
-          aria-describedby="flow-qc-qty-constraint"
-          value={quantity}
-          onChange={(event) => setQuantity(event.target.value)}
-        />
-        <span id="flow-qc-qty-constraint" className="sr-only">
-          必须等于 {produced}
-        </span>
-      </Field>
-      {qty !== null && qty !== produced ? (
+      <div className="flow-form__row">
+        <Field label="检验数量" htmlFor="flow-qc-qty" required>
+          <input
+            id="flow-qc-qty"
+            className="input mono"
+            inputMode="numeric"
+            max={max}
+            aria-describedby="flow-qc-qty-constraint"
+            value={quantity}
+            onChange={(event) => setQuantity(event.target.value)}
+          />
+          <span id="flow-qc-qty-constraint" className="sr-only">
+            最多 {max}
+          </span>
+        </Field>
+        <Field label="合格数量" htmlFor="flow-qc-ok" required>
+          <input
+            id="flow-qc-ok"
+            className="input mono"
+            inputMode="numeric"
+            aria-describedby="flow-qc-ok-constraint"
+            value={qualified}
+            onChange={(event) => setQualified(event.target.value)}
+          />
+          <span id="flow-qc-ok-constraint" className="sr-only">
+            不能超过检验数量
+          </span>
+        </Field>
+      </div>
+      <p className="flow-form__meta mono">
+        不合格 {bad ?? '—'} 件
+        {bad !== null && bad > 0 ? ' · 由管理员决定返工或报废' : ''}
+      </p>
+      {qty !== null && qty > max ? (
         <p className="flow-form__hint" role="status">
-          需整批检验：请填 {produced}。少检会让剩余数量无法放行，属于 R09F 的部分检验能力。
+          本轮最多 {max} 件{isReinspect ? '（返工量）' : '（未检数量）'}。
+        </p>
+      ) : null}
+      {qualifiedInvalid ? (
+        <p className="flow-form__hint" role="status">
+          合格数量必须是 0 到检验数量之间的整数。
         </p>
       ) : null}
       <Button
         loading={ctx.pending === 'qc-entry'}
-        disabled={qty === null || qty !== produced}
+        disabled={qty === null || qty > max || bad === null || qualifiedInvalid}
         trailing={<ArrowRight size={15} />}
         onClick={() =>
           ctx.run('qc-entry', `/productions/${production.id}/qc-records`, {
             inspectedQty: qty,
-            qualifiedQty: qty,
-            unqualifiedQty: 0,
+            qualifiedQty: ok,
+            unqualifiedQty: bad,
+            ...(pendingReinspection
+              ? { parentQcRecordId: pendingReinspection.parentQcRecordId }
+              : {}),
           })
         }
       >
-        提交全合格结果
+        {isReinspect ? '提交复检结果' : '提交质检结果'}
       </Button>
     </div>
   );
 }
 
-/* ---------- 质检放行 ---------- */
+function toIntOrZero(value: string): number {
+  if (value.trim() === '') return 0;
+  if (!/^\d+$/.test(value.trim())) return Number.NaN;
+  return Number(value);
+}
+
+/* ---------- 质检决策 ---------- */
+const DECISION_LABEL: Record<string, string> = {
+  PASS: '放行',
+  REWORK: '返工',
+  SCRAP: '报废',
+};
+
 function QcDecisionForm({ ctx }: { ctx: Ctx }) {
   const qc = ctx.order.flow.qc;
   if (!qc) return null;
+  const hasUnqualified = qc.unqualifiedQty > 0;
+
   return (
     <div className="flow-form">
       <p className="flow-form__lead">
-        品控录入：检验 {qc.inspectedQty} · 合格 {qc.qualifiedQty} · 不合格 {qc.unqualifiedQty}
+        品控录入（第 {qc.round} 轮）：检验 {qc.inspectedQty} · 合格 {qc.qualifiedQty} · 不合格{' '}
+        {qc.unqualifiedQty}
       </p>
-      <p className="flow-form__meta">放行后该数量才可供包装使用。返工与报废为 F 未实现。</p>
-      <Button
-        loading={ctx.pending === 'qc-decision'}
-        trailing={<CheckIcon size={15} />}
-        onClick={() => ctx.run('qc-decision', `/qc-records/${qc.id}/decision`, { decision: 'PASS' })}
-      >
-        确认放行
-      </Button>
+      <p className="flow-form__meta">
+        {hasUnqualified
+          ? '合格量无论选哪种决策都会放行；返工需品控复检，报废直接结案。'
+          : '全部合格，确认放行后该数量才可供包装使用。'}
+      </p>
+      <div className="flow-form__row flow-form__row--triple">
+        <Button
+          loading={ctx.pending === 'qc-decision'}
+          disabled={hasUnqualified}
+          trailing={<CheckIcon size={15} />}
+          onClick={() =>
+            ctx.run('qc-decision', `/qc-records/${qc.id}/decision`, { decision: 'PASS' })
+          }
+        >
+          确认放行
+        </Button>
+        <Button
+          variant="secondary"
+          loading={ctx.pending === 'qc-decision'}
+          disabled={!hasUnqualified}
+          onClick={() =>
+            ctx.run('qc-decision', `/qc-records/${qc.id}/decision`, { decision: 'REWORK' })
+          }
+        >
+          判返工
+        </Button>
+        <Button
+          variant="secondary"
+          loading={ctx.pending === 'qc-decision'}
+          disabled={!hasUnqualified}
+          onClick={() =>
+            ctx.run('qc-decision', `/qc-records/${qc.id}/decision`, { decision: 'SCRAP' })
+          }
+        >
+          判报废
+        </Button>
+      </div>
+      {hasUnqualified ? null : (
+        <p className="flow-form__hint" role="status">
+          没有不合格量，返工与报废不可选。
+        </p>
+      )}
     </div>
   );
 }
@@ -758,12 +841,18 @@ export function FlowLedger({ order }: { order: OrderDetail }) {
     });
   }
   if (qc) {
+    const lastDecision = [...qc.records].reverse().find((record) => record.decision)?.decision;
     rows.push({
       label: '质检',
-      value: `检验 ${qc.inspectedQty} · 合格 ${qc.qualifiedQty}`,
-      note: qc.decision
-        ? `${qc.decision.decision} 放行 ${qc.decision.releasedQty}`
-        : '等待管理员放行',
+      value: `首检 ${quantities.inspectedQty} · 合格 ${quantities.qualifiedQty} · 放行 ${quantities.releasedQty}`,
+      note:
+        quantities.reworkPendingQty > 0
+          ? `返工待复检 ${quantities.reworkPendingQty} 件`
+          : quantities.scrappedQty > 0
+            ? `报废 ${quantities.scrappedQty} 件`
+            : lastDecision
+              ? `${DECISION_LABEL[lastDecision.decision]} · ${qc.records.length} 次检验`
+              : '等待管理员决策',
     });
   }
   if (packing.records.length > 0) {

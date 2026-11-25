@@ -9,6 +9,8 @@ import { NotificationCategory } from '../generated/prisma/enums.ts';
 import { ok } from '../http/respond.ts';
 import { runDueDateReminders } from '../jobs/due-reminders.ts';
 import { writeAudit } from '../lib/audit.ts';
+import { recordEvent } from '../lib/events.ts';
+import { replayHeaders, runIdempotent } from '../lib/idempotency.ts';
 import { NOTIFICATION_CATEGORIES } from '../lib/notification-categories.ts';
 
 const pageSchema = z.object({
@@ -341,12 +343,16 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
 
   // ---------- 异常上报与处置（R22F） ----------
   const EXCEPTION_CATEGORIES = ['QUALITY', 'MATERIAL', 'EQUIPMENT', 'SCHEDULE', 'OTHER'] as const;
-  const EXCEPTION_STATUSES = ['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as const;
+  const EXCEPTION_STATUSES = ['OPEN', 'IN_PROGRESS', 'WAITING_QC', 'RESOLVED', 'CLOSED'] as const;
 
-  /** 只允许向前推进；不允许从已关闭回退，也不允许跳步。 */
+  /**
+   * 只允许向前推进；不允许从已关闭回退，也不允许跳步。
+   * WAITING_QC 只能由「下发复核」进入，只能凭通过的质检记录离开。
+   */
   const EXCEPTION_TRANSITIONS: Record<string, readonly string[]> = {
     OPEN: ['IN_PROGRESS', 'CLOSED'],
-    IN_PROGRESS: ['RESOLVED', 'CLOSED'],
+    IN_PROGRESS: ['WAITING_QC', 'RESOLVED', 'CLOSED'],
+    WAITING_QC: ['RESOLVED'],
     RESOLVED: ['CLOSED'],
     CLOSED: [],
   };
@@ -377,8 +383,14 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
       handlerId: z.string().uuid().nullable().optional(),
       expectedAt: z.string().datetime({ offset: true }).nullable().optional(),
       resolution: z.string().trim().min(2).max(500).nullable().optional(),
+      /** 质量异常明确不走质检时的留痕豁免，必须同时填写处理说明。 */
+      waiveQc: z.boolean().optional(),
     })
     .refine((value) => Object.keys(value).length > 0, { message: '没有需要修改的字段' });
+
+  const exceptionReviewSchema = z.object({
+    expectedAt: z.string().datetime({ offset: true }).nullable().optional(),
+  });
 
   function toExceptionItem(row: {
     id: string;
@@ -392,9 +404,23 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
     resolution: string | null;
     createdAt: Date;
     updatedAt: Date;
+    qcRecordId: string | null;
+    qcWaived: boolean;
     order: { orderNo: string } | null;
     reporter: { displayName: string };
     handler: { id: string; displayName: string } | null;
+    qcRecord: {
+      id: string;
+      round: number;
+      inspectedQty: number;
+      qualifiedQty: number;
+      unqualifiedQty: number;
+      decision: {
+        decision: string;
+        releasedQty: number;
+        scrapQty: number;
+      } | null;
+    } | null;
   }) {
     return {
       id: row.id,
@@ -409,6 +435,20 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
       expectedAt: row.expectedAt?.toISOString() ?? null,
       resolvedAt: row.resolvedAt?.toISOString() ?? null,
       resolution: row.resolution,
+      qcRecordId: row.qcRecordId,
+      qcWaived: row.qcWaived,
+      qc: row.qcRecord
+        ? {
+            recordId: row.qcRecord.id,
+            round: row.qcRecord.round,
+            inspectedQty: row.qcRecord.inspectedQty,
+            qualifiedQty: row.qcRecord.qualifiedQty,
+            unqualifiedQty: row.qcRecord.unqualifiedQty,
+            result: row.qcRecord.decision?.decision ?? null,
+            releasedQty: row.qcRecord.decision?.releasedQty ?? 0,
+            scrapQty: row.qcRecord.decision?.scrapQty ?? 0,
+          }
+        : null,
       reporterName: row.reporter.displayName,
       createdAt: row.createdAt.toISOString(),
       updatedAt: row.updatedAt.toISOString(),
@@ -419,6 +459,16 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
     reporter: { select: { displayName: true } },
     handler: { select: { id: true, displayName: true } },
     order: { select: { orderNo: true } },
+    qcRecord: {
+      select: {
+        id: true,
+        round: true,
+        inspectedQty: true,
+        qualifiedQty: true,
+        unqualifiedQty: true,
+        decision: { select: { decision: true, releasedQty: true, scrapQty: true } },
+      },
+    },
   } as const;
 
   app.post('/api/v1/exceptions', { preHandler: authenticate }, async (request, reply) => {
@@ -549,6 +599,15 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
         const nextStatus = body.status ?? current.status;
         const statusChanged = nextStatus !== current.status;
 
+        // WAITING_QC 是「已下发复核」的系统状态，不能靠 PATCH 手填，
+        // 否则又变成了一条自由改状态的旁路。
+        if (body.status === 'WAITING_QC') {
+          throw Errors.conflict(
+            'EXCEPTION_REVIEW_REQUIRED',
+            '请使用「下发复核」按钮，由系统关联质检记录',
+          );
+        }
+
         if (statusChanged) {
           const allowed = EXCEPTION_TRANSITIONS[current.status] ?? [];
           if (!allowed.includes(nextStatus)) {
@@ -557,10 +616,31 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
               `异常状态不能从 ${current.status} 变为 ${nextStatus}`,
             );
           }
-          if (nextStatus === 'RESOLVED' && !(body.resolution ?? current.resolution)) {
-            throw Errors.validation('标记解决时必须填写处理说明', [
-              { path: 'resolution', message: '缺少处理说明' },
-            ]);
+          if (nextStatus === 'RESOLVED') {
+            const resolution = body.resolution ?? current.resolution;
+            if (!resolution) {
+              throw Errors.validation('标记解决时必须填写处理说明', [
+                { path: 'resolution', message: '缺少处理说明' },
+              ]);
+            }
+            // 质量异常要有凭证：关联质检必须 PASS；没有关联质检时只能显式留痕豁免。
+            if (current.qcRecordId) {
+              const qc = await tx.qCRecord.findUnique({
+                where: { id: current.qcRecordId },
+                include: { decision: true },
+              });
+              if (qc?.decision?.decision !== 'PASS') {
+                throw Errors.conflict(
+                  'EXCEPTION_QC_NOT_PASSED',
+                  '关联质检尚未通过，不能标记解决',
+                );
+              }
+            } else if (current.category === 'QUALITY' && !body.waiveQc) {
+              throw Errors.conflict(
+                'EXCEPTION_QC_REQUIRED',
+                '质量异常需先下发复核并取得 PASS；确不涉及质检时请勾选留痕豁免',
+              );
+            }
           }
         }
 
@@ -573,6 +653,12 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
               ? { expectedAt: body.expectedAt ? new Date(body.expectedAt) : null }
               : {}),
             ...(body.resolution !== undefined ? { resolution: body.resolution } : {}),
+            ...(body.waiveQc === true &&
+            !current.qcRecordId &&
+            statusChanged &&
+            nextStatus === 'RESOLVED'
+              ? { qcWaived: true }
+              : {}),
             ...(statusChanged && nextStatus === 'RESOLVED' ? { resolvedAt: new Date() } : {}),
           },
           include: exceptionInclude,
@@ -589,12 +675,16 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
             handlerId: current.handlerId,
             expectedAt: current.expectedAt?.toISOString() ?? null,
             resolution: current.resolution,
+            qcRecordId: current.qcRecordId,
+            qcWaived: current.qcWaived,
           },
           after: {
             status: saved.status,
             handlerId: saved.handlerId,
             expectedAt: saved.expectedAt?.toISOString() ?? null,
             resolution: saved.resolution,
+            qcRecordId: saved.qcRecordId,
+            qcWaived: saved.qcWaived,
           },
         });
 
@@ -619,6 +709,186 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
       });
 
       return ok(reply, toExceptionItem(updated));
+    },
+  );
+
+  // ---------- 异常下发复核（R22F × R09F） ----------
+  // 异常单不直接改数量或质检状态：它只把生产任务送入正式质检链，
+  // 由品控录入、管理员决策，异常单引用通过后的质检记录作为解决凭证。
+  app.post(
+    '/api/v1/exceptions/:id/review',
+    { preHandler: [authenticate, requireAdmin] },
+    async (request, reply) => {
+      const auth = authContext(request);
+      const { id } = idParam.parse(request.params);
+      const body = exceptionReviewSchema.parse(request.body ?? {});
+
+      const outcome = await runIdempotent({
+        actorId: auth.user.id,
+        operation: 'exception.review',
+        key: request.headers['idempotency-key'],
+        body: { exceptionId: id, ...body },
+        handler: async (tx) => {
+          const exception = await tx.tabletException.findUnique({ where: { id } });
+          if (!exception) throw Errors.notFound('异常记录不存在', 'EXCEPTION_NOT_FOUND');
+          if (exception.status !== 'OPEN' && exception.status !== 'IN_PROGRESS') {
+            throw Errors.conflict(
+              'EXCEPTION_STATUS_CONFLICT',
+              `当前状态 ${exception.status} 不能下发复核`,
+            );
+          }
+          if (!exception.productionOrderId) {
+            throw Errors.business(
+              '异常未关联生产任务，无法下发复核；可在处理说明中留痕解决',
+              'EXCEPTION_NO_PRODUCTION',
+            );
+          }
+
+          const production = await tx.productionOrder.findUnique({
+            where: { id: exception.productionOrderId },
+            include: {
+              order: true,
+              feedbacks: true,
+              qcRecords: { include: { decision: true } },
+            },
+          });
+          if (!production) throw Errors.notFound('生产任务不存在', 'PRODUCTION_NOT_FOUND');
+          const order = production.order;
+          const produced = production.feedbacks.reduce((sum, f) => sum + f.quantity, 0);
+          if (produced <= 0) {
+            throw Errors.business('生产尚未反馈完成数量，无法下发复核', 'EXCEPTION_NO_PRODUCED_QTY');
+          }
+
+          const active = await tx.tabletException.findFirst({
+            where: {
+              productionOrderId: production.id,
+              status: 'WAITING_QC',
+              id: { not: id },
+            },
+          });
+          if (active) {
+            throw Errors.conflict(
+              'EXCEPTION_REVIEW_IN_PROGRESS',
+              '该生产任务已有待复核异常，请等该异常解决后再下发',
+            );
+          }
+
+          const records = production.qcRecords;
+          if (records.some((record) => !record.decision)) {
+            throw Errors.conflict(
+              'EXCEPTION_QC_PENDING_DECISION',
+              '已有质检结果等待管理员决策，不能重复下发复核',
+            );
+          }
+
+          const initialInspected = records
+            .filter((record) => record.round === 1)
+            .reduce((sum, record) => sum + record.inspectedQty, 0);
+          const hasInitial = initialInspected > 0;
+
+          if (!hasInitial) {
+            // 尚未首检：异常复核等同于把生产任务送入首次质检。
+            if (order.status === 'IN_PRODUCTION') {
+              await tx.order.update({
+                where: { id: order.id },
+                data: { status: 'PENDING_QC' },
+              });
+              await recordEvent(tx, {
+                orderId: order.id,
+                type: 'QC_DISPATCHED',
+                actorId: auth.user.id,
+                payload: {
+                  productionOrderId: production.id,
+                  produced,
+                  reason: 'exception_review',
+                  exceptionId: id,
+                },
+                notify: {
+                  title: `${order.orderNo} 异常复核已下发质检`,
+                  body: `待检数量 ${produced}，等待品控录入结果。`,
+                },
+              });
+            } else if (order.status !== 'PENDING_QC') {
+              throw Errors.conflict(
+                'EXCEPTION_QC_NOT_AVAILABLE',
+                `订单当前状态 ${order.status} 不能发起质检复核`,
+              );
+            }
+          } else {
+            // 已首检：只有存在未复检的返工量时才允许复核。
+            const reworkPending = records.reduce((total, record) => {
+              if (record.decision?.decision !== 'REWORK') return total;
+              const reinspected = records
+                .filter((child) => child.parentQcRecordId === record.id)
+                .reduce((sum, child) => sum + child.inspectedQty, 0);
+              return total + Math.max(0, record.unqualifiedQty - reinspected);
+            }, 0);
+            if (reworkPending <= 0) {
+              throw Errors.business(
+                '该生产任务没有待复检的返工量；如需重新检验，请先由管理员对质检记录作返工决策',
+                'EXCEPTION_NO_QC_BASIS',
+              );
+            }
+            if (order.status !== 'PENDING_QC') {
+              throw Errors.conflict(
+                'EXCEPTION_QC_NOT_AVAILABLE',
+                `订单当前状态 ${order.status} 不能发起质检复核`,
+              );
+            }
+          }
+
+          const saved = await tx.tabletException.update({
+            where: { id },
+            data: {
+              status: 'WAITING_QC',
+              ...(exception.handlerId ? {} : { handlerId: auth.user.id }),
+              ...(body.expectedAt !== undefined
+                ? { expectedAt: body.expectedAt ? new Date(body.expectedAt) : null }
+                : {}),
+            },
+            include: exceptionInclude,
+          });
+
+          await writeAudit(tx, {
+            requestId: request.id,
+            actorId: auth.user.id,
+            action: 'exception.review',
+            resourceType: 'exception',
+            resourceId: id,
+            before: { status: exception.status, qcRecordId: exception.qcRecordId },
+            after: {
+              status: saved.status,
+              productionOrderId: production.id,
+              firstInspection: !hasInitial,
+            },
+          });
+
+          // 复核任务要进品控的队列，而不是只停留在管理员页面上。
+          const qcUsers = await tx.adminUser.findMany({
+            where: { role: 'QC', active: true },
+            select: { id: true },
+          });
+          if (qcUsers.length > 0) {
+            await tx.notification.createMany({
+              data: qcUsers.map((user) => ({
+                eventType: 'EXCEPTION_REVIEWED',
+                category: 'EXCEPTION' as const,
+                title: `复核任务 · ${saved.order?.orderNo ?? '未关联订单'}`,
+                body: exception.description.slice(0, 120),
+                recipientId: user.id,
+                orderId: exception.orderId,
+                dedupeKey: `exception:${id}:REVIEW:${user.id}`,
+              })),
+              skipDuplicates: true,
+            });
+          }
+
+          return { status: 200, data: toExceptionItem(saved), resourceId: id };
+        },
+      });
+
+      reply.headers(replayHeaders(outcome.replayed));
+      return ok(reply, outcome.data);
     },
   );
 }

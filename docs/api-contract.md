@@ -71,6 +71,11 @@
 | 409 | `INSUFFICIENT_STOCK` | 库存扣减会变负 |
 | 409 | `IDEMPOTENCY_KEY_REUSED` / `REQUEST_IN_PROGRESS` | 同键异体 / 同键处理中 |
 | 409 | `EXCEPTION_STATUS_CONFLICT` / `IMPORT_ALREADY_COMMITTED` | 非法状态迁移 / 重复导入 |
+| 409 | `QC_DECISION_PENDING` / `QC_ALL_INSPECTED` / `QC_PARENT_NOT_REWORK` / `QC_REWORK_COMPLETE` | 上一轮未决策 / 首检已满 / 父记录非返工 / 返工已复检完 |
+| 409 | `EXCEPTION_REVIEW_REQUIRED` / `EXCEPTION_REVIEW_IN_PROGRESS` / `EXCEPTION_QC_PENDING_DECISION` | 手填 `WAITING_QC` / 同任务已有复核 / 质检未决策 |
+| 409 | `EXCEPTION_QC_REQUIRED` / `EXCEPTION_QC_NOT_PASSED` | 质量异常无凭证 / 关联质检未 PASS |
+| 422 | `QC_PASS_WITH_UNQUALIFIED` / `QC_NO_UNQUALIFIED` / `QC_EXCEEDS_REWORK` | PASS 带不合格 / 无不合格却返工报废 / 复检超返工量 |
+| 422 | `EXCEPTION_NO_PRODUCTION` / `EXCEPTION_NO_PRODUCED_QTY` / `EXCEPTION_NO_QC_BASIS` / `EXCEPTION_QC_NOT_AVAILABLE` | 复核前置条件不满足 |
 | 422 | 业务码，如 `ARRIVAL_EXCEEDS_REMAINING`、`QC_QTY_MISMATCH`、`PACKING_EXCEEDS_REMAINING`、`SHIPMENT_EXCEEDS_LIMIT` | 业务规则拒绝 |
 | 422 | `IMPORT_HAS_ERRORS` / `IMPORT_DEPARTMENT_INVALID` | 预检有错误行 / 部门无效 |
 | 422 | `SUPPLIER_NOT_IN_PART_SET` | 配件配置了供应商集合，但采购选了集合外供应商 |
@@ -133,7 +138,7 @@
 | `POST /orders` | ADMIN | `{customerId, customerContact?, dueDate, remark?, ownerId?, items:[{productName,spec,quantity,unitPrice}]}` | 201 订单详情；`ownerId` 缺省为创建人 | 422 客户停用；400 校验 |
 | `GET /orders/export.xlsx` | ADMIN | `status,keyword,customerId` | 200 xlsx 附件（≤10000 行） | 403 |
 
-订单详情结构：`summary + createdByName + items + flow + timeline`。`flow` 包含 `quantities`、`purchase`、`plating`、`production`、`qc`、`packing`、`shipping`、`profit`（非管理员为 null）。`plating` 含 `required/notApplicable/sentQty/receivedQty/outstandingQty/orders`。`allowedActions` 由后端按角色/状态/数量计算，前端不得自行推断。
+订单详情结构：`summary + createdByName + items + flow + timeline`。`flow` 包含 `quantities`、`purchase`、`plating`、`production`、`qc`、`packing`、`shipping`、`profit`（非管理员为 null）。`plating` 含 `required/notApplicable/sentQty/receivedQty/outstandingQty/orders`。`qc` 含最近一轮的 `id/round/parentQcRecordId/decision`，并用 `records` 返回全部轮次（原不合格记录保留），`pendingReinspection` 给出下一轮可复检的父记录与数量。`allowedActions` 由后端按角色/状态/数量计算，前端不得自行推断。
 
 ### 4.2 流转动作
 
@@ -144,8 +149,8 @@
 | `POST /orders/:id/productions` | ADMIN | `{departmentId, employeeId?, processName, quantity, unitPrice, dueDate?, unitPriceVisible?}` | PURCHASING 且采购全部到货、无生产任务 | 建生产任务，状态→IN_PRODUCTION | `ARRIVAL_INCOMPLETE`、`DEPARTMENT_CATEGORY_MISMATCH`、`EMPLOYEE_DEPARTMENT_MISMATCH`、`PRODUCTION_ALREADY_DISPATCHED` |
 | `POST /productions/:id/feedback` | PRODUCTION（同部门） | `{quantity}` | IN_PRODUCTION，未反馈 | 写反馈，数量 ≤ 任务量 | 403 非本部门、`FEEDBACK_EXCEEDS_TASK`、`FEEDBACK_ALREADY_RECORDED` |
 | `POST /orders/:id/qc-dispatch` | ADMIN | 空对象 | IN_PRODUCTION 且已有反馈 | 状态→PENDING_QC | `NO_PRODUCED_QTY`、`QC_ALREADY_DISPATCHED` |
-| `POST /productions/:id/qc-records` | QC | `{inspectedQty, qualifiedQty, unqualifiedQty}` | PENDING_QC，未录入 | 写质检记录 | `QC_QTY_MISMATCH`、`QC_PARTIAL_NOT_SUPPORTED`、`QC_EXCEEDS_PRODUCED` |
-| `POST /qc-records/:id/decision` | ADMIN | `{decision:'PASS'}` | PENDING_QC 且已录入、未决策 | 写 PASS 决策，状态→QC_DONE | `QC_DECISION_NOT_SUPPORTED`（REWORK/SCRAP）、`QC_ALREADY_DECIDED` |
+| `POST /productions/:id/qc-records` | QC | `{inspectedQty, qualifiedQty, unqualifiedQty, parentQcRecordId?}`；首检不传父记录，复检必传 | PENDING_QC；无未决策记录；首检累计未满或存在待复检返工量 | 写质检记录（`round`、`parentQcRecordId`），并自动关联同生产任务 `WAITING_QC` 异常 | `QC_QTY_MISMATCH`、`QC_EXCEEDS_PRODUCED`、`QC_DECISION_PENDING`、`QC_ALL_INSPECTED`、`QC_PARENT_NOT_FOUND`、`QC_PARENT_NOT_REWORK`、`QC_EXCEEDS_REWORK`、`QC_REWORK_COMPLETE` |
+| `POST /qc-records/:id/decision` | ADMIN | `{decision:'PASS'|'REWORK'|'SCRAP'}` | PENDING_QC 且该记录未决策 | 写决策（`releasedQty`/`scrapQty`）；已检量全部有归宿时状态→QC_DONE，否则留 PENDING_QC | `QC_ALREADY_DECIDED`、`QC_PASS_WITH_UNQUALIFIED`、`QC_NO_UNQUALIFIED` |
 | `POST /orders/:id/packing-dispatch` | ADMIN | 空对象 | QC_DONE 且放行量 >0 | 状态→PACKING | `NO_RELEASED_QTY` |
 | `POST /orders/:id/packing-records` | PACKING | `{quantity}` | PACKING | 写包装记录，累计 ≤ 放行量 | `PACKING_EXCEEDS_REMAINING` |
 | `POST /orders/:id/shipping-trigger` | ADMIN | 空对象 | PACKING 且已包装 >0 | 状态→SHIPPING | `NO_PACKED_QTY` |
@@ -185,7 +190,8 @@
 | `POST /jobs/due-reminders` | ADMIN | — | 200 `{businessDate,orders,recipients,created}`；同日重复执行为 `created:0` |
 | `POST /exceptions` | 登录 | `{orderId?|productionOrderId?, category?, description}`（至少一个关联，4–500 字） | 201 异常；同时通知管理员 |
 | `GET /exceptions` | ADMIN | `status,category,handlerId,keyword,page,pageSize` | 200 分页异常 |
-| `PATCH /exceptions/:id` | ADMIN | `{status?,handlerId?,expectedAt?,resolution?}` 至少一项 | 200 更新后的异常；非法状态迁移 409；RESOLVED 缺说明 400 |
+| `PATCH /exceptions/:id` | ADMIN | `{status?,handlerId?,expectedAt?,resolution?,waiveQc?}` 至少一项 | 200 更新后的异常；非法状态迁移 409；RESOLVED 缺说明 400；质量异常无 PASS 凭证且未 `waiveQc` → 409 `EXCEPTION_QC_REQUIRED` / `EXCEPTION_QC_NOT_PASSED`；手填 `WAITING_QC` → 409 `EXCEPTION_REVIEW_REQUIRED` |
+| `POST /exceptions/:id/review` | ADMIN | `{expectedAt?}`，需幂等键 | 200 异常（状态 `WAITING_QC`）；未关联生产任务 422 `EXCEPTION_NO_PRODUCTION`；同任务已有待复核 409 `EXCEPTION_REVIEW_IN_PROGRESS`；无待复检返工量 422 `EXCEPTION_NO_QC_BASIS` |
 
 ## 7. 附件
 
@@ -207,8 +213,8 @@
 
 | 方法/路径 | 角色 | 请求 | 成功 |
 | --- | --- | --- | --- |
-| `GET /audit-logs` | ADMIN | `action,resourceType,resourceId,actorId,keyword,from,to,page,pageSize` | 200 分页；含脱敏后的 `before/after` 与 `changes` |
-| `GET /audit-logs/export.xlsx` | ADMIN | 同列表筛选条件 | 200 xlsx（≤10000 行），敏感字段 `***` | 403 |
+| `GET /audit-logs` | ADMIN | `action,resourceType,resourceId,actorId,keyword,from,to,page,pageSize` | 200 分页；含脱敏后的 `before/after`、`changes`，以及反查的 `orderId/orderNo`（无订单上下文为 null） |
+| `GET /audit-logs/export.xlsx` | ADMIN | 同列表筛选条件 | 200 xlsx（≤10000 行），含“订单号”列，敏感字段 `***` | 403 |
 | `GET /audit-logs/facets` | ADMIN | — | 200 `{actions,resourceTypes,actors}` |
 
 现场角色访问返回 403；审计没有修改/删除接口。

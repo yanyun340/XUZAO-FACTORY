@@ -3101,6 +3101,8 @@ export const QCRecordScalarFieldEnum = {
   inspectedQty: 'inspectedQty',
   qualifiedQty: 'qualifiedQty',
   unqualifiedQty: 'unqualifiedQty',
+  round: 'round',
+  parentQcRecordId: 'parentQcRecordId',
   operatorId: 'operatorId',
   createdAt: 'createdAt'
 } as const
@@ -3113,6 +3115,7 @@ export const QCDecisionScalarFieldEnum = {
   qcRecordId: 'qcRecordId',
   decision: 'decision',
   releasedQty: 'releasedQty',
+  scrapQty: 'scrapQty',
   decidedById: 'decidedById',
   createdAt: 'createdAt'
 } as const
@@ -3245,6 +3248,8 @@ export const TabletExceptionScalarFieldEnum = {
   expectedAt: 'expectedAt',
   resolvedAt: 'resolvedAt',
   resolution: 'resolution',
+  qcRecordId: 'qcRecordId',
+  qcWaived: 'qcWaived',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

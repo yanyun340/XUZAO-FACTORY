@@ -30,12 +30,14 @@ export type QCRecordAvgAggregateOutputType = {
   inspectedQty: number | null
   qualifiedQty: number | null
   unqualifiedQty: number | null
+  round: number | null
 }
 
 export type QCRecordSumAggregateOutputType = {
   inspectedQty: number | null
   qualifiedQty: number | null
   unqualifiedQty: number | null
+  round: number | null
 }
 
 export type QCRecordMinAggregateOutputType = {
@@ -44,6 +46,8 @@ export type QCRecordMinAggregateOutputType = {
   inspectedQty: number | null
   qualifiedQty: number | null
   unqualifiedQty: number | null
+  round: number | null
+  parentQcRecordId: string | null
   operatorId: string | null
   createdAt: Date | null
 }
@@ -54,6 +58,8 @@ export type QCRecordMaxAggregateOutputType = {
   inspectedQty: number | null
   qualifiedQty: number | null
   unqualifiedQty: number | null
+  round: number | null
+  parentQcRecordId: string | null
   operatorId: string | null
   createdAt: Date | null
 }
@@ -64,6 +70,8 @@ export type QCRecordCountAggregateOutputType = {
   inspectedQty: number
   qualifiedQty: number
   unqualifiedQty: number
+  round: number
+  parentQcRecordId: number
   operatorId: number
   createdAt: number
   _all: number
@@ -74,12 +82,14 @@ export type QCRecordAvgAggregateInputType = {
   inspectedQty?: true
   qualifiedQty?: true
   unqualifiedQty?: true
+  round?: true
 }
 
 export type QCRecordSumAggregateInputType = {
   inspectedQty?: true
   qualifiedQty?: true
   unqualifiedQty?: true
+  round?: true
 }
 
 export type QCRecordMinAggregateInputType = {
@@ -88,6 +98,8 @@ export type QCRecordMinAggregateInputType = {
   inspectedQty?: true
   qualifiedQty?: true
   unqualifiedQty?: true
+  round?: true
+  parentQcRecordId?: true
   operatorId?: true
   createdAt?: true
 }
@@ -98,6 +110,8 @@ export type QCRecordMaxAggregateInputType = {
   inspectedQty?: true
   qualifiedQty?: true
   unqualifiedQty?: true
+  round?: true
+  parentQcRecordId?: true
   operatorId?: true
   createdAt?: true
 }
@@ -108,6 +122,8 @@ export type QCRecordCountAggregateInputType = {
   inspectedQty?: true
   qualifiedQty?: true
   unqualifiedQty?: true
+  round?: true
+  parentQcRecordId?: true
   operatorId?: true
   createdAt?: true
   _all?: true
@@ -205,6 +221,8 @@ export type QCRecordGroupByOutputType = {
   inspectedQty: number
   qualifiedQty: number
   unqualifiedQty: number
+  round: number
+  parentQcRecordId: string | null
   operatorId: string
   createdAt: Date
   _count: QCRecordCountAggregateOutputType | null
@@ -238,11 +256,16 @@ export type QCRecordWhereInput = {
   inspectedQty?: Prisma.IntFilter<"QCRecord"> | number
   qualifiedQty?: Prisma.IntFilter<"QCRecord"> | number
   unqualifiedQty?: Prisma.IntFilter<"QCRecord"> | number
+  round?: Prisma.IntFilter<"QCRecord"> | number
+  parentQcRecordId?: Prisma.UuidNullableFilter<"QCRecord"> | string | null
   operatorId?: Prisma.UuidFilter<"QCRecord"> | string
   createdAt?: Prisma.DateTimeFilter<"QCRecord"> | Date | string
   productionOrder?: Prisma.XOR<Prisma.ProductionOrderScalarRelationFilter, Prisma.ProductionOrderWhereInput>
+  parentQcRecord?: Prisma.XOR<Prisma.QCRecordNullableScalarRelationFilter, Prisma.QCRecordWhereInput> | null
+  reinspections?: Prisma.QCRecordListRelationFilter
   operator?: Prisma.XOR<Prisma.AdminUserScalarRelationFilter, Prisma.AdminUserWhereInput>
   decision?: Prisma.XOR<Prisma.QCDecisionNullableScalarRelationFilter, Prisma.QCDecisionWhereInput> | null
+  exception?: Prisma.XOR<Prisma.TabletExceptionNullableScalarRelationFilter, Prisma.TabletExceptionWhereInput> | null
 }
 
 export type QCRecordOrderByWithRelationInput = {
@@ -251,11 +274,16 @@ export type QCRecordOrderByWithRelationInput = {
   inspectedQty?: Prisma.SortOrder
   qualifiedQty?: Prisma.SortOrder
   unqualifiedQty?: Prisma.SortOrder
+  round?: Prisma.SortOrder
+  parentQcRecordId?: Prisma.SortOrderInput | Prisma.SortOrder
   operatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   productionOrder?: Prisma.ProductionOrderOrderByWithRelationInput
+  parentQcRecord?: Prisma.QCRecordOrderByWithRelationInput
+  reinspections?: Prisma.QCRecordOrderByRelationAggregateInput
   operator?: Prisma.AdminUserOrderByWithRelationInput
   decision?: Prisma.QCDecisionOrderByWithRelationInput
+  exception?: Prisma.TabletExceptionOrderByWithRelationInput
 }
 
 export type QCRecordWhereUniqueInput = Prisma.AtLeast<{
@@ -267,11 +295,16 @@ export type QCRecordWhereUniqueInput = Prisma.AtLeast<{
   inspectedQty?: Prisma.IntFilter<"QCRecord"> | number
   qualifiedQty?: Prisma.IntFilter<"QCRecord"> | number
   unqualifiedQty?: Prisma.IntFilter<"QCRecord"> | number
+  round?: Prisma.IntFilter<"QCRecord"> | number
+  parentQcRecordId?: Prisma.UuidNullableFilter<"QCRecord"> | string | null
   operatorId?: Prisma.UuidFilter<"QCRecord"> | string
   createdAt?: Prisma.DateTimeFilter<"QCRecord"> | Date | string
   productionOrder?: Prisma.XOR<Prisma.ProductionOrderScalarRelationFilter, Prisma.ProductionOrderWhereInput>
+  parentQcRecord?: Prisma.XOR<Prisma.QCRecordNullableScalarRelationFilter, Prisma.QCRecordWhereInput> | null
+  reinspections?: Prisma.QCRecordListRelationFilter
   operator?: Prisma.XOR<Prisma.AdminUserScalarRelationFilter, Prisma.AdminUserWhereInput>
   decision?: Prisma.XOR<Prisma.QCDecisionNullableScalarRelationFilter, Prisma.QCDecisionWhereInput> | null
+  exception?: Prisma.XOR<Prisma.TabletExceptionNullableScalarRelationFilter, Prisma.TabletExceptionWhereInput> | null
 }, "id">
 
 export type QCRecordOrderByWithAggregationInput = {
@@ -280,6 +313,8 @@ export type QCRecordOrderByWithAggregationInput = {
   inspectedQty?: Prisma.SortOrder
   qualifiedQty?: Prisma.SortOrder
   unqualifiedQty?: Prisma.SortOrder
+  round?: Prisma.SortOrder
+  parentQcRecordId?: Prisma.SortOrderInput | Prisma.SortOrder
   operatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.QCRecordCountOrderByAggregateInput
@@ -298,6 +333,8 @@ export type QCRecordScalarWhereWithAggregatesInput = {
   inspectedQty?: Prisma.IntWithAggregatesFilter<"QCRecord"> | number
   qualifiedQty?: Prisma.IntWithAggregatesFilter<"QCRecord"> | number
   unqualifiedQty?: Prisma.IntWithAggregatesFilter<"QCRecord"> | number
+  round?: Prisma.IntWithAggregatesFilter<"QCRecord"> | number
+  parentQcRecordId?: Prisma.UuidNullableWithAggregatesFilter<"QCRecord"> | string | null
   operatorId?: Prisma.UuidWithAggregatesFilter<"QCRecord"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"QCRecord"> | Date | string
 }
@@ -307,10 +344,14 @@ export type QCRecordCreateInput = {
   inspectedQty: number
   qualifiedQty: number
   unqualifiedQty: number
+  round?: number
   createdAt?: Date | string
   productionOrder: Prisma.ProductionOrderCreateNestedOneWithoutQcRecordsInput
+  parentQcRecord?: Prisma.QCRecordCreateNestedOneWithoutReinspectionsInput
+  reinspections?: Prisma.QCRecordCreateNestedManyWithoutParentQcRecordInput
   operator: Prisma.AdminUserCreateNestedOneWithoutQcRecordsInput
   decision?: Prisma.QCDecisionCreateNestedOneWithoutQcRecordInput
+  exception?: Prisma.TabletExceptionCreateNestedOneWithoutQcRecordInput
 }
 
 export type QCRecordUncheckedCreateInput = {
@@ -319,9 +360,13 @@ export type QCRecordUncheckedCreateInput = {
   inspectedQty: number
   qualifiedQty: number
   unqualifiedQty: number
+  round?: number
+  parentQcRecordId?: string | null
   operatorId: string
   createdAt?: Date | string
+  reinspections?: Prisma.QCRecordUncheckedCreateNestedManyWithoutParentQcRecordInput
   decision?: Prisma.QCDecisionUncheckedCreateNestedOneWithoutQcRecordInput
+  exception?: Prisma.TabletExceptionUncheckedCreateNestedOneWithoutQcRecordInput
 }
 
 export type QCRecordUpdateInput = {
@@ -329,10 +374,14 @@ export type QCRecordUpdateInput = {
   inspectedQty?: Prisma.IntFieldUpdateOperationsInput | number
   qualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
   unqualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  round?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   productionOrder?: Prisma.ProductionOrderUpdateOneRequiredWithoutQcRecordsNestedInput
+  parentQcRecord?: Prisma.QCRecordUpdateOneWithoutReinspectionsNestedInput
+  reinspections?: Prisma.QCRecordUpdateManyWithoutParentQcRecordNestedInput
   operator?: Prisma.AdminUserUpdateOneRequiredWithoutQcRecordsNestedInput
   decision?: Prisma.QCDecisionUpdateOneWithoutQcRecordNestedInput
+  exception?: Prisma.TabletExceptionUpdateOneWithoutQcRecordNestedInput
 }
 
 export type QCRecordUncheckedUpdateInput = {
@@ -341,9 +390,13 @@ export type QCRecordUncheckedUpdateInput = {
   inspectedQty?: Prisma.IntFieldUpdateOperationsInput | number
   qualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
   unqualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  round?: Prisma.IntFieldUpdateOperationsInput | number
+  parentQcRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   operatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reinspections?: Prisma.QCRecordUncheckedUpdateManyWithoutParentQcRecordNestedInput
   decision?: Prisma.QCDecisionUncheckedUpdateOneWithoutQcRecordNestedInput
+  exception?: Prisma.TabletExceptionUncheckedUpdateOneWithoutQcRecordNestedInput
 }
 
 export type QCRecordCreateManyInput = {
@@ -352,6 +405,8 @@ export type QCRecordCreateManyInput = {
   inspectedQty: number
   qualifiedQty: number
   unqualifiedQty: number
+  round?: number
+  parentQcRecordId?: string | null
   operatorId: string
   createdAt?: Date | string
 }
@@ -361,6 +416,7 @@ export type QCRecordUpdateManyMutationInput = {
   inspectedQty?: Prisma.IntFieldUpdateOperationsInput | number
   qualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
   unqualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  round?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -370,6 +426,8 @@ export type QCRecordUncheckedUpdateManyInput = {
   inspectedQty?: Prisma.IntFieldUpdateOperationsInput | number
   qualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
   unqualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  round?: Prisma.IntFieldUpdateOperationsInput | number
+  parentQcRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   operatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -384,12 +442,19 @@ export type QCRecordOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type QCRecordNullableScalarRelationFilter = {
+  is?: Prisma.QCRecordWhereInput | null
+  isNot?: Prisma.QCRecordWhereInput | null
+}
+
 export type QCRecordCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   productionOrderId?: Prisma.SortOrder
   inspectedQty?: Prisma.SortOrder
   qualifiedQty?: Prisma.SortOrder
   unqualifiedQty?: Prisma.SortOrder
+  round?: Prisma.SortOrder
+  parentQcRecordId?: Prisma.SortOrder
   operatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -398,6 +463,7 @@ export type QCRecordAvgOrderByAggregateInput = {
   inspectedQty?: Prisma.SortOrder
   qualifiedQty?: Prisma.SortOrder
   unqualifiedQty?: Prisma.SortOrder
+  round?: Prisma.SortOrder
 }
 
 export type QCRecordMaxOrderByAggregateInput = {
@@ -406,6 +472,8 @@ export type QCRecordMaxOrderByAggregateInput = {
   inspectedQty?: Prisma.SortOrder
   qualifiedQty?: Prisma.SortOrder
   unqualifiedQty?: Prisma.SortOrder
+  round?: Prisma.SortOrder
+  parentQcRecordId?: Prisma.SortOrder
   operatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -416,6 +484,8 @@ export type QCRecordMinOrderByAggregateInput = {
   inspectedQty?: Prisma.SortOrder
   qualifiedQty?: Prisma.SortOrder
   unqualifiedQty?: Prisma.SortOrder
+  round?: Prisma.SortOrder
+  parentQcRecordId?: Prisma.SortOrder
   operatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -424,6 +494,7 @@ export type QCRecordSumOrderByAggregateInput = {
   inspectedQty?: Prisma.SortOrder
   qualifiedQty?: Prisma.SortOrder
   unqualifiedQty?: Prisma.SortOrder
+  round?: Prisma.SortOrder
 }
 
 export type QCRecordScalarRelationFilter = {
@@ -515,6 +586,64 @@ export type QCRecordUncheckedUpdateManyWithoutProductionOrderNestedInput = {
   deleteMany?: Prisma.QCRecordScalarWhereInput | Prisma.QCRecordScalarWhereInput[]
 }
 
+export type QCRecordCreateNestedOneWithoutReinspectionsInput = {
+  create?: Prisma.XOR<Prisma.QCRecordCreateWithoutReinspectionsInput, Prisma.QCRecordUncheckedCreateWithoutReinspectionsInput>
+  connectOrCreate?: Prisma.QCRecordCreateOrConnectWithoutReinspectionsInput
+  connect?: Prisma.QCRecordWhereUniqueInput
+}
+
+export type QCRecordCreateNestedManyWithoutParentQcRecordInput = {
+  create?: Prisma.XOR<Prisma.QCRecordCreateWithoutParentQcRecordInput, Prisma.QCRecordUncheckedCreateWithoutParentQcRecordInput> | Prisma.QCRecordCreateWithoutParentQcRecordInput[] | Prisma.QCRecordUncheckedCreateWithoutParentQcRecordInput[]
+  connectOrCreate?: Prisma.QCRecordCreateOrConnectWithoutParentQcRecordInput | Prisma.QCRecordCreateOrConnectWithoutParentQcRecordInput[]
+  createMany?: Prisma.QCRecordCreateManyParentQcRecordInputEnvelope
+  connect?: Prisma.QCRecordWhereUniqueInput | Prisma.QCRecordWhereUniqueInput[]
+}
+
+export type QCRecordUncheckedCreateNestedManyWithoutParentQcRecordInput = {
+  create?: Prisma.XOR<Prisma.QCRecordCreateWithoutParentQcRecordInput, Prisma.QCRecordUncheckedCreateWithoutParentQcRecordInput> | Prisma.QCRecordCreateWithoutParentQcRecordInput[] | Prisma.QCRecordUncheckedCreateWithoutParentQcRecordInput[]
+  connectOrCreate?: Prisma.QCRecordCreateOrConnectWithoutParentQcRecordInput | Prisma.QCRecordCreateOrConnectWithoutParentQcRecordInput[]
+  createMany?: Prisma.QCRecordCreateManyParentQcRecordInputEnvelope
+  connect?: Prisma.QCRecordWhereUniqueInput | Prisma.QCRecordWhereUniqueInput[]
+}
+
+export type QCRecordUpdateOneWithoutReinspectionsNestedInput = {
+  create?: Prisma.XOR<Prisma.QCRecordCreateWithoutReinspectionsInput, Prisma.QCRecordUncheckedCreateWithoutReinspectionsInput>
+  connectOrCreate?: Prisma.QCRecordCreateOrConnectWithoutReinspectionsInput
+  upsert?: Prisma.QCRecordUpsertWithoutReinspectionsInput
+  disconnect?: Prisma.QCRecordWhereInput | boolean
+  delete?: Prisma.QCRecordWhereInput | boolean
+  connect?: Prisma.QCRecordWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.QCRecordUpdateToOneWithWhereWithoutReinspectionsInput, Prisma.QCRecordUpdateWithoutReinspectionsInput>, Prisma.QCRecordUncheckedUpdateWithoutReinspectionsInput>
+}
+
+export type QCRecordUpdateManyWithoutParentQcRecordNestedInput = {
+  create?: Prisma.XOR<Prisma.QCRecordCreateWithoutParentQcRecordInput, Prisma.QCRecordUncheckedCreateWithoutParentQcRecordInput> | Prisma.QCRecordCreateWithoutParentQcRecordInput[] | Prisma.QCRecordUncheckedCreateWithoutParentQcRecordInput[]
+  connectOrCreate?: Prisma.QCRecordCreateOrConnectWithoutParentQcRecordInput | Prisma.QCRecordCreateOrConnectWithoutParentQcRecordInput[]
+  upsert?: Prisma.QCRecordUpsertWithWhereUniqueWithoutParentQcRecordInput | Prisma.QCRecordUpsertWithWhereUniqueWithoutParentQcRecordInput[]
+  createMany?: Prisma.QCRecordCreateManyParentQcRecordInputEnvelope
+  set?: Prisma.QCRecordWhereUniqueInput | Prisma.QCRecordWhereUniqueInput[]
+  disconnect?: Prisma.QCRecordWhereUniqueInput | Prisma.QCRecordWhereUniqueInput[]
+  delete?: Prisma.QCRecordWhereUniqueInput | Prisma.QCRecordWhereUniqueInput[]
+  connect?: Prisma.QCRecordWhereUniqueInput | Prisma.QCRecordWhereUniqueInput[]
+  update?: Prisma.QCRecordUpdateWithWhereUniqueWithoutParentQcRecordInput | Prisma.QCRecordUpdateWithWhereUniqueWithoutParentQcRecordInput[]
+  updateMany?: Prisma.QCRecordUpdateManyWithWhereWithoutParentQcRecordInput | Prisma.QCRecordUpdateManyWithWhereWithoutParentQcRecordInput[]
+  deleteMany?: Prisma.QCRecordScalarWhereInput | Prisma.QCRecordScalarWhereInput[]
+}
+
+export type QCRecordUncheckedUpdateManyWithoutParentQcRecordNestedInput = {
+  create?: Prisma.XOR<Prisma.QCRecordCreateWithoutParentQcRecordInput, Prisma.QCRecordUncheckedCreateWithoutParentQcRecordInput> | Prisma.QCRecordCreateWithoutParentQcRecordInput[] | Prisma.QCRecordUncheckedCreateWithoutParentQcRecordInput[]
+  connectOrCreate?: Prisma.QCRecordCreateOrConnectWithoutParentQcRecordInput | Prisma.QCRecordCreateOrConnectWithoutParentQcRecordInput[]
+  upsert?: Prisma.QCRecordUpsertWithWhereUniqueWithoutParentQcRecordInput | Prisma.QCRecordUpsertWithWhereUniqueWithoutParentQcRecordInput[]
+  createMany?: Prisma.QCRecordCreateManyParentQcRecordInputEnvelope
+  set?: Prisma.QCRecordWhereUniqueInput | Prisma.QCRecordWhereUniqueInput[]
+  disconnect?: Prisma.QCRecordWhereUniqueInput | Prisma.QCRecordWhereUniqueInput[]
+  delete?: Prisma.QCRecordWhereUniqueInput | Prisma.QCRecordWhereUniqueInput[]
+  connect?: Prisma.QCRecordWhereUniqueInput | Prisma.QCRecordWhereUniqueInput[]
+  update?: Prisma.QCRecordUpdateWithWhereUniqueWithoutParentQcRecordInput | Prisma.QCRecordUpdateWithWhereUniqueWithoutParentQcRecordInput[]
+  updateMany?: Prisma.QCRecordUpdateManyWithWhereWithoutParentQcRecordInput | Prisma.QCRecordUpdateManyWithWhereWithoutParentQcRecordInput[]
+  deleteMany?: Prisma.QCRecordScalarWhereInput | Prisma.QCRecordScalarWhereInput[]
+}
+
 export type QCRecordCreateNestedOneWithoutDecisionInput = {
   create?: Prisma.XOR<Prisma.QCRecordCreateWithoutDecisionInput, Prisma.QCRecordUncheckedCreateWithoutDecisionInput>
   connectOrCreate?: Prisma.QCRecordCreateOrConnectWithoutDecisionInput
@@ -529,14 +658,34 @@ export type QCRecordUpdateOneRequiredWithoutDecisionNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.QCRecordUpdateToOneWithWhereWithoutDecisionInput, Prisma.QCRecordUpdateWithoutDecisionInput>, Prisma.QCRecordUncheckedUpdateWithoutDecisionInput>
 }
 
+export type QCRecordCreateNestedOneWithoutExceptionInput = {
+  create?: Prisma.XOR<Prisma.QCRecordCreateWithoutExceptionInput, Prisma.QCRecordUncheckedCreateWithoutExceptionInput>
+  connectOrCreate?: Prisma.QCRecordCreateOrConnectWithoutExceptionInput
+  connect?: Prisma.QCRecordWhereUniqueInput
+}
+
+export type QCRecordUpdateOneWithoutExceptionNestedInput = {
+  create?: Prisma.XOR<Prisma.QCRecordCreateWithoutExceptionInput, Prisma.QCRecordUncheckedCreateWithoutExceptionInput>
+  connectOrCreate?: Prisma.QCRecordCreateOrConnectWithoutExceptionInput
+  upsert?: Prisma.QCRecordUpsertWithoutExceptionInput
+  disconnect?: Prisma.QCRecordWhereInput | boolean
+  delete?: Prisma.QCRecordWhereInput | boolean
+  connect?: Prisma.QCRecordWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.QCRecordUpdateToOneWithWhereWithoutExceptionInput, Prisma.QCRecordUpdateWithoutExceptionInput>, Prisma.QCRecordUncheckedUpdateWithoutExceptionInput>
+}
+
 export type QCRecordCreateWithoutOperatorInput = {
   id?: string
   inspectedQty: number
   qualifiedQty: number
   unqualifiedQty: number
+  round?: number
   createdAt?: Date | string
   productionOrder: Prisma.ProductionOrderCreateNestedOneWithoutQcRecordsInput
+  parentQcRecord?: Prisma.QCRecordCreateNestedOneWithoutReinspectionsInput
+  reinspections?: Prisma.QCRecordCreateNestedManyWithoutParentQcRecordInput
   decision?: Prisma.QCDecisionCreateNestedOneWithoutQcRecordInput
+  exception?: Prisma.TabletExceptionCreateNestedOneWithoutQcRecordInput
 }
 
 export type QCRecordUncheckedCreateWithoutOperatorInput = {
@@ -545,8 +694,12 @@ export type QCRecordUncheckedCreateWithoutOperatorInput = {
   inspectedQty: number
   qualifiedQty: number
   unqualifiedQty: number
+  round?: number
+  parentQcRecordId?: string | null
   createdAt?: Date | string
+  reinspections?: Prisma.QCRecordUncheckedCreateNestedManyWithoutParentQcRecordInput
   decision?: Prisma.QCDecisionUncheckedCreateNestedOneWithoutQcRecordInput
+  exception?: Prisma.TabletExceptionUncheckedCreateNestedOneWithoutQcRecordInput
 }
 
 export type QCRecordCreateOrConnectWithoutOperatorInput = {
@@ -584,6 +737,8 @@ export type QCRecordScalarWhereInput = {
   inspectedQty?: Prisma.IntFilter<"QCRecord"> | number
   qualifiedQty?: Prisma.IntFilter<"QCRecord"> | number
   unqualifiedQty?: Prisma.IntFilter<"QCRecord"> | number
+  round?: Prisma.IntFilter<"QCRecord"> | number
+  parentQcRecordId?: Prisma.UuidNullableFilter<"QCRecord"> | string | null
   operatorId?: Prisma.UuidFilter<"QCRecord"> | string
   createdAt?: Prisma.DateTimeFilter<"QCRecord"> | Date | string
 }
@@ -593,9 +748,13 @@ export type QCRecordCreateWithoutProductionOrderInput = {
   inspectedQty: number
   qualifiedQty: number
   unqualifiedQty: number
+  round?: number
   createdAt?: Date | string
+  parentQcRecord?: Prisma.QCRecordCreateNestedOneWithoutReinspectionsInput
+  reinspections?: Prisma.QCRecordCreateNestedManyWithoutParentQcRecordInput
   operator: Prisma.AdminUserCreateNestedOneWithoutQcRecordsInput
   decision?: Prisma.QCDecisionCreateNestedOneWithoutQcRecordInput
+  exception?: Prisma.TabletExceptionCreateNestedOneWithoutQcRecordInput
 }
 
 export type QCRecordUncheckedCreateWithoutProductionOrderInput = {
@@ -603,9 +762,13 @@ export type QCRecordUncheckedCreateWithoutProductionOrderInput = {
   inspectedQty: number
   qualifiedQty: number
   unqualifiedQty: number
+  round?: number
+  parentQcRecordId?: string | null
   operatorId: string
   createdAt?: Date | string
+  reinspections?: Prisma.QCRecordUncheckedCreateNestedManyWithoutParentQcRecordInput
   decision?: Prisma.QCDecisionUncheckedCreateNestedOneWithoutQcRecordInput
+  exception?: Prisma.TabletExceptionUncheckedCreateNestedOneWithoutQcRecordInput
 }
 
 export type QCRecordCreateOrConnectWithoutProductionOrderInput = {
@@ -634,14 +797,144 @@ export type QCRecordUpdateManyWithWhereWithoutProductionOrderInput = {
   data: Prisma.XOR<Prisma.QCRecordUpdateManyMutationInput, Prisma.QCRecordUncheckedUpdateManyWithoutProductionOrderInput>
 }
 
+export type QCRecordCreateWithoutReinspectionsInput = {
+  id?: string
+  inspectedQty: number
+  qualifiedQty: number
+  unqualifiedQty: number
+  round?: number
+  createdAt?: Date | string
+  productionOrder: Prisma.ProductionOrderCreateNestedOneWithoutQcRecordsInput
+  parentQcRecord?: Prisma.QCRecordCreateNestedOneWithoutReinspectionsInput
+  operator: Prisma.AdminUserCreateNestedOneWithoutQcRecordsInput
+  decision?: Prisma.QCDecisionCreateNestedOneWithoutQcRecordInput
+  exception?: Prisma.TabletExceptionCreateNestedOneWithoutQcRecordInput
+}
+
+export type QCRecordUncheckedCreateWithoutReinspectionsInput = {
+  id?: string
+  productionOrderId: string
+  inspectedQty: number
+  qualifiedQty: number
+  unqualifiedQty: number
+  round?: number
+  parentQcRecordId?: string | null
+  operatorId: string
+  createdAt?: Date | string
+  decision?: Prisma.QCDecisionUncheckedCreateNestedOneWithoutQcRecordInput
+  exception?: Prisma.TabletExceptionUncheckedCreateNestedOneWithoutQcRecordInput
+}
+
+export type QCRecordCreateOrConnectWithoutReinspectionsInput = {
+  where: Prisma.QCRecordWhereUniqueInput
+  create: Prisma.XOR<Prisma.QCRecordCreateWithoutReinspectionsInput, Prisma.QCRecordUncheckedCreateWithoutReinspectionsInput>
+}
+
+export type QCRecordCreateWithoutParentQcRecordInput = {
+  id?: string
+  inspectedQty: number
+  qualifiedQty: number
+  unqualifiedQty: number
+  round?: number
+  createdAt?: Date | string
+  productionOrder: Prisma.ProductionOrderCreateNestedOneWithoutQcRecordsInput
+  reinspections?: Prisma.QCRecordCreateNestedManyWithoutParentQcRecordInput
+  operator: Prisma.AdminUserCreateNestedOneWithoutQcRecordsInput
+  decision?: Prisma.QCDecisionCreateNestedOneWithoutQcRecordInput
+  exception?: Prisma.TabletExceptionCreateNestedOneWithoutQcRecordInput
+}
+
+export type QCRecordUncheckedCreateWithoutParentQcRecordInput = {
+  id?: string
+  productionOrderId: string
+  inspectedQty: number
+  qualifiedQty: number
+  unqualifiedQty: number
+  round?: number
+  operatorId: string
+  createdAt?: Date | string
+  reinspections?: Prisma.QCRecordUncheckedCreateNestedManyWithoutParentQcRecordInput
+  decision?: Prisma.QCDecisionUncheckedCreateNestedOneWithoutQcRecordInput
+  exception?: Prisma.TabletExceptionUncheckedCreateNestedOneWithoutQcRecordInput
+}
+
+export type QCRecordCreateOrConnectWithoutParentQcRecordInput = {
+  where: Prisma.QCRecordWhereUniqueInput
+  create: Prisma.XOR<Prisma.QCRecordCreateWithoutParentQcRecordInput, Prisma.QCRecordUncheckedCreateWithoutParentQcRecordInput>
+}
+
+export type QCRecordCreateManyParentQcRecordInputEnvelope = {
+  data: Prisma.QCRecordCreateManyParentQcRecordInput | Prisma.QCRecordCreateManyParentQcRecordInput[]
+  skipDuplicates?: boolean
+}
+
+export type QCRecordUpsertWithoutReinspectionsInput = {
+  update: Prisma.XOR<Prisma.QCRecordUpdateWithoutReinspectionsInput, Prisma.QCRecordUncheckedUpdateWithoutReinspectionsInput>
+  create: Prisma.XOR<Prisma.QCRecordCreateWithoutReinspectionsInput, Prisma.QCRecordUncheckedCreateWithoutReinspectionsInput>
+  where?: Prisma.QCRecordWhereInput
+}
+
+export type QCRecordUpdateToOneWithWhereWithoutReinspectionsInput = {
+  where?: Prisma.QCRecordWhereInput
+  data: Prisma.XOR<Prisma.QCRecordUpdateWithoutReinspectionsInput, Prisma.QCRecordUncheckedUpdateWithoutReinspectionsInput>
+}
+
+export type QCRecordUpdateWithoutReinspectionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  inspectedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  qualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  unqualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  round?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  productionOrder?: Prisma.ProductionOrderUpdateOneRequiredWithoutQcRecordsNestedInput
+  parentQcRecord?: Prisma.QCRecordUpdateOneWithoutReinspectionsNestedInput
+  operator?: Prisma.AdminUserUpdateOneRequiredWithoutQcRecordsNestedInput
+  decision?: Prisma.QCDecisionUpdateOneWithoutQcRecordNestedInput
+  exception?: Prisma.TabletExceptionUpdateOneWithoutQcRecordNestedInput
+}
+
+export type QCRecordUncheckedUpdateWithoutReinspectionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  productionOrderId?: Prisma.StringFieldUpdateOperationsInput | string
+  inspectedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  qualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  unqualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  round?: Prisma.IntFieldUpdateOperationsInput | number
+  parentQcRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  operatorId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  decision?: Prisma.QCDecisionUncheckedUpdateOneWithoutQcRecordNestedInput
+  exception?: Prisma.TabletExceptionUncheckedUpdateOneWithoutQcRecordNestedInput
+}
+
+export type QCRecordUpsertWithWhereUniqueWithoutParentQcRecordInput = {
+  where: Prisma.QCRecordWhereUniqueInput
+  update: Prisma.XOR<Prisma.QCRecordUpdateWithoutParentQcRecordInput, Prisma.QCRecordUncheckedUpdateWithoutParentQcRecordInput>
+  create: Prisma.XOR<Prisma.QCRecordCreateWithoutParentQcRecordInput, Prisma.QCRecordUncheckedCreateWithoutParentQcRecordInput>
+}
+
+export type QCRecordUpdateWithWhereUniqueWithoutParentQcRecordInput = {
+  where: Prisma.QCRecordWhereUniqueInput
+  data: Prisma.XOR<Prisma.QCRecordUpdateWithoutParentQcRecordInput, Prisma.QCRecordUncheckedUpdateWithoutParentQcRecordInput>
+}
+
+export type QCRecordUpdateManyWithWhereWithoutParentQcRecordInput = {
+  where: Prisma.QCRecordScalarWhereInput
+  data: Prisma.XOR<Prisma.QCRecordUpdateManyMutationInput, Prisma.QCRecordUncheckedUpdateManyWithoutParentQcRecordInput>
+}
+
 export type QCRecordCreateWithoutDecisionInput = {
   id?: string
   inspectedQty: number
   qualifiedQty: number
   unqualifiedQty: number
+  round?: number
   createdAt?: Date | string
   productionOrder: Prisma.ProductionOrderCreateNestedOneWithoutQcRecordsInput
+  parentQcRecord?: Prisma.QCRecordCreateNestedOneWithoutReinspectionsInput
+  reinspections?: Prisma.QCRecordCreateNestedManyWithoutParentQcRecordInput
   operator: Prisma.AdminUserCreateNestedOneWithoutQcRecordsInput
+  exception?: Prisma.TabletExceptionCreateNestedOneWithoutQcRecordInput
 }
 
 export type QCRecordUncheckedCreateWithoutDecisionInput = {
@@ -650,8 +943,12 @@ export type QCRecordUncheckedCreateWithoutDecisionInput = {
   inspectedQty: number
   qualifiedQty: number
   unqualifiedQty: number
+  round?: number
+  parentQcRecordId?: string | null
   operatorId: string
   createdAt?: Date | string
+  reinspections?: Prisma.QCRecordUncheckedCreateNestedManyWithoutParentQcRecordInput
+  exception?: Prisma.TabletExceptionUncheckedCreateNestedOneWithoutQcRecordInput
 }
 
 export type QCRecordCreateOrConnectWithoutDecisionInput = {
@@ -675,9 +972,13 @@ export type QCRecordUpdateWithoutDecisionInput = {
   inspectedQty?: Prisma.IntFieldUpdateOperationsInput | number
   qualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
   unqualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  round?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   productionOrder?: Prisma.ProductionOrderUpdateOneRequiredWithoutQcRecordsNestedInput
+  parentQcRecord?: Prisma.QCRecordUpdateOneWithoutReinspectionsNestedInput
+  reinspections?: Prisma.QCRecordUpdateManyWithoutParentQcRecordNestedInput
   operator?: Prisma.AdminUserUpdateOneRequiredWithoutQcRecordsNestedInput
+  exception?: Prisma.TabletExceptionUpdateOneWithoutQcRecordNestedInput
 }
 
 export type QCRecordUncheckedUpdateWithoutDecisionInput = {
@@ -686,8 +987,84 @@ export type QCRecordUncheckedUpdateWithoutDecisionInput = {
   inspectedQty?: Prisma.IntFieldUpdateOperationsInput | number
   qualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
   unqualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  round?: Prisma.IntFieldUpdateOperationsInput | number
+  parentQcRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   operatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reinspections?: Prisma.QCRecordUncheckedUpdateManyWithoutParentQcRecordNestedInput
+  exception?: Prisma.TabletExceptionUncheckedUpdateOneWithoutQcRecordNestedInput
+}
+
+export type QCRecordCreateWithoutExceptionInput = {
+  id?: string
+  inspectedQty: number
+  qualifiedQty: number
+  unqualifiedQty: number
+  round?: number
+  createdAt?: Date | string
+  productionOrder: Prisma.ProductionOrderCreateNestedOneWithoutQcRecordsInput
+  parentQcRecord?: Prisma.QCRecordCreateNestedOneWithoutReinspectionsInput
+  reinspections?: Prisma.QCRecordCreateNestedManyWithoutParentQcRecordInput
+  operator: Prisma.AdminUserCreateNestedOneWithoutQcRecordsInput
+  decision?: Prisma.QCDecisionCreateNestedOneWithoutQcRecordInput
+}
+
+export type QCRecordUncheckedCreateWithoutExceptionInput = {
+  id?: string
+  productionOrderId: string
+  inspectedQty: number
+  qualifiedQty: number
+  unqualifiedQty: number
+  round?: number
+  parentQcRecordId?: string | null
+  operatorId: string
+  createdAt?: Date | string
+  reinspections?: Prisma.QCRecordUncheckedCreateNestedManyWithoutParentQcRecordInput
+  decision?: Prisma.QCDecisionUncheckedCreateNestedOneWithoutQcRecordInput
+}
+
+export type QCRecordCreateOrConnectWithoutExceptionInput = {
+  where: Prisma.QCRecordWhereUniqueInput
+  create: Prisma.XOR<Prisma.QCRecordCreateWithoutExceptionInput, Prisma.QCRecordUncheckedCreateWithoutExceptionInput>
+}
+
+export type QCRecordUpsertWithoutExceptionInput = {
+  update: Prisma.XOR<Prisma.QCRecordUpdateWithoutExceptionInput, Prisma.QCRecordUncheckedUpdateWithoutExceptionInput>
+  create: Prisma.XOR<Prisma.QCRecordCreateWithoutExceptionInput, Prisma.QCRecordUncheckedCreateWithoutExceptionInput>
+  where?: Prisma.QCRecordWhereInput
+}
+
+export type QCRecordUpdateToOneWithWhereWithoutExceptionInput = {
+  where?: Prisma.QCRecordWhereInput
+  data: Prisma.XOR<Prisma.QCRecordUpdateWithoutExceptionInput, Prisma.QCRecordUncheckedUpdateWithoutExceptionInput>
+}
+
+export type QCRecordUpdateWithoutExceptionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  inspectedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  qualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  unqualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  round?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  productionOrder?: Prisma.ProductionOrderUpdateOneRequiredWithoutQcRecordsNestedInput
+  parentQcRecord?: Prisma.QCRecordUpdateOneWithoutReinspectionsNestedInput
+  reinspections?: Prisma.QCRecordUpdateManyWithoutParentQcRecordNestedInput
+  operator?: Prisma.AdminUserUpdateOneRequiredWithoutQcRecordsNestedInput
+  decision?: Prisma.QCDecisionUpdateOneWithoutQcRecordNestedInput
+}
+
+export type QCRecordUncheckedUpdateWithoutExceptionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  productionOrderId?: Prisma.StringFieldUpdateOperationsInput | string
+  inspectedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  qualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  unqualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  round?: Prisma.IntFieldUpdateOperationsInput | number
+  parentQcRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  operatorId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reinspections?: Prisma.QCRecordUncheckedUpdateManyWithoutParentQcRecordNestedInput
+  decision?: Prisma.QCDecisionUncheckedUpdateOneWithoutQcRecordNestedInput
 }
 
 export type QCRecordCreateManyOperatorInput = {
@@ -696,6 +1073,8 @@ export type QCRecordCreateManyOperatorInput = {
   inspectedQty: number
   qualifiedQty: number
   unqualifiedQty: number
+  round?: number
+  parentQcRecordId?: string | null
   createdAt?: Date | string
 }
 
@@ -704,9 +1083,13 @@ export type QCRecordUpdateWithoutOperatorInput = {
   inspectedQty?: Prisma.IntFieldUpdateOperationsInput | number
   qualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
   unqualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  round?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   productionOrder?: Prisma.ProductionOrderUpdateOneRequiredWithoutQcRecordsNestedInput
+  parentQcRecord?: Prisma.QCRecordUpdateOneWithoutReinspectionsNestedInput
+  reinspections?: Prisma.QCRecordUpdateManyWithoutParentQcRecordNestedInput
   decision?: Prisma.QCDecisionUpdateOneWithoutQcRecordNestedInput
+  exception?: Prisma.TabletExceptionUpdateOneWithoutQcRecordNestedInput
 }
 
 export type QCRecordUncheckedUpdateWithoutOperatorInput = {
@@ -715,8 +1098,12 @@ export type QCRecordUncheckedUpdateWithoutOperatorInput = {
   inspectedQty?: Prisma.IntFieldUpdateOperationsInput | number
   qualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
   unqualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  round?: Prisma.IntFieldUpdateOperationsInput | number
+  parentQcRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reinspections?: Prisma.QCRecordUncheckedUpdateManyWithoutParentQcRecordNestedInput
   decision?: Prisma.QCDecisionUncheckedUpdateOneWithoutQcRecordNestedInput
+  exception?: Prisma.TabletExceptionUncheckedUpdateOneWithoutQcRecordNestedInput
 }
 
 export type QCRecordUncheckedUpdateManyWithoutOperatorInput = {
@@ -725,6 +1112,8 @@ export type QCRecordUncheckedUpdateManyWithoutOperatorInput = {
   inspectedQty?: Prisma.IntFieldUpdateOperationsInput | number
   qualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
   unqualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  round?: Prisma.IntFieldUpdateOperationsInput | number
+  parentQcRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -733,6 +1122,8 @@ export type QCRecordCreateManyProductionOrderInput = {
   inspectedQty: number
   qualifiedQty: number
   unqualifiedQty: number
+  round?: number
+  parentQcRecordId?: string | null
   operatorId: string
   createdAt?: Date | string
 }
@@ -742,9 +1133,13 @@ export type QCRecordUpdateWithoutProductionOrderInput = {
   inspectedQty?: Prisma.IntFieldUpdateOperationsInput | number
   qualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
   unqualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  round?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentQcRecord?: Prisma.QCRecordUpdateOneWithoutReinspectionsNestedInput
+  reinspections?: Prisma.QCRecordUpdateManyWithoutParentQcRecordNestedInput
   operator?: Prisma.AdminUserUpdateOneRequiredWithoutQcRecordsNestedInput
   decision?: Prisma.QCDecisionUpdateOneWithoutQcRecordNestedInput
+  exception?: Prisma.TabletExceptionUpdateOneWithoutQcRecordNestedInput
 }
 
 export type QCRecordUncheckedUpdateWithoutProductionOrderInput = {
@@ -752,9 +1147,13 @@ export type QCRecordUncheckedUpdateWithoutProductionOrderInput = {
   inspectedQty?: Prisma.IntFieldUpdateOperationsInput | number
   qualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
   unqualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  round?: Prisma.IntFieldUpdateOperationsInput | number
+  parentQcRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   operatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reinspections?: Prisma.QCRecordUncheckedUpdateManyWithoutParentQcRecordNestedInput
   decision?: Prisma.QCDecisionUncheckedUpdateOneWithoutQcRecordNestedInput
+  exception?: Prisma.TabletExceptionUncheckedUpdateOneWithoutQcRecordNestedInput
 }
 
 export type QCRecordUncheckedUpdateManyWithoutProductionOrderInput = {
@@ -762,10 +1161,91 @@ export type QCRecordUncheckedUpdateManyWithoutProductionOrderInput = {
   inspectedQty?: Prisma.IntFieldUpdateOperationsInput | number
   qualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
   unqualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  round?: Prisma.IntFieldUpdateOperationsInput | number
+  parentQcRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   operatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type QCRecordCreateManyParentQcRecordInput = {
+  id?: string
+  productionOrderId: string
+  inspectedQty: number
+  qualifiedQty: number
+  unqualifiedQty: number
+  round?: number
+  operatorId: string
+  createdAt?: Date | string
+}
+
+export type QCRecordUpdateWithoutParentQcRecordInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  inspectedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  qualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  unqualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  round?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  productionOrder?: Prisma.ProductionOrderUpdateOneRequiredWithoutQcRecordsNestedInput
+  reinspections?: Prisma.QCRecordUpdateManyWithoutParentQcRecordNestedInput
+  operator?: Prisma.AdminUserUpdateOneRequiredWithoutQcRecordsNestedInput
+  decision?: Prisma.QCDecisionUpdateOneWithoutQcRecordNestedInput
+  exception?: Prisma.TabletExceptionUpdateOneWithoutQcRecordNestedInput
+}
+
+export type QCRecordUncheckedUpdateWithoutParentQcRecordInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  productionOrderId?: Prisma.StringFieldUpdateOperationsInput | string
+  inspectedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  qualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  unqualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  round?: Prisma.IntFieldUpdateOperationsInput | number
+  operatorId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reinspections?: Prisma.QCRecordUncheckedUpdateManyWithoutParentQcRecordNestedInput
+  decision?: Prisma.QCDecisionUncheckedUpdateOneWithoutQcRecordNestedInput
+  exception?: Prisma.TabletExceptionUncheckedUpdateOneWithoutQcRecordNestedInput
+}
+
+export type QCRecordUncheckedUpdateManyWithoutParentQcRecordInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  productionOrderId?: Prisma.StringFieldUpdateOperationsInput | string
+  inspectedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  qualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  unqualifiedQty?: Prisma.IntFieldUpdateOperationsInput | number
+  round?: Prisma.IntFieldUpdateOperationsInput | number
+  operatorId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+
+/**
+ * Count Type QCRecordCountOutputType
+ */
+
+export type QCRecordCountOutputType = {
+  reinspections: number
+}
+
+export type QCRecordCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  reinspections?: boolean | QCRecordCountOutputTypeCountReinspectionsArgs
+}
+
+/**
+ * QCRecordCountOutputType without action
+ */
+export type QCRecordCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the QCRecordCountOutputType
+   */
+  select?: Prisma.QCRecordCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * QCRecordCountOutputType without action
+ */
+export type QCRecordCountOutputTypeCountReinspectionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.QCRecordWhereInput
+}
 
 
 export type QCRecordSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -774,11 +1254,17 @@ export type QCRecordSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   inspectedQty?: boolean
   qualifiedQty?: boolean
   unqualifiedQty?: boolean
+  round?: boolean
+  parentQcRecordId?: boolean
   operatorId?: boolean
   createdAt?: boolean
   productionOrder?: boolean | Prisma.ProductionOrderDefaultArgs<ExtArgs>
+  parentQcRecord?: boolean | Prisma.QCRecord$parentQcRecordArgs<ExtArgs>
+  reinspections?: boolean | Prisma.QCRecord$reinspectionsArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
   decision?: boolean | Prisma.QCRecord$decisionArgs<ExtArgs>
+  exception?: boolean | Prisma.QCRecord$exceptionArgs<ExtArgs>
+  _count?: boolean | Prisma.QCRecordCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["qCRecord"]>
 
 export type QCRecordSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -787,9 +1273,12 @@ export type QCRecordSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   inspectedQty?: boolean
   qualifiedQty?: boolean
   unqualifiedQty?: boolean
+  round?: boolean
+  parentQcRecordId?: boolean
   operatorId?: boolean
   createdAt?: boolean
   productionOrder?: boolean | Prisma.ProductionOrderDefaultArgs<ExtArgs>
+  parentQcRecord?: boolean | Prisma.QCRecord$parentQcRecordArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["qCRecord"]>
 
@@ -799,9 +1288,12 @@ export type QCRecordSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   inspectedQty?: boolean
   qualifiedQty?: boolean
   unqualifiedQty?: boolean
+  round?: boolean
+  parentQcRecordId?: boolean
   operatorId?: boolean
   createdAt?: boolean
   productionOrder?: boolean | Prisma.ProductionOrderDefaultArgs<ExtArgs>
+  parentQcRecord?: boolean | Prisma.QCRecord$parentQcRecordArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["qCRecord"]>
 
@@ -811,22 +1303,30 @@ export type QCRecordSelectScalar = {
   inspectedQty?: boolean
   qualifiedQty?: boolean
   unqualifiedQty?: boolean
+  round?: boolean
+  parentQcRecordId?: boolean
   operatorId?: boolean
   createdAt?: boolean
 }
 
-export type QCRecordOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productionOrderId" | "inspectedQty" | "qualifiedQty" | "unqualifiedQty" | "operatorId" | "createdAt", ExtArgs["result"]["qCRecord"]>
+export type QCRecordOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productionOrderId" | "inspectedQty" | "qualifiedQty" | "unqualifiedQty" | "round" | "parentQcRecordId" | "operatorId" | "createdAt", ExtArgs["result"]["qCRecord"]>
 export type QCRecordInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   productionOrder?: boolean | Prisma.ProductionOrderDefaultArgs<ExtArgs>
+  parentQcRecord?: boolean | Prisma.QCRecord$parentQcRecordArgs<ExtArgs>
+  reinspections?: boolean | Prisma.QCRecord$reinspectionsArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
   decision?: boolean | Prisma.QCRecord$decisionArgs<ExtArgs>
+  exception?: boolean | Prisma.QCRecord$exceptionArgs<ExtArgs>
+  _count?: boolean | Prisma.QCRecordCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type QCRecordIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   productionOrder?: boolean | Prisma.ProductionOrderDefaultArgs<ExtArgs>
+  parentQcRecord?: boolean | Prisma.QCRecord$parentQcRecordArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
 }
 export type QCRecordIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   productionOrder?: boolean | Prisma.ProductionOrderDefaultArgs<ExtArgs>
+  parentQcRecord?: boolean | Prisma.QCRecord$parentQcRecordArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
 }
 
@@ -834,8 +1334,11 @@ export type $QCRecordPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   name: "QCRecord"
   objects: {
     productionOrder: Prisma.$ProductionOrderPayload<ExtArgs>
+    parentQcRecord: Prisma.$QCRecordPayload<ExtArgs> | null
+    reinspections: Prisma.$QCRecordPayload<ExtArgs>[]
     operator: Prisma.$AdminUserPayload<ExtArgs>
     decision: Prisma.$QCDecisionPayload<ExtArgs> | null
+    exception: Prisma.$TabletExceptionPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -843,6 +1346,11 @@ export type $QCRecordPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     inspectedQty: number
     qualifiedQty: number
     unqualifiedQty: number
+    /**
+     * * R09F：1 = 首次检验，>1 = 对上一轮返工量的复检。
+     */
+    round: number
+    parentQcRecordId: string | null
     operatorId: string
     createdAt: Date
   }, ExtArgs["result"]["qCRecord"]>
@@ -1240,8 +1748,11 @@ readonly fields: QCRecordFieldRefs;
 export interface Prisma__QCRecordClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   productionOrder<T extends Prisma.ProductionOrderDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductionOrderDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductionOrderClient<runtime.Types.Result.GetResult<Prisma.$ProductionOrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  parentQcRecord<T extends Prisma.QCRecord$parentQcRecordArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.QCRecord$parentQcRecordArgs<ExtArgs>>): Prisma.Prisma__QCRecordClient<runtime.Types.Result.GetResult<Prisma.$QCRecordPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  reinspections<T extends Prisma.QCRecord$reinspectionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.QCRecord$reinspectionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QCRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   operator<T extends Prisma.AdminUserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUserDefaultArgs<ExtArgs>>): Prisma.Prisma__AdminUserClient<runtime.Types.Result.GetResult<Prisma.$AdminUserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   decision<T extends Prisma.QCRecord$decisionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.QCRecord$decisionArgs<ExtArgs>>): Prisma.Prisma__QCDecisionClient<runtime.Types.Result.GetResult<Prisma.$QCDecisionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  exception<T extends Prisma.QCRecord$exceptionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.QCRecord$exceptionArgs<ExtArgs>>): Prisma.Prisma__TabletExceptionClient<runtime.Types.Result.GetResult<Prisma.$TabletExceptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1276,6 +1787,8 @@ export interface QCRecordFieldRefs {
   readonly inspectedQty: Prisma.FieldRef<"QCRecord", 'Int'>
   readonly qualifiedQty: Prisma.FieldRef<"QCRecord", 'Int'>
   readonly unqualifiedQty: Prisma.FieldRef<"QCRecord", 'Int'>
+  readonly round: Prisma.FieldRef<"QCRecord", 'Int'>
+  readonly parentQcRecordId: Prisma.FieldRef<"QCRecord", 'String'>
   readonly operatorId: Prisma.FieldRef<"QCRecord", 'String'>
   readonly createdAt: Prisma.FieldRef<"QCRecord", 'DateTime'>
 }
@@ -1679,6 +2192,49 @@ export type QCRecordDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
+ * QCRecord.parentQcRecord
+ */
+export type QCRecord$parentQcRecordArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the QCRecord
+   */
+  select?: Prisma.QCRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the QCRecord
+   */
+  omit?: Prisma.QCRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.QCRecordInclude<ExtArgs> | null
+  where?: Prisma.QCRecordWhereInput
+}
+
+/**
+ * QCRecord.reinspections
+ */
+export type QCRecord$reinspectionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the QCRecord
+   */
+  select?: Prisma.QCRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the QCRecord
+   */
+  omit?: Prisma.QCRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.QCRecordInclude<ExtArgs> | null
+  where?: Prisma.QCRecordWhereInput
+  orderBy?: Prisma.QCRecordOrderByWithRelationInput | Prisma.QCRecordOrderByWithRelationInput[]
+  cursor?: Prisma.QCRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.QCRecordScalarFieldEnum | Prisma.QCRecordScalarFieldEnum[]
+}
+
+/**
  * QCRecord.decision
  */
 export type QCRecord$decisionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1695,6 +2251,25 @@ export type QCRecord$decisionArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   include?: Prisma.QCDecisionInclude<ExtArgs> | null
   where?: Prisma.QCDecisionWhereInput
+}
+
+/**
+ * QCRecord.exception
+ */
+export type QCRecord$exceptionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TabletException
+   */
+  select?: Prisma.TabletExceptionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TabletException
+   */
+  omit?: Prisma.TabletExceptionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TabletExceptionInclude<ExtArgs> | null
+  where?: Prisma.TabletExceptionWhereInput
 }
 
 /**

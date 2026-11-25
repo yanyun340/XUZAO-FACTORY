@@ -96,6 +96,8 @@ export const EVENT_LABEL: Record<string, string> = {
   QC_DISPATCHED: '下发质检',
   QC_RECORDED: '质检录入',
   QC_PASSED: '质检放行',
+  QC_REWORKED: '质检返工',
+  QC_SCRAPPED: '质检报废',
   PACKING_DISPATCHED: '下发包装',
   PACKING_RECORDED: '包装登记',
   SHIPPING_TRIGGERED: '触发发货',
@@ -148,6 +150,7 @@ export const EXCEPTION_CATEGORY_LABEL: Record<string, string> = {
 export const EXCEPTION_STATUS_LABEL: Record<string, string> = {
   OPEN: '待处理',
   IN_PROGRESS: '处理中',
+  WAITING_QC: '待品控复核',
   RESOLVED: '已解决',
   CLOSED: '已关闭',
 };
@@ -183,6 +186,7 @@ export const AUDIT_ACTION_LABEL: Record<string, string> = {
   'attachment.delete': '删除附件',
   'exception.report': '上报异常',
   'exception.update': '处置异常',
+  'exception.review': '下发异常复核',
   'customer.create': '新建客户',
   'customer.update': '修改客户',
   'supplier.create': '新建供应商',

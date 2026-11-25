@@ -302,7 +302,18 @@ export function toOrderDetail(
 
   const purchase = order.purchaseOrders[0] ?? null;
   const production = order.productions.at(-1) ?? null;
-  const qc = production?.qcRecords.at(-1) ?? null;
+  const qcRecords = production?.qcRecords ?? [];
+  const qc = qcRecords.at(-1) ?? null;
+  // R09F：下一轮复检只针对“已判返工但尚未复检”的数量。
+  const pendingReinspection = qcRecords
+    .filter((record) => record.decision?.decision === 'REWORK')
+    .map((record) => {
+      const reinspected = qcRecords
+        .filter((child) => child.parentQcRecordId === record.id)
+        .reduce((sum, child) => sum + child.inspectedQty, 0);
+      return { parentQcRecordId: record.id, quantity: Math.max(0, record.unqualifiedQty - reinspected) };
+    })
+    .find((row) => row.quantity > 0) ?? null;
 
   return {
     ...summary,
@@ -403,16 +414,39 @@ export function toOrderDetail(
             inspectedQty: qc.inspectedQty,
             qualifiedQty: qc.qualifiedQty,
             unqualifiedQty: qc.unqualifiedQty,
+            round: qc.round,
+            parentQcRecordId: qc.parentQcRecordId,
             operatorName: qc.operator.displayName,
             createdAt: qc.createdAt.toISOString(),
             decision: qc.decision
               ? {
                   decision: qc.decision.decision,
                   releasedQty: qc.decision.releasedQty,
+                  scrapQty: qc.decision.scrapQty,
                   decidedByName: qc.decision.decidedBy.displayName,
                   createdAt: qc.decision.createdAt.toISOString(),
                 }
               : null,
+            records: qcRecords.map((record) => ({
+              id: record.id,
+              round: record.round,
+              parentQcRecordId: record.parentQcRecordId,
+              inspectedQty: record.inspectedQty,
+              qualifiedQty: record.qualifiedQty,
+              unqualifiedQty: record.unqualifiedQty,
+              operatorName: record.operator.displayName,
+              createdAt: record.createdAt.toISOString(),
+              decision: record.decision
+                ? {
+                    decision: record.decision.decision,
+                    releasedQty: record.decision.releasedQty,
+                    scrapQty: record.decision.scrapQty,
+                    decidedByName: record.decision.decidedBy.displayName,
+                    createdAt: record.decision.createdAt.toISOString(),
+                  }
+                : null,
+            })),
+            pendingReinspection,
           }
         : null,
       packing: {

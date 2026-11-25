@@ -91,7 +91,7 @@ npm run start -w backend
 ## 5. 测试
 
 ```bash
-npm test             # backend Vitest，15 个文件 / 123 个用例
+npm test             # backend Vitest，15 个文件 / 131 个用例
 ```
 
 - 测试库来自 `TEST_DATABASE_URL`，`config.ts` 强制库名包含 `test`；未配置、指向开发库或库名不含 `test` 都会直接失败。

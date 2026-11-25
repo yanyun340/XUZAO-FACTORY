@@ -9,6 +9,7 @@ import {
   formatChanges,
   maskRecord,
 } from '../lib/audit-diff.ts';
+import { resolveAuditOrderContexts } from '../lib/audit-order-context.ts';
 import { buildWorkbook, sendXlsx, type XlsxColumn } from '../lib/export-workbook.ts';
 import { shanghaiDateKey } from '../lib/time.ts';
 
@@ -71,6 +72,7 @@ function timestamp(date: Date): string {
 const EXPORT_COLUMNS: XlsxColumn[] = [
   { header: '时间', width: 20 },
   { header: '操作', width: 24 },
+  { header: '订单号', width: 22 },
   { header: '资源类型', width: 16 },
   { header: '资源 ID', width: 38 },
   { header: '操作者', width: 16 },
@@ -98,17 +100,26 @@ export async function auditRoutes(app: FastifyInstance): Promise<void> {
       }),
     ]);
 
+    const orderContexts = await resolveAuditOrderContexts(
+      rows.map((row) => ({ resourceType: row.resourceType, resourceId: row.resourceId })),
+    );
+
     return ok(
       reply,
       rows.map((row) => {
         const before = maskRecord(row.beforeJson);
         const after = maskRecord(row.afterJson);
+        const orderContext = row.resourceId
+          ? orderContexts.get(`${row.resourceType}:${row.resourceId}`)
+          : undefined;
         return {
           id: row.id,
           requestId: row.requestId,
           action: row.action,
           resourceType: row.resourceType,
           resourceId: row.resourceId,
+          orderId: orderContext?.orderId ?? null,
+          orderNo: orderContext?.orderNo ?? null,
           result: row.result,
           actorName: row.actor?.displayName ?? null,
           actorUsername: row.actor?.username ?? null,
@@ -142,14 +153,22 @@ export async function auditRoutes(app: FastifyInstance): Promise<void> {
         include: { actor: { select: { displayName: true, username: true } } },
       });
 
+      const orderContexts = await resolveAuditOrderContexts(
+        rows.map((row) => ({ resourceType: row.resourceType, resourceId: row.resourceId })),
+      );
+
       const workbook = buildWorkbook({
         sheetName: '审计日志',
         columns: EXPORT_COLUMNS,
         rows: rows.map((row) => {
           const changes = diffRecords(maskRecord(row.beforeJson), maskRecord(row.afterJson));
+          const orderContext = row.resourceId
+            ? orderContexts.get(`${row.resourceType}:${row.resourceId}`)
+            : undefined;
           return [
             timestamp(row.createdAt),
             row.action,
+            orderContext?.orderNo ?? '',
             row.resourceType,
             row.resourceId,
             row.actor?.displayName ?? '',

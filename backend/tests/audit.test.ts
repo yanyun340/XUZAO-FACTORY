@@ -2,14 +2,15 @@ import ExcelJS from 'exceljs';
 import type { FastifyInstance } from 'fastify';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { diffRecords, maskRecord } from '../src/lib/audit-diff.ts';
-import { api, createApp, login, resetDb, seedBase } from './helpers.ts';
+import { api, createApp, login, resetDb, seedBase, type Fixtures } from './helpers.ts';
 
 let app: FastifyInstance;
 let adminCookie: string;
+let fx: Fixtures;
 
 beforeAll(async () => {
   await resetDb();
-  await seedBase();
+  fx = await seedBase();
   app = await createApp();
   adminCookie = await login(app, 'admin');
 });
@@ -73,6 +74,67 @@ describe('审计差异与导出（R23F）', () => {
       actions.add(String(sheet.getRow(row).getCell(2).value));
     }
     expect(actions).toEqual(new Set(['customer.update']));
+  });
+
+  it('审计记录能反查到所属订单，并出现在导出中', async () => {
+    const admin = api(app, adminCookie);
+    const logistics = api(app, await login(app, 'logistics'));
+
+    const order = await admin('POST', '/api/v1/orders', {
+      customerId: fx.customerId,
+      dueDate: '2026-12-31',
+      items: [{ productName: '审计订单测试件', spec: 'A-01', quantity: 1, unitPrice: '1.00' }],
+    });
+    expect(order.status).toBe(201);
+    const orderId = order.body.data.id as string;
+    const orderNo = order.body.data.orderNo as string;
+
+    const purchase = await admin('POST', `/api/v1/orders/${orderId}/purchase`, {
+      supplierId: fx.supplierId,
+      partId: fx.partId,
+      quantity: 1,
+      unitPrice: '0.50',
+    });
+    const purchaseId = purchase.body.data.flow.purchase.id as string;
+    const arrival = await logistics('POST', `/api/v1/purchases/${purchaseId}/arrivals`, {
+      quantity: 1,
+    });
+    expect(arrival.status).toBe(201);
+
+    const logs = await admin('GET', '/api/v1/audit-logs?action=arrival.create&pageSize=20');
+    expect(logs.status).toBe(200);
+    const entry = logs.body.data.find(
+      (row: { orderId: string | null }) => row.orderId === orderId,
+    );
+    expect(entry).toBeTruthy();
+    expect(entry).toMatchObject({ orderId, orderNo, resourceType: 'arrival' });
+
+    const exported = await app.inject({
+      method: 'GET',
+      url: '/api/v1/audit-logs/export.xlsx?action=arrival.create',
+      headers: { cookie: adminCookie },
+    });
+    expect(exported.statusCode).toBe(200);
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(exported.rawPayload as unknown as ArrayBuffer);
+    const sheet = workbook.worksheets[0];
+    expect(sheet).toBeDefined();
+    if (!sheet) throw new Error('导出文件没有工作表');
+    expect(sheet.getRow(1).getCell(3).value).toBe('订单号');
+
+    const orderNos = new Set<string>();
+    for (let row = 2; row <= sheet.rowCount; row += 1) {
+      orderNos.add(String(sheet.getRow(row).getCell(3).value));
+    }
+    expect(orderNos.has(orderNo)).toBe(true);
+  });
+
+  it('没有订单上下文的审计记录返回 null', async () => {
+    const admin = api(app, adminCookie);
+    const logs = await admin('GET', '/api/v1/audit-logs?action=auth.login&pageSize=5');
+    expect(logs.status).toBe(200);
+    expect(logs.body.data.length).toBeGreaterThan(0);
+    expect(logs.body.data[0]).toMatchObject({ orderId: null, orderNo: null });
   });
 
   it('现场角色不能查看或导出审计', async () => {

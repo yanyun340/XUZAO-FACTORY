@@ -7,7 +7,7 @@ R05 到货,M,物流登记到货；管理员可查,A07、A08,POST /purchases/:id/
 R06 电镀,M,不支持并在页面标明未启用或不适用,A09,"POST /orders/:id/plating-orders；PATCH/DELETE /plating-orders/:id；POST /plating-orders/:id/send|receive",plating_orders；purchase_items.platingRequired,"routes/flow.ts；domain/flow.ts；PlatingPanel.tsx",plating.test.ts（8 项）,已验收,不新增订单状态
 R07 生产,M,单部门任务、管理员下发、一次反馈、数量受限,A10、A11,"POST /orders/:id/productions；POST /productions/:id/feedback","production_orders；production_feedbacks","routes/flow.ts；FlowPanel.tsx","flow.test.ts；domain.test.ts",已验收,多任务/分批反馈未做
 R08 单价开关,M,管理员控制该生产任务单价可见；其他成本不泄露,A02,"POST /orders/:id/productions；PATCH /productions/:id/price-visibility；PATCH /departments/:id",production_orders.unitPriceVisible；departments.unitPriceVisible,"domain/orders.ts unitPriceForWorker；routes/flow.ts；FlowPanel.tsx",permissions.test.ts（2 项）,已验收,仅生产计件单价
-R09 质检,M,一次质检全合格；录入与 PASS 决策分离,A12、A13,"POST /productions/:id/qc-records；POST /qc-records/:id/decision","qc_records；qc_decisions","routes/flow.ts；FlowPanel.tsx",flow.test.ts,已验收,部分合格/返工/报废未做
+R09 质检,M,品控录入与管理员决策分离；全部检验量有归宿才结算,A12、A13,"POST /productions/:id/qc-records；POST /qc-records/:id/decision","qc_records；qc_decisions","routes/flow.ts；FlowPanel.tsx",flow.test.ts,已验收,分批与返工复检见 R09F
 R10 包装,M,下发后登记；不得超过可包装量,A14,"POST /orders/:id/packing-dispatch；POST /orders/:id/packing-records",packing_records,"routes/flow.ts；FlowPanel.tsx","flow.test.ts；domain.test.ts",已验收,按产品拆分未做
 R11 发货,M,触发后登记；足量完成,A15、A16,"POST /orders/:id/shipping-trigger；POST /orders/:id/shipment-records",shipment_records,"routes/flow.ts；FlowPanel.tsx","flow.test.ts；domain.test.ts",已验收,单产品足量口径
 R12 撤销修正,M,未支持的撤销明确拒绝；不随意删记录,A17,无删除接口,全部业务表,状态守卫与路由表（无 DELETE）,flow.test.ts 状态冲突断言,已实现（人工核对）,10 分钟撤销未做
@@ -34,7 +34,7 @@ R05F 到货,F,多批次、部分到货投产、超量原因确认,A08,POST /purc
 R06F 电镀,F,厂商、关联采购项、整件计价、发送收货状态,A09,"POST /orders/:id/plating-orders；PATCH/DELETE /plating-orders/:id；POST /plating-orders/:id/send|receive",plating_orders；suppliers.type,"routes/flow.ts；domain/flow.ts；PlatingPanel.tsx；FlowPanel.tsx",plating.test.ts（8 项）,已验收,部分电镀受单生产任务限制
 R07F 生产,F,多任务、分批反馈、部门回流、工艺记录,A11,"POST /orders/:id/productions；POST /productions/:id/feedback","production_orders；production_feedbacks",routes/flow.ts,flow.test.ts,未选做,单任务一次反馈
 R08F 单价开关,F,部门/任务范围、历史查询、导出和附件权限,A02,"PATCH /productions/:id/price-visibility；GET /productions/:id/price-visibility-history；PATCH /departments/:id",production_orders.unitPriceVisible；departments.unitPriceVisible；audit_logs,"domain/orders.ts；routes/flow.ts；routes/base-data.ts；FlowPanel.tsx",permissions.test.ts,已验收,仅生产计件单价
-R09F 质检,F,部分合格、阈值、原因、返工/报废、再检,A13,"POST /productions/:id/qc-records；POST /qc-records/:id/decision","qc_records；qc_decisions",routes/flow.ts,flow.test.ts,未选做,仅全合格
+R09F 质检,F,部分合格、返工/报废、再检（阈值与原因码不选做）,A13,"POST /productions/:id/qc-records；POST /qc-records/:id/decision","qc_records；qc_decisions","routes/flow.ts；domain/flow.ts；FlowPanel.tsx",flow.test.ts（R09F 三例）,部分,"未做不合格率阈值与原因码；单生产任务口径"
 R10F 包装,F,按产品多批次、今日/累计/剩余,A14,"POST /orders/:id/packing-records",packing_records,routes/flow.ts,flow.test.ts,部分,多次登记已做；按产品拆分未做
 R11F 发货,F,按产品分批、剩余包装闸门、全部足量完成,A16,"POST /orders/:id/shipment-records",shipment_records,routes/flow.ts,flow.test.ts,部分,单产品口径
 R12F 撤销修正,F,10 分钟安全撤销、超时留痕修正,A17,无,全部业务表,状态守卫,flow.test.ts,未选做,明确拒绝撤销
@@ -47,7 +47,7 @@ R18F 导入,F,客户/供应商/配件/员工 Excel 模板、预检、错误行�
 R19F 导出,F,订单/采购/生产/质检/发货/库存 xlsx/docx/pdf；所选/筛选及历史,A26,GET /orders/export.xlsx,"orders；order_items","routes/export.ts；lib/export-workbook.ts",人工冒烟,部分,仅订单 xlsx
 R20F 通知提醒,F,分类、全部已读、到期前七天每日一次、补执行不重复,A27,"POST /notifications/read-all；POST /jobs/due-reminders；GET /notifications?category=","notifications.category；notifications.dedupeKey","routes/collab.ts；jobs/due-reminders.ts；jobs/scheduler.ts；NotificationsPage.tsx","collab.test.ts；jobs.test.ts",已验收,无站外渠道
 R21F 看板,F,负责人/时间筛选、生产看板、成本/发货/库存指标、可追溯明细,A28,"GET /dashboard?from&to&ownerId；GET /orders?ownerId=","orders.ownerId；production_orders；inventory_logs","routes/collab.ts；DashboardPage.tsx；OrdersPage.tsx",collab.test.ts,已验收,无工时效率
-R22F 异常上报,F,分类、处理状态、处理人、时间反馈、关联通知和审计,A29,"POST /exceptions；GET /exceptions；PATCH /exceptions/:id",tablet_exceptions,"routes/collab.ts；ExceptionsPage.tsx；ReportException.tsx",collab.test.ts,已验收,无附件/超时升级
+R22F 异常上报,F,分类、处理状态、处理人、时间反馈、关联通知和审计；下发品控复核并引用质检凭证,A29,"POST /exceptions；GET /exceptions；PATCH /exceptions/:id；POST /exceptions/:id/review","tablet_exceptions；qc_records","routes/collab.ts；ExceptionsPage.tsx；ReportException.tsx",collab.test.ts（R22F×R09F 四例）,已验收,无附件/超时升级
 R23F 审计,F,管理员审计检索、前后变化脱敏与历史查询增强,A30,"GET /audit-logs；GET /audit-logs/export.xlsx",audit_logs,"routes/audit.ts；lib/audit-diff.ts；AuditLogPage.tsx",audit.test.ts,已验收,无跨记录版本链
 R24F 重试与弱网,F,持久待同步队列、恢复自动重试、身份过期暂停、冲突人工处理,A31,库存/订单写接口的 Idempotency-Key,idempotency_requests,"lib/idempotency.ts；api/client.ts；InventoryPage.tsx",inventory.test.ts,部分,无持久队列
 R25F 可靠性,F,M 之外的扩展并发、补偿及跨资源一致性,A19、A20、A32,全部写接口,全部业务表,事务 + 幂等 + 失败注入,inventory.test.ts（5 项新增）,已验收,撤销补偿未做

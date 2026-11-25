@@ -1218,6 +1218,22 @@
   color: var(--green);
 }
 
+.exceptions-page .exception-item__status--waiting_qc {
+  border-color: rgba(124, 58, 237, 0.35);
+  color: #7c3aed;
+}
+
+.exception-item__qc {
+  margin-top: 6px;
+  font-size: 11.5px;
+  color: #7c3aed;
+}
+
+.exception-item__hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
 .exception-item__body {
   flex: 1;
   min-width: 0;
@@ -1282,6 +1298,13 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+/* 状态提示与留痕勾选单独占一行，不挤在输入框和按钮之间。 */
+.exception-dispose .exception-item__hint,
+.exception-dispose .check-field {
+  flex-basis: 100%;
+  margin: 0;
 }
 
 .price-history {
@@ -1687,13 +1710,14 @@
 }
 
 .audit-table > * {
-  min-width: 720px;
+  min-width: 860px;
 }
 
 .audit-table__head,
 .audit-row {
   display: grid;
-  grid-template-columns: 190px minmax(0, 1.35fr) minmax(0, 1fr) 74px 56px;
+  grid-template-columns:
+    190px minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr) 74px 56px;
   gap: 14px;
   align-items: center;
   padding: 0 22px;
@@ -2036,6 +2060,7 @@
   }
 
   .audit-row__action,
+  .audit-row__order,
   .audit-row__resource {
     grid-column: 1;
     flex-direction: row;
@@ -2045,17 +2070,20 @@
 
   .audit-row__who strong,
   .audit-row__action strong,
+  .audit-row__order strong,
   .audit-row__resource strong {
     font-size: 12.5px;
   }
 
   .audit-row__who small,
   .audit-row__action small,
+  .audit-row__order small,
   .audit-row__resource small {
     font-size: 10.5px;
   }
 
   .audit-row__action strong,
+  .audit-row__order strong,
   .audit-row__resource strong {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -2068,7 +2096,7 @@
 
   .audit-row__toggle-cell {
     grid-column: 2;
-    grid-row: 1 / span 3;
+    grid-row: 1 / span 4;
     align-self: center;
   }
 

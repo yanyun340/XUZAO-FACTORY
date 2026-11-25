@@ -134,7 +134,7 @@ npm run dev -w frontend    # 终端 3：Web http://localhost:5173
 | --- | --- | --- | --- |
 | 类型检查 | 根目录 `npm run typecheck` | 无 | 终端输出 |
 | 前端构建 | 根目录 `npm run build -w frontend` | 无 | 终端输出 |
-| 后端测试 | 根目录 `npm test` | 隔离库 `xuzao_test`；15 文件 / 123 用例；会先 `migrate deploy` 再清表 | [tests/reports/2026-11-23-plating.md](tests/reports/2026-11-23-plating.md) |
+| 后端测试 | 根目录 `npm test` | 隔离库 `xuzao_test`；15 文件 / 131 用例；会先 `migrate deploy` 再清表 | [tests/reports/2026-11-25-audit-context.md](tests/reports/2026-11-25-audit-context.md) |
 | 备份恢复 | `backend/` 下 `npm run backup` / `npm run restore -- …` | 新隔离库 + 隔离附件目录 | [tests/reports/2026-11-04-backup-restore.md](tests/reports/2026-11-04-backup-restore.md) |
 | 浏览器闭环 | 启动后按角色登录操作 | 合成演示数据 | `.shots/`（过程材料） |
 
@@ -143,7 +143,8 @@ npm run dev -w frontend    # 终端 3：Web http://localhost:5173
 1. 管理员创建订单 → 采购下单。
 2. 物流登录登记到货（可分批）。
 3. 管理员下发生产；生产账号在本部门提交反馈。
-4. 管理员下发育检；品控录入全合格；管理员决策 PASS。
+4. 管理员下发育检；品控分批录入；管理员决策 PASS / 返工 / 报废，返工量由品控复检。
+   质量异常可在异常页「下发品控复核」，取得 PASS 凭证后才能标记解决。
 5. 管理员下发包装；包装账号登记；管理员触发发货。
 6. 物流登记发货，累计足量后订单完成。
 7. 验证越权（现场角色访问用户管理/审计 403）、重复提交（同一幂等键重放不重复建单）、库存并发扣减不为负。

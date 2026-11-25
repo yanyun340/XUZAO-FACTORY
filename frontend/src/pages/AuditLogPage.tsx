@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { ApiError, apiDownload, apiGet, apiGetPage } from '../api/client';
 import type { AuditFacets, AuditLogItem, PageMeta } from '../api/types';
 import { DataTable } from '../components/DataTable';
@@ -369,6 +370,19 @@ export function AuditLogPage() {
                     <small className="mono">{item.action}</small>
                   </>
                 ),
+              },
+              {
+                key: 'order',
+                title: '订单',
+                className: 'audit-row__order',
+                cell: (item) =>
+                  item.orderNo && item.orderId ? (
+                    <Link className="text-link mono" to={`/orders/${item.orderId}`}>
+                      {item.orderNo}
+                    </Link>
+                  ) : (
+                    <span className="mono">—</span>
+                  ),
               },
               {
                 key: 'resource',

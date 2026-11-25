@@ -148,6 +148,9 @@ export interface FlowQuantities {
   inspectedQty: number;
   qualifiedQty: number;
   releasedQty: number;
+  scrappedQty: number;
+  reworkPendingQty: number;
+  undecidedQty: number;
   packedQty: number;
   shippedQty: number;
   platingRequiredQty: number;
@@ -233,19 +236,40 @@ export interface ProductionFlow {
   } | null;
 }
 
-export interface QcFlow {
+export interface QcDecisionFlow {
+  decision: QcDecisionType;
+  releasedQty: number;
+  scrapQty: number;
+  decidedByName: string;
+  createdAt: string;
+}
+
+export interface QcRecordFlow {
   id: string;
+  round: number;
+  parentQcRecordId: string | null;
   inspectedQty: number;
   qualifiedQty: number;
   unqualifiedQty: number;
   operatorName: string;
   createdAt: string;
-  decision: {
-    decision: 'PASS' | 'REWORK' | 'SCRAP';
-    releasedQty: number;
-    decidedByName: string;
-    createdAt: string;
-  } | null;
+  decision: QcDecisionFlow | null;
+}
+
+export interface QcFlow {
+  id: string;
+  inspectedQty: number;
+  qualifiedQty: number;
+  unqualifiedQty: number;
+  round: number;
+  parentQcRecordId: string | null;
+  operatorName: string;
+  createdAt: string;
+  decision: QcDecisionFlow | null;
+  /** R09F：首检与各轮复检的完整记录，原记录不被覆盖。 */
+  records: QcRecordFlow[];
+  /** 已判返工、尚未复检的数量；下一轮复检以此为基准。 */
+  pendingReinspection: { parentQcRecordId: string; quantity: number } | null;
 }
 
 export interface RecordFlow {
@@ -433,7 +457,26 @@ export interface AttachmentItem {
 }
 
 export type ExceptionCategory = 'QUALITY' | 'MATERIAL' | 'EQUIPMENT' | 'SCHEDULE' | 'OTHER';
-export type ExceptionStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
+export type ExceptionStatus =
+  | 'OPEN'
+  | 'IN_PROGRESS'
+  | 'WAITING_QC'
+  | 'RESOLVED'
+  | 'CLOSED';
+
+export type QcDecisionType = 'PASS' | 'REWORK' | 'SCRAP';
+
+/** R22F：异常关联的质检凭证，结果为空表示品控已录入但管理员未决策。 */
+export interface ExceptionQc {
+  recordId: string;
+  round: number;
+  inspectedQty: number;
+  qualifiedQty: number;
+  unqualifiedQty: number;
+  result: QcDecisionType | null;
+  releasedQty: number;
+  scrapQty: number;
+}
 
 export interface ExceptionItem {
   id: string;
@@ -448,6 +491,9 @@ export interface ExceptionItem {
   expectedAt: string | null;
   resolvedAt: string | null;
   resolution: string | null;
+  qcRecordId: string | null;
+  qcWaived: boolean;
+  qc: ExceptionQc | null;
   reporterName: string;
   createdAt: string;
   updatedAt: string;
@@ -474,6 +520,9 @@ export interface AuditLogItem {
   action: string;
   resourceType: string;
   resourceId: string | null;
+  /** 审计记录所属订单（读取时反查）；无订单上下文为 null。 */
+  orderId: string | null;
+  orderNo: string | null;
   result: 'SUCCESS' | 'FAILED';
   actorName: string | null;
   actorUsername: string | null;

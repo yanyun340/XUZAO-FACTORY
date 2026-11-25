@@ -566,6 +566,11 @@
   gap: 12px;
 }
 
+/* 三个决策按钮要并排，不能用两列网格把第三个挤到下一行。 */
+.flow-form__row--triple {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .flow-form__lead {
   font-size: 12px;
   line-height: 1.65;

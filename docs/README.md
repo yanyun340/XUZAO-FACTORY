@@ -25,8 +25,8 @@
 
 | 证据 | 位置 | 说明 |
 | --- | --- | --- |
-| 自动化测试代码 | `backend/tests/` | 14 个 Vitest 文件，真实隔离库 `xuzao_test` |
-| 最近一次执行结果 | `tests/reports/2026-11-23-plating.md` | 123 个用例全部通过，命令与耗时均已记录 |
+| 自动化测试代码 | `backend/tests/` | 15 个 Vitest 文件，真实隔离库 `xuzao_test` |
+| 最近一次执行结果 | `tests/reports/2026-11-25-qc-reinspection.md` | 131 个用例全部通过，命令与耗时均已记录 |
 | 部署与回退演练 | `tests/reports/2026-11-14-deploy-rollback.md` | `/ready` 三项检查；0.1.0 代码运行在 0.2.0 结构上的回退演练 |
 | 备份恢复演练 | `tests/reports/2026-11-04-backup-restore.md` | 恢复到新库 `xuzao_restore_verify_20261104b` 与隔离附件目录，28 张表 + 2 个附件核对一致 |
 | 手工冒烟脚本 | `scripts/smoke-*.mjs` | 开发期使用，不作为自动化验收证据；说明见 `tests/README.md` |

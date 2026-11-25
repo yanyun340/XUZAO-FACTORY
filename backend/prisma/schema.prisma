@@ -462,13 +462,20 @@ model QCRecord {
   inspectedQty      Int
   qualifiedQty      Int
   unqualifiedQty    Int
+  /** R09F：1 = 首次检验，>1 = 对上一轮返工量的复检。 */
+  round             Int             @default(1)
+  parentQcRecordId  String?         @db.Uuid
+  parentQcRecord    QCRecord?       @relation("QCReinspection", fields: [parentQcRecordId], references: [id])
+  reinspections     QCRecord[]      @relation("QCReinspection")
   operatorId        String          @db.Uuid
   operator          AdminUser       @relation("QCOperator", fields: [operatorId], references: [id])
   createdAt         DateTime        @default(now())
 
-  decision QCDecision?
+  decision  QCDecision?
+  exception TabletException?
 
   @@index([productionOrderId])
+  @@index([parentQcRecordId])
   @@map("qc_records")
 }
 
@@ -478,6 +485,8 @@ model QCDecision {
   qcRecord    QCRecord       @relation(fields: [qcRecordId], references: [id])
   decision    QCDecisionType
   releasedQty Int
+  /** R09F：SCRAP 决策下本记录不合格量全部报废；REWORK/PASS 为 0。 */
+  scrapQty    Int            @default(0)
   decidedById String         @db.Uuid
   decidedBy   AdminUser      @relation("QCDecidedBy", fields: [decidedById], references: [id])
   createdAt   DateTime       @default(now())
@@ -635,6 +644,11 @@ model TabletException {
   expectedAt        DateTime?
   resolvedAt        DateTime?
   resolution        String?
+  /** R22F/R09F：管理员下发复核后，品控产生的质检记录。 */
+  qcRecordId        String?          @unique @db.Uuid
+  qcRecord          QCRecord?        @relation(fields: [qcRecordId], references: [id])
+  /** 质量类异常未走质检而由管理员留痕豁免时置真。 */
+  qcWaived          Boolean          @default(false)
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @default(now()) @updatedAt
 

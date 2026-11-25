@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ApiError, apiGetPage, apiPatch } from '../api/client';
+import { ApiError, apiGetPage, apiPatch, apiPost } from '../api/client';
 import type {
   ExceptionCategory,
   ExceptionItem,
@@ -47,6 +47,7 @@ export function ExceptionsPage() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [expectedAt, setExpectedAt] = useState('');
   const [resolution, setResolution] = useState('');
+  const [waiveQc, setWaiveQc] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -92,9 +93,28 @@ export function ExceptionsPage() {
       await apiPatch(`/exceptions/${item.id}`, body);
       setActiveId(null);
       setResolution('');
+      setWaiveQc(false);
       setReloadToken((token) => token + 1);
     } catch (caught) {
       setError(caught instanceof ApiError ? caught.message : '异常处置失败');
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  /** R22F×R09F：下发复核把生产任务送入正式质检链，异常单随后凭 PASS 决策解决。 */
+  const dispatchReview = async (item: ExceptionItem) => {
+    setBusyId(item.id);
+    setError(null);
+    try {
+      await apiPost(`/exceptions/${item.id}/review`, {
+        ...(expectedAt ? { expectedAt: new Date(expectedAt).toISOString() } : {}),
+      });
+      setActiveId(null);
+      setExpectedAt('');
+      setReloadToken((token) => token + 1);
+    } catch (caught) {
+      setError(caught instanceof ApiError ? caught.message : '下发复核失败');
     } finally {
       setBusyId(null);
     }
@@ -108,15 +128,30 @@ export function ExceptionsPage() {
     });
 
   const resolve = (item: ExceptionItem) => {
-    if (!resolution.trim()) {
-      setError('标记解决前请填写处理说明');
+    // 与后端一致：处理说明 2–500 字，避免提交后才收到泛化的“请求参数不合法”。
+    const trimmed = resolution.trim();
+    if (trimmed.length < 2) {
+      setError('处理说明至少填写 2 个字');
       return;
     }
-    void update(item, { status: 'RESOLVED', resolution: resolution.trim() });
+    if (trimmed.length > 500) {
+      setError('处理说明不能超过 500 个字');
+      return;
+    }
+    const needsWaiver = item.category === 'QUALITY' && !item.qcRecordId;
+    if (needsWaiver && !waiveQc) {
+      setError('质量异常需先下发复核并取得 PASS；确不涉及质检时请勾选留痕豁免');
+      return;
+    }
+    void update(item, {
+      status: 'RESOLVED',
+      resolution: resolution.trim(),
+      ...(needsWaiver ? { waiveQc: true } : {}),
+    });
   };
 
   return (
-    <div className="page">
+    <div className="page exceptions-page">
       <header className="page-head">
         <div className="page-head__copy">
           <h1 className="page-title">异常上报</h1>
@@ -217,8 +252,14 @@ export function ExceptionsPage() {
             {items.map((item) => {
               const open = activeId === item.id;
               const canStart = item.status === 'OPEN';
-              const canResolve = item.status === 'IN_PROGRESS';
+              const qcPassed = item.qc?.result === 'PASS';
+              // 待复核时只有拿到 PASS 才能解决；否则质检还没结论，解决没有凭证。
+              const canResolve = item.status === 'IN_PROGRESS' || (item.status === 'WAITING_QC' && qcPassed);
               const canClose = item.status === 'OPEN' || item.status === 'IN_PROGRESS';
+              const canReview =
+                (item.status === 'OPEN' || item.status === 'IN_PROGRESS') &&
+                item.productionOrderId !== null;
+              const needsWaiver = item.category === 'QUALITY' && !item.qcRecordId;
 
               return (
                 <li className="exception-item exception-item--stack" key={item.id}>
@@ -237,6 +278,17 @@ export function ExceptionsPage() {
                         {item.expectedAt ? ` · 预计 ${formatDateTime(item.expectedAt)}` : ''}
                         {item.orderNo ? ` · ${item.orderNo}` : ''}
                       </p>
+                      {item.qc ? (
+                        <p className="exception-item__qc mono">
+                          复核凭证：第 {item.qc.round} 轮 · 检 {item.qc.inspectedQty} · 合格{' '}
+                          {item.qc.qualifiedQty}
+                          {item.qc.result
+                            ? ` · 结论 ${item.qc.result}`
+                            : ' · 等待管理员决策'}
+                        </p>
+                      ) : item.qcWaived ? (
+                        <p className="exception-item__qc mono">未关联质检 · 管理员留痕豁免</p>
+                      ) : null}
                       {item.resolution ? (
                         <p className="exception-item__resolution">
                           处理说明：{item.resolution}
@@ -258,6 +310,7 @@ export function ExceptionsPage() {
                             setActiveId(open ? null : item.id);
                             setResolution('');
                             setExpectedAt('');
+                            setWaiveQc(false);
                             setError(null);
                           }}
                           aria-expanded={open}
@@ -279,16 +332,43 @@ export function ExceptionsPage() {
                           onChange={(event) => setExpectedAt(event.target.value)}
                         />
                       </label>
-                      {canResolve || item.status === 'RESOLVED' ? (
+                      {canResolve || item.status === 'RESOLVED' || item.status === 'WAITING_QC' ? (
                         <label className="field">
                           <span className="field__label">处理说明</span>
                           <input
                             className="input"
                             value={resolution}
                             onChange={(event) => setResolution(event.target.value)}
-                            placeholder="例如：已更换刀具并复检"
+                            placeholder="例如：已更换刀具并复检（至少 2 字）"
+                            minLength={2}
+                            maxLength={500}
                           />
                         </label>
+                      ) : null}
+                      {needsWaiver && canResolve ? (
+                        <label className="check-field">
+                          <input
+                            type="checkbox"
+                            checked={waiveQc}
+                            onChange={(event) => setWaiveQc(event.target.checked)}
+                          />
+                          <span>该异常不涉及重新质检，留痕豁免（记入审计）</span>
+                        </label>
+                      ) : null}
+                      {item.status === 'WAITING_QC' ? (
+                        <p className="exception-item__hint" role="status">
+                          {item.qc
+                            ? item.qc.result === 'PASS'
+                              ? '质检已通过，可填写处理说明后标记解决。'
+                              : item.qc.result
+                                ? `质检结论为 ${item.qc.result}，未通过不能标记解决；请按检验结果返工或重检。`
+                                : '品控已录入结果，等待管理员在订单页做 PASS/返工/报废决策。'
+                            : '等待品控录入复核结果；录入后会自动关联质检记录。'}
+                        </p>
+                      ) : item.qcRecordId && !qcPassed ? (
+                        <p className="exception-item__hint" role="status">
+                          已关联第 {item.qc?.round ?? 1} 轮质检，需管理员在订单页决策 PASS 后才能标记解决。
+                        </p>
                       ) : null}
                       <div className="exception-dispose__actions">
                         {canStart ? (
@@ -299,6 +379,16 @@ export function ExceptionsPage() {
                             onClick={() => void startHandling(item)}
                           >
                             <span className="btn__label">开始处理</span>
+                          </button>
+                        ) : null}
+                        {canReview ? (
+                          <button
+                            type="button"
+                            className="btn btn--sm"
+                            disabled={busyId === item.id}
+                            onClick={() => void dispatchReview(item)}
+                          >
+                            <span className="btn__label">下发品控复核</span>
                           </button>
                         ) : null}
                         {canResolve ? (

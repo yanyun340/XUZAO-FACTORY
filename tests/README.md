@@ -45,7 +45,7 @@ npx vitest                            # watch
 
 | `plating.test.ts` | 8 | 电镀建单/改删、发送收货幂等、生产闸门、利润与不适用 |
 
-合计：15 个文件、123 个用例。最近一次执行结果见 `reports/2026-11-23-plating.md`。
+合计：15 个文件、124 个用例。最近一次执行结果见 `reports/2026-11-25-audit-context.md`。
 
 ## 3. 测试辅助
 

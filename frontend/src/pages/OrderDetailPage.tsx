@@ -50,9 +50,14 @@ function nextStep(order: OrderDetail): { owner: string; text: string } {
         return { owner: '生产', text: '反馈本工序完成数量' };
       }
       return { owner: '管理员', text: '生产已反馈，下发质检' };
-    case 'PENDING_QC':
-      if (!qc) return { owner: '品控', text: '录入质检结果（M 版本为全合格）' };
-      return { owner: '管理员', text: '做质检放行决策，确定可包装数量' };
+    case 'PENDING_QC': {
+      const openRecord = qc?.records.find((record) => !record.decision);
+      if (openRecord) return { owner: '管理员', text: '对质检结果做放行、返工或报废决策' };
+      if (quantities.reworkPendingQty > 0) {
+        return { owner: '品控', text: `返工复检剩余 ${quantities.reworkPendingQty} 件` };
+      }
+      return { owner: '品控', text: '录入质检结果（可分批，不合格由管理员处置）' };
+    }
     case 'QC_DONE':
       return { owner: '管理员', text: '下发包装，交给包装人员登记' };
     case 'PACKING':
