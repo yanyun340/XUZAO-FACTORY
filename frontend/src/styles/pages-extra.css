@@ -27,6 +27,11 @@
   line-height: 1;
 }
 
+/* 设备审批角标用琥珀色：它是“有人在等你处理”，不是通知未读 */
+.rail__badge--amber {
+  background: #b45309;
+}
+
 .segmented {
   display: inline-flex;
   gap: 2px;
@@ -1403,6 +1408,115 @@
   background: rgba(17, 24, 39, 0.06);
 }
 
+/* 账号列表里的待批准数量：不打开弹窗也能看出哪条账号在等人审批 */
+.device-pending-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 18px;
+  color: #b45309;
+  background: rgba(180, 83, 9, 0.1);
+  white-space: nowrap;
+}
+
+/* 全局设备审批提示：轮询发现新的待批准设备时浮出，不打断当前操作 */
+.device-toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: max-content;
+  max-width: min(440px, calc(100vw - 32px));
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: 0 18px 40px rgba(17, 24, 39, 0.16);
+  animation: device-toast-in 220ms var(--ease-out) both;
+}
+
+.device-toast__dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #b45309;
+  box-shadow: 0 0 0 4px rgba(180, 83, 9, 0.14);
+}
+
+.device-toast__copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.device-toast__copy strong {
+  font-size: 13.5px;
+  color: var(--ink);
+}
+
+.device-toast__copy small {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.device-toast__action {
+  flex: none;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #ffffff;
+  font-size: 12px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.device-toast__close {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 150ms var(--ease-out), color 150ms var(--ease-out);
+}
+
+.device-toast__close:hover {
+  background: rgba(17, 24, 39, 0.06);
+  color: var(--ink);
+}
+
+@keyframes device-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .device-toast {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
+    max-width: none;
+  }
+}
+
 .device-binding {
   display: flex;
   align-items: center;
@@ -1486,14 +1600,14 @@
 }
 
 .user-table > * {
-  min-width: 860px;
+  min-width: 936px;
 }
 
 .user-table__head,
 .user-row {
   display: grid;
   grid-template-columns:
-    minmax(0, 1.3fr) 92px minmax(0, 1fr) 62px 90px 54px minmax(0, 240px);
+    minmax(0, 1.3fr) 92px minmax(0, 1fr) 62px 156px 54px minmax(0, 240px);
   gap: 14px;
   align-items: center;
   padding: 0 22px;
@@ -1516,9 +1630,17 @@
   font-size: 13px;
 }
 
+/* 状态文字和待批准标签各占一个 flex 项：列宽不够时换行，不会溢出压到下一列 */
 .user-row__devices {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
   font-size: 12px;
   color: var(--muted);
+}
+
+.user-row__devices-text {
   white-space: nowrap;
 }
 

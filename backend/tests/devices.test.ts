@@ -144,6 +144,18 @@ describe('受控设备（R01F）', () => {
     expect(rows.filter((row) => row.status === 'PENDING')).toHaveLength(1);
   });
 
+  it('待批准设备进入管理员摘要与账号列表，不用逐个打开弹窗', async () => {
+    const summary = await api(app, admin2Cookie)('GET', '/api/v1/notifications/summary');
+    expect(summary.status).toBe(200);
+    expect(summary.body.data.pendingDevices).toBe(1);
+
+    const list = await api(app, admin2Cookie)('GET', '/api/v1/users?page=1&pageSize=100');
+    expect(list.status).toBe(200);
+    const packing = list.body.data.find((row: { id: string }) => row.id === packingId);
+    expect(packing.activeDevices).toBe(1);
+    expect(packing.pendingDevices).toBe(1);
+  });
+
   it('吊销设备后该设备的会话立即失效，且不能自动复活', async () => {
     const device = await prisma.device.findFirstOrThrow({
       where: { userId: packingId, deviceKey: DEVICE_A },

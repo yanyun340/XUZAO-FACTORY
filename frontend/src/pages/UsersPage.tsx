@@ -44,34 +44,47 @@ export function UsersPage() {
     canClose: () => !busy,
   });
 
-  useEffect(() => {
-    let cancelled = false;
-    apiGetPage<ManagedUser[]>('/users?page=1&pageSize=100')
-      .then((result) => {
-        if (cancelled) return;
-        setUsers(result.data);
-        setMeta(result.meta);
-      })
-      .catch((caught) => {
-        if (cancelled) return;
+  const loadUsers = useCallback(async (mode: 'initial' | 'silent') => {
+    try {
+      const result = await apiGetPage<ManagedUser[]>('/users?page=1&pageSize=100');
+      setUsers(result.data);
+      setMeta(result.meta);
+    } catch (caught) {
+      // 静默轮询失败不打断当前页面，下一轮会重试
+      if (mode === 'initial') {
         setError(caught instanceof ApiError ? caught.message : '账号列表加载失败');
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+      }
+    } finally {
+      if (mode === 'initial') setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadUsers('initial');
 
     apiGetPage<Department[]>('/departments')
-      .then((result) => {
-        if (!cancelled) setDepartments(result.data);
-      })
+      .then((result) => setDepartments(result.data))
       .catch(() => {
         // 部门下拉失败不影响账号列表
       });
+  }, [reloadToken, loadUsers]);
+
+  // 别的终端尝试登录时，账号页不手动刷新也能看到「待批准 N」
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === 'visible') void loadUsers('silent');
+    }, 15_000);
+
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') void loadUsers('silent');
+    };
+    document.addEventListener('visibilitychange', onVisible);
 
     return () => {
-      cancelled = true;
+      window.clearInterval(timer);
+      document.removeEventListener('visibilitychange', onVisible);
     };
-  }, [reloadToken]);
+  }, [loadUsers]);
 
   const reload = useCallback(() => setReloadToken((token) => token + 1), []);
 
@@ -250,9 +263,19 @@ export function UsersPage() {
                     </span>
                   </span>
                   <span className="user-row__devices">
-                    {item.deviceBindingMode === 'ENFORCED'
-                      ? `已启用（${item.activeDevices} 台）`
-                      : '关闭'}
+                    <span className="user-row__devices-text">
+                      {item.deviceBindingMode === 'ENFORCED'
+                        ? `已启用（${item.activeDevices} 台）`
+                        : '关闭'}
+                    </span>
+                    {item.pendingDevices > 0 ? (
+                      <span
+                        className="device-pending-pill"
+                        title={`${item.pendingDevices} 台设备等待批准`}
+                      >
+                        待批准 {item.pendingDevices}
+                      </span>
+                    ) : null}
                   </span>
                   <span className="user-row__sessions mono">{item.activeSessions}</span>
                   <span className="user-row__actions">

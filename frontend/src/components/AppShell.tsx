@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { apiGet } from '../api/client';
 import type { NotificationSummary } from '../api/types';
@@ -7,14 +7,18 @@ import { ROLE_LABEL } from '../lib/format';
 import { BrandMark } from './BrandMark';
 import { ToastHost } from './Toast';
 import { LogOutIcon } from './Icons';
+import { announce } from './LiveAnnouncer';
 
 interface NavItem {
   to: string;
   index: string;
   label: string;
   adminOnly?: boolean;
-  badgeKey?: 'notifications';
+  badgeKey?: 'notifications' | 'deviceApprovals';
 }
+
+/** 后台轮询间隔：兼顾「尽快看到」与本地服务压力。 */
+const SUMMARY_POLL_MS = 15_000;
 
 const NAV_ITEMS: NavItem[] = [
   { to: '/tasks', index: '01', label: '待办' },
@@ -26,7 +30,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/exceptions', index: '07', label: '异常', adminOnly: true },
   { to: '/notifications', index: '08', label: '通知', badgeKey: 'notifications' },
   { to: '/audit', index: '09', label: '审计日志', adminOnly: true },
-  { to: '/users', index: '10', label: '账号', adminOnly: true },
+  { to: '/users', index: '10', label: '账号', adminOnly: true, badgeKey: 'deviceApprovals' },
 ];
 
 function initials(name: string): string {
@@ -47,22 +51,59 @@ export function AppShell() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [unread, setUnread] = useState(0);
+  const [pendingDevices, setPendingDevices] = useState(0);
+  const [deviceToast, setDeviceToast] = useState<number | null>(null);
+  const lastPending = useRef<number | null>(null);
 
-  // 每次切换页面刷新未读数：完成一步流转后，管理员能立刻看到角标变化
+  const refreshSummary = useCallback(async () => {
+    try {
+      const summary = await apiGet<NotificationSummary>('/notifications/summary');
+      setUnread(summary.unread);
+      setPendingDevices(summary.pendingDevices);
+
+      // 只在「首次发现」或数量上升时提醒，避免每轮轮询都弹一次
+      const previous = lastPending.current;
+      if (summary.pendingDevices > 0 && (previous === null || summary.pendingDevices > previous)) {
+        setDeviceToast(summary.pendingDevices);
+        announce(`有 ${summary.pendingDevices} 台设备等待批准`);
+      }
+      lastPending.current = summary.pendingDevices;
+    } catch {
+      // 角标失败不影响主流程，下一轮轮询会重试
+    }
+  }, []);
+
+  // 换账号登录后重新建立基线，避免沿用上一个会话的待批准数量而漏报
+  useEffect(() => {
+    lastPending.current = null;
+  }, [user?.id]);
+
+  // 切换页面立即刷新，其余时间轮询：管理员不打开账号页也能收到设备审批提醒
   useEffect(() => {
     if (!user) return;
-    let cancelled = false;
-    apiGet<NotificationSummary>('/notifications/summary')
-      .then((summary) => {
-        if (!cancelled) setUnread(summary.unread);
-      })
-      .catch(() => {
-        // 角标失败不影响主流程
-      });
-    return () => {
-      cancelled = true;
+    void refreshSummary();
+
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === 'visible') void refreshSummary();
+    }, SUMMARY_POLL_MS);
+
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') void refreshSummary();
     };
-  }, [user, pathname]);
+    document.addEventListener('visibilitychange', onVisible);
+
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [user, pathname, refreshSummary]);
+
+  // 提示条自动消失，管理员不在电脑前也不会一直挂着
+  useEffect(() => {
+    if (deviceToast === null) return;
+    const timer = window.setTimeout(() => setDeviceToast(null), 12_000);
+    return () => window.clearTimeout(timer);
+  }, [deviceToast]);
 
   if (!user) return null;
 
@@ -76,75 +117,106 @@ export function AppShell() {
   };
 
   return (
-    <div className="shell">
-      <aside className="rail">
-        <div className="rail__top">
-          <div className="brand">
-            <BrandMark className="brand__mark" size={30} />
-            <span className="brand__text">
-              <strong>序造</strong>
-              <small>XUZAO / FACTORY OS</small>
-            </span>
-          </div>
+    <>
+      <div className="shell">
+        <aside className="rail">
+          <div className="rail__top">
+            <div className="brand">
+              <BrandMark className="brand__mark" size={30} />
+              <span className="brand__text">
+                <strong>序造</strong>
+                <small>XUZAO / FACTORY OS</small>
+              </span>
+            </div>
 
-          <nav
-            className="rail__nav"
-            aria-label="主导航"
-            style={{ '--rail-active-index': Math.max(activeIndex, 0) } as CSSProperties}
-          >
-            {activeIndex >= 0 ? <span className="rail__indicator" aria-hidden /> : null}
-            {items.map((item) => {
-              const active = isActivePath(item.to, pathname);
-              return (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className={`rail__link${active ? ' rail__link--active' : ''}`}
-                  aria-current={active ? 'page' : undefined}
-                >
-                  <span className="rail__index">{item.index}</span>
-                  <span>{item.label}</span>
-                  {item.badgeKey === 'notifications' && unread > 0 ? (
-                    <span className="rail__badge mono" aria-label={`${unread} 条未读`}>
-                      {unread > 99 ? '99+' : unread}
-                    </span>
-                  ) : null}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-
-        <div className="rail__foot">
-          <div className="rail__user">
-            <span className="rail__avatar" aria-hidden>
-              {initials(user.displayName)}
-            </span>
-            <span className="rail__identity">
-              <strong>{user.displayName}</strong>
-              <small>
-                {ROLE_LABEL[user.role]}
-                {user.department ? ` · ${user.department.name}` : ''}
-              </small>
-            </span>
-            <button
-              type="button"
-              className="rail__logout"
-              onClick={() => void handleLogout()}
-              title="退出登录"
-              aria-label="退出登录"
+            <nav
+              className="rail__nav"
+              aria-label="主导航"
+              style={{ '--rail-active-index': Math.max(activeIndex, 0) } as CSSProperties}
             >
-              <LogOutIcon size={17} />
-            </button>
+              {activeIndex >= 0 ? <span className="rail__indicator" aria-hidden /> : null}
+              {items.map((item) => {
+                const active = isActivePath(item.to, pathname);
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    className={`rail__link${active ? ' rail__link--active' : ''}`}
+                    aria-current={active ? 'page' : undefined}
+                  >
+                    <span className="rail__index">{item.index}</span>
+                    <span>{item.label}</span>
+                    {item.badgeKey === 'notifications' && unread > 0 ? (
+                      <span className="rail__badge mono" aria-label={`${unread} 条未读`}>
+                        {unread > 99 ? '99+' : unread}
+                      </span>
+                    ) : null}
+                    {item.badgeKey === 'deviceApprovals' && pendingDevices > 0 ? (
+                      <span
+                        className="rail__badge rail__badge--amber mono"
+                        aria-label={`${pendingDevices} 台设备待批准`}
+                      >
+                        {pendingDevices > 99 ? '99+' : pendingDevices}
+                      </span>
+                    ) : null}
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
+
+          <div className="rail__foot">
+            <div className="rail__user">
+              <span className="rail__avatar" aria-hidden>
+                {initials(user.displayName)}
+              </span>
+              <span className="rail__identity">
+                <strong>{user.displayName}</strong>
+                <small>
+                  {ROLE_LABEL[user.role]}
+                  {user.department ? ` · ${user.department.name}` : ''}
+                </small>
+              </span>
+              <button
+                type="button"
+                className="rail__logout"
+                onClick={() => void handleLogout()}
+                title="退出登录"
+                aria-label="退出登录"
+              >
+                <LogOutIcon size={17} />
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        <main className="main">
+          <Outlet />
+        </main>
+
+        <ToastHost />
+      </div>
+
+      {deviceToast !== null ? (
+        <div className="device-toast" role="status">
+          <span className="device-toast__dot" aria-hidden />
+          <div className="device-toast__copy">
+            <strong>{deviceToast} 台设备等待批准</strong>
+            <small>有人在新设备上登录被拦截，批准后才能继续使用。</small>
+          </div>
+          <Link to="/users" className="device-toast__action" onClick={() => setDeviceToast(null)}>
+            去处理
+          </Link>
+          <button
+            type="button"
+            className="device-toast__close"
+            aria-label="关闭提示"
+            onClick={() => setDeviceToast(null)}
+          >
+            ×
+          </button>
         </div>
-      </aside>
-
-      <main className="main">
-        <Outlet />
-      </main>
-
-      <ToastHost />
-    </div>
+      ) : null}
+    </>
   );
 }
