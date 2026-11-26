@@ -2646,6 +2646,138 @@
   }
 }
 
+/* ── R12F：录入记录台账（撤销/修正） ───────────────────────────── */
+
+.record-panel {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  padding: 22px;
+}
+
+.record-panel__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+
+.record-panel__count {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.record-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.record-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 0;
+  border-top: 1px solid var(--line);
+  animation: orderRowIn 160ms var(--ease-out) backwards;
+}
+
+.record-item:first-child {
+  border-top: 0;
+}
+
+.record-item__main {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+
+.record-item__kind {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.record-item__qty {
+  font-size: 13px;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.record-item__meta {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.record-item__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-self: end;
+}
+
+.record-item__timer {
+  font-size: 11.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 作废行：整行降权，但仍可读——现场要看懂「哪条被撤了、为什么」 */
+.record-item--voided .record-item__kind,
+.record-item--voided .record-item__qty,
+.record-item--voided .record-item__meta {
+  color: var(--muted);
+}
+
+.record-item--voided .record-item__qty {
+  text-decoration: line-through;
+  text-decoration-color: var(--line-strong);
+}
+
+/* 作废原因单独占第二行，不挤在操作列里被截断 */
+.record-item--voided .record-item__void {
+  grid-column: 1 / -1;
+  justify-self: start;
+  font-size: 11.5px;
+  color: var(--muted);
+  text-align: left;
+  max-width: none;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .record-item {
+    grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: 4px;
+  }
+
+  .record-item__main {
+    grid-column: 1 / -1;
+  }
+
+  .record-item__void {
+    max-width: none;
+    grid-column: 1 / -1;
+    justify-self: start;
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .record-item {
+    animation: none;
+  }
+}
+
 /* 行列入场带延迟，减少动态时直接终态，不在延迟期把内容藏起来 */
 @media (prefers-reduced-motion: reduce) {
   .order-row,

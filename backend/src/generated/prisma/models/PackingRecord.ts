@@ -41,6 +41,9 @@ export type PackingRecordMinAggregateOutputType = {
   quantity: number | null
   operatorId: string | null
   createdAt: Date | null
+  voidedAt: Date | null
+  voidedById: string | null
+  voidReason: string | null
 }
 
 export type PackingRecordMaxAggregateOutputType = {
@@ -50,6 +53,9 @@ export type PackingRecordMaxAggregateOutputType = {
   quantity: number | null
   operatorId: string | null
   createdAt: Date | null
+  voidedAt: Date | null
+  voidedById: string | null
+  voidReason: string | null
 }
 
 export type PackingRecordCountAggregateOutputType = {
@@ -59,6 +65,9 @@ export type PackingRecordCountAggregateOutputType = {
   quantity: number
   operatorId: number
   createdAt: number
+  voidedAt: number
+  voidedById: number
+  voidReason: number
   _all: number
 }
 
@@ -78,6 +87,9 @@ export type PackingRecordMinAggregateInputType = {
   quantity?: true
   operatorId?: true
   createdAt?: true
+  voidedAt?: true
+  voidedById?: true
+  voidReason?: true
 }
 
 export type PackingRecordMaxAggregateInputType = {
@@ -87,6 +99,9 @@ export type PackingRecordMaxAggregateInputType = {
   quantity?: true
   operatorId?: true
   createdAt?: true
+  voidedAt?: true
+  voidedById?: true
+  voidReason?: true
 }
 
 export type PackingRecordCountAggregateInputType = {
@@ -96,6 +111,9 @@ export type PackingRecordCountAggregateInputType = {
   quantity?: true
   operatorId?: true
   createdAt?: true
+  voidedAt?: true
+  voidedById?: true
+  voidReason?: true
   _all?: true
 }
 
@@ -192,6 +210,9 @@ export type PackingRecordGroupByOutputType = {
   quantity: number
   operatorId: string
   createdAt: Date
+  voidedAt: Date | null
+  voidedById: string | null
+  voidReason: string | null
   _count: PackingRecordCountAggregateOutputType | null
   _avg: PackingRecordAvgAggregateOutputType | null
   _sum: PackingRecordSumAggregateOutputType | null
@@ -224,9 +245,13 @@ export type PackingRecordWhereInput = {
   quantity?: Prisma.IntFilter<"PackingRecord"> | number
   operatorId?: Prisma.UuidFilter<"PackingRecord"> | string
   createdAt?: Prisma.DateTimeFilter<"PackingRecord"> | Date | string
+  voidedAt?: Prisma.DateTimeNullableFilter<"PackingRecord"> | Date | string | null
+  voidedById?: Prisma.UuidNullableFilter<"PackingRecord"> | string | null
+  voidReason?: Prisma.StringNullableFilter<"PackingRecord"> | string | null
   order?: Prisma.XOR<Prisma.OrderScalarRelationFilter, Prisma.OrderWhereInput>
   orderItem?: Prisma.XOR<Prisma.OrderItemScalarRelationFilter, Prisma.OrderItemWhereInput>
   operator?: Prisma.XOR<Prisma.AdminUserScalarRelationFilter, Prisma.AdminUserWhereInput>
+  voidedBy?: Prisma.XOR<Prisma.AdminUserNullableScalarRelationFilter, Prisma.AdminUserWhereInput> | null
 }
 
 export type PackingRecordOrderByWithRelationInput = {
@@ -236,9 +261,13 @@ export type PackingRecordOrderByWithRelationInput = {
   quantity?: Prisma.SortOrder
   operatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidReason?: Prisma.SortOrderInput | Prisma.SortOrder
   order?: Prisma.OrderOrderByWithRelationInput
   orderItem?: Prisma.OrderItemOrderByWithRelationInput
   operator?: Prisma.AdminUserOrderByWithRelationInput
+  voidedBy?: Prisma.AdminUserOrderByWithRelationInput
 }
 
 export type PackingRecordWhereUniqueInput = Prisma.AtLeast<{
@@ -251,9 +280,13 @@ export type PackingRecordWhereUniqueInput = Prisma.AtLeast<{
   quantity?: Prisma.IntFilter<"PackingRecord"> | number
   operatorId?: Prisma.UuidFilter<"PackingRecord"> | string
   createdAt?: Prisma.DateTimeFilter<"PackingRecord"> | Date | string
+  voidedAt?: Prisma.DateTimeNullableFilter<"PackingRecord"> | Date | string | null
+  voidedById?: Prisma.UuidNullableFilter<"PackingRecord"> | string | null
+  voidReason?: Prisma.StringNullableFilter<"PackingRecord"> | string | null
   order?: Prisma.XOR<Prisma.OrderScalarRelationFilter, Prisma.OrderWhereInput>
   orderItem?: Prisma.XOR<Prisma.OrderItemScalarRelationFilter, Prisma.OrderItemWhereInput>
   operator?: Prisma.XOR<Prisma.AdminUserScalarRelationFilter, Prisma.AdminUserWhereInput>
+  voidedBy?: Prisma.XOR<Prisma.AdminUserNullableScalarRelationFilter, Prisma.AdminUserWhereInput> | null
 }, "id">
 
 export type PackingRecordOrderByWithAggregationInput = {
@@ -263,6 +296,9 @@ export type PackingRecordOrderByWithAggregationInput = {
   quantity?: Prisma.SortOrder
   operatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidReason?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.PackingRecordCountOrderByAggregateInput
   _avg?: Prisma.PackingRecordAvgOrderByAggregateInput
   _max?: Prisma.PackingRecordMaxOrderByAggregateInput
@@ -280,15 +316,21 @@ export type PackingRecordScalarWhereWithAggregatesInput = {
   quantity?: Prisma.IntWithAggregatesFilter<"PackingRecord"> | number
   operatorId?: Prisma.UuidWithAggregatesFilter<"PackingRecord"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PackingRecord"> | Date | string
+  voidedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"PackingRecord"> | Date | string | null
+  voidedById?: Prisma.UuidNullableWithAggregatesFilter<"PackingRecord"> | string | null
+  voidReason?: Prisma.StringNullableWithAggregatesFilter<"PackingRecord"> | string | null
 }
 
 export type PackingRecordCreateInput = {
   id?: string
   quantity: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
   order: Prisma.OrderCreateNestedOneWithoutPackingRecordsInput
   orderItem: Prisma.OrderItemCreateNestedOneWithoutPackingRecordsInput
   operator: Prisma.AdminUserCreateNestedOneWithoutPackingRecordsInput
+  voidedBy?: Prisma.AdminUserCreateNestedOneWithoutPackingVoidedInput
 }
 
 export type PackingRecordUncheckedCreateInput = {
@@ -298,15 +340,21 @@ export type PackingRecordUncheckedCreateInput = {
   quantity: number
   operatorId: string
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
 }
 
 export type PackingRecordUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   order?: Prisma.OrderUpdateOneRequiredWithoutPackingRecordsNestedInput
   orderItem?: Prisma.OrderItemUpdateOneRequiredWithoutPackingRecordsNestedInput
   operator?: Prisma.AdminUserUpdateOneRequiredWithoutPackingRecordsNestedInput
+  voidedBy?: Prisma.AdminUserUpdateOneWithoutPackingVoidedNestedInput
 }
 
 export type PackingRecordUncheckedUpdateInput = {
@@ -316,6 +364,9 @@ export type PackingRecordUncheckedUpdateInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   operatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PackingRecordCreateManyInput = {
@@ -325,12 +376,17 @@ export type PackingRecordCreateManyInput = {
   quantity: number
   operatorId: string
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
 }
 
 export type PackingRecordUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PackingRecordUncheckedUpdateManyInput = {
@@ -340,6 +396,9 @@ export type PackingRecordUncheckedUpdateManyInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   operatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PackingRecordListRelationFilter = {
@@ -359,6 +418,9 @@ export type PackingRecordCountOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   operatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrder
+  voidedById?: Prisma.SortOrder
+  voidReason?: Prisma.SortOrder
 }
 
 export type PackingRecordAvgOrderByAggregateInput = {
@@ -372,6 +434,9 @@ export type PackingRecordMaxOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   operatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrder
+  voidedById?: Prisma.SortOrder
+  voidReason?: Prisma.SortOrder
 }
 
 export type PackingRecordMinOrderByAggregateInput = {
@@ -381,6 +446,9 @@ export type PackingRecordMinOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   operatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrder
+  voidedById?: Prisma.SortOrder
+  voidReason?: Prisma.SortOrder
 }
 
 export type PackingRecordSumOrderByAggregateInput = {
@@ -394,10 +462,24 @@ export type PackingRecordCreateNestedManyWithoutOperatorInput = {
   connect?: Prisma.PackingRecordWhereUniqueInput | Prisma.PackingRecordWhereUniqueInput[]
 }
 
+export type PackingRecordCreateNestedManyWithoutVoidedByInput = {
+  create?: Prisma.XOR<Prisma.PackingRecordCreateWithoutVoidedByInput, Prisma.PackingRecordUncheckedCreateWithoutVoidedByInput> | Prisma.PackingRecordCreateWithoutVoidedByInput[] | Prisma.PackingRecordUncheckedCreateWithoutVoidedByInput[]
+  connectOrCreate?: Prisma.PackingRecordCreateOrConnectWithoutVoidedByInput | Prisma.PackingRecordCreateOrConnectWithoutVoidedByInput[]
+  createMany?: Prisma.PackingRecordCreateManyVoidedByInputEnvelope
+  connect?: Prisma.PackingRecordWhereUniqueInput | Prisma.PackingRecordWhereUniqueInput[]
+}
+
 export type PackingRecordUncheckedCreateNestedManyWithoutOperatorInput = {
   create?: Prisma.XOR<Prisma.PackingRecordCreateWithoutOperatorInput, Prisma.PackingRecordUncheckedCreateWithoutOperatorInput> | Prisma.PackingRecordCreateWithoutOperatorInput[] | Prisma.PackingRecordUncheckedCreateWithoutOperatorInput[]
   connectOrCreate?: Prisma.PackingRecordCreateOrConnectWithoutOperatorInput | Prisma.PackingRecordCreateOrConnectWithoutOperatorInput[]
   createMany?: Prisma.PackingRecordCreateManyOperatorInputEnvelope
+  connect?: Prisma.PackingRecordWhereUniqueInput | Prisma.PackingRecordWhereUniqueInput[]
+}
+
+export type PackingRecordUncheckedCreateNestedManyWithoutVoidedByInput = {
+  create?: Prisma.XOR<Prisma.PackingRecordCreateWithoutVoidedByInput, Prisma.PackingRecordUncheckedCreateWithoutVoidedByInput> | Prisma.PackingRecordCreateWithoutVoidedByInput[] | Prisma.PackingRecordUncheckedCreateWithoutVoidedByInput[]
+  connectOrCreate?: Prisma.PackingRecordCreateOrConnectWithoutVoidedByInput | Prisma.PackingRecordCreateOrConnectWithoutVoidedByInput[]
+  createMany?: Prisma.PackingRecordCreateManyVoidedByInputEnvelope
   connect?: Prisma.PackingRecordWhereUniqueInput | Prisma.PackingRecordWhereUniqueInput[]
 }
 
@@ -415,6 +497,20 @@ export type PackingRecordUpdateManyWithoutOperatorNestedInput = {
   deleteMany?: Prisma.PackingRecordScalarWhereInput | Prisma.PackingRecordScalarWhereInput[]
 }
 
+export type PackingRecordUpdateManyWithoutVoidedByNestedInput = {
+  create?: Prisma.XOR<Prisma.PackingRecordCreateWithoutVoidedByInput, Prisma.PackingRecordUncheckedCreateWithoutVoidedByInput> | Prisma.PackingRecordCreateWithoutVoidedByInput[] | Prisma.PackingRecordUncheckedCreateWithoutVoidedByInput[]
+  connectOrCreate?: Prisma.PackingRecordCreateOrConnectWithoutVoidedByInput | Prisma.PackingRecordCreateOrConnectWithoutVoidedByInput[]
+  upsert?: Prisma.PackingRecordUpsertWithWhereUniqueWithoutVoidedByInput | Prisma.PackingRecordUpsertWithWhereUniqueWithoutVoidedByInput[]
+  createMany?: Prisma.PackingRecordCreateManyVoidedByInputEnvelope
+  set?: Prisma.PackingRecordWhereUniqueInput | Prisma.PackingRecordWhereUniqueInput[]
+  disconnect?: Prisma.PackingRecordWhereUniqueInput | Prisma.PackingRecordWhereUniqueInput[]
+  delete?: Prisma.PackingRecordWhereUniqueInput | Prisma.PackingRecordWhereUniqueInput[]
+  connect?: Prisma.PackingRecordWhereUniqueInput | Prisma.PackingRecordWhereUniqueInput[]
+  update?: Prisma.PackingRecordUpdateWithWhereUniqueWithoutVoidedByInput | Prisma.PackingRecordUpdateWithWhereUniqueWithoutVoidedByInput[]
+  updateMany?: Prisma.PackingRecordUpdateManyWithWhereWithoutVoidedByInput | Prisma.PackingRecordUpdateManyWithWhereWithoutVoidedByInput[]
+  deleteMany?: Prisma.PackingRecordScalarWhereInput | Prisma.PackingRecordScalarWhereInput[]
+}
+
 export type PackingRecordUncheckedUpdateManyWithoutOperatorNestedInput = {
   create?: Prisma.XOR<Prisma.PackingRecordCreateWithoutOperatorInput, Prisma.PackingRecordUncheckedCreateWithoutOperatorInput> | Prisma.PackingRecordCreateWithoutOperatorInput[] | Prisma.PackingRecordUncheckedCreateWithoutOperatorInput[]
   connectOrCreate?: Prisma.PackingRecordCreateOrConnectWithoutOperatorInput | Prisma.PackingRecordCreateOrConnectWithoutOperatorInput[]
@@ -426,6 +522,20 @@ export type PackingRecordUncheckedUpdateManyWithoutOperatorNestedInput = {
   connect?: Prisma.PackingRecordWhereUniqueInput | Prisma.PackingRecordWhereUniqueInput[]
   update?: Prisma.PackingRecordUpdateWithWhereUniqueWithoutOperatorInput | Prisma.PackingRecordUpdateWithWhereUniqueWithoutOperatorInput[]
   updateMany?: Prisma.PackingRecordUpdateManyWithWhereWithoutOperatorInput | Prisma.PackingRecordUpdateManyWithWhereWithoutOperatorInput[]
+  deleteMany?: Prisma.PackingRecordScalarWhereInput | Prisma.PackingRecordScalarWhereInput[]
+}
+
+export type PackingRecordUncheckedUpdateManyWithoutVoidedByNestedInput = {
+  create?: Prisma.XOR<Prisma.PackingRecordCreateWithoutVoidedByInput, Prisma.PackingRecordUncheckedCreateWithoutVoidedByInput> | Prisma.PackingRecordCreateWithoutVoidedByInput[] | Prisma.PackingRecordUncheckedCreateWithoutVoidedByInput[]
+  connectOrCreate?: Prisma.PackingRecordCreateOrConnectWithoutVoidedByInput | Prisma.PackingRecordCreateOrConnectWithoutVoidedByInput[]
+  upsert?: Prisma.PackingRecordUpsertWithWhereUniqueWithoutVoidedByInput | Prisma.PackingRecordUpsertWithWhereUniqueWithoutVoidedByInput[]
+  createMany?: Prisma.PackingRecordCreateManyVoidedByInputEnvelope
+  set?: Prisma.PackingRecordWhereUniqueInput | Prisma.PackingRecordWhereUniqueInput[]
+  disconnect?: Prisma.PackingRecordWhereUniqueInput | Prisma.PackingRecordWhereUniqueInput[]
+  delete?: Prisma.PackingRecordWhereUniqueInput | Prisma.PackingRecordWhereUniqueInput[]
+  connect?: Prisma.PackingRecordWhereUniqueInput | Prisma.PackingRecordWhereUniqueInput[]
+  update?: Prisma.PackingRecordUpdateWithWhereUniqueWithoutVoidedByInput | Prisma.PackingRecordUpdateWithWhereUniqueWithoutVoidedByInput[]
+  updateMany?: Prisma.PackingRecordUpdateManyWithWhereWithoutVoidedByInput | Prisma.PackingRecordUpdateManyWithWhereWithoutVoidedByInput[]
   deleteMany?: Prisma.PackingRecordScalarWhereInput | Prisma.PackingRecordScalarWhereInput[]
 }
 
@@ -517,8 +627,11 @@ export type PackingRecordCreateWithoutOperatorInput = {
   id?: string
   quantity: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
   order: Prisma.OrderCreateNestedOneWithoutPackingRecordsInput
   orderItem: Prisma.OrderItemCreateNestedOneWithoutPackingRecordsInput
+  voidedBy?: Prisma.AdminUserCreateNestedOneWithoutPackingVoidedInput
 }
 
 export type PackingRecordUncheckedCreateWithoutOperatorInput = {
@@ -527,6 +640,9 @@ export type PackingRecordUncheckedCreateWithoutOperatorInput = {
   orderItemId: string
   quantity: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
 }
 
 export type PackingRecordCreateOrConnectWithoutOperatorInput = {
@@ -536,6 +652,38 @@ export type PackingRecordCreateOrConnectWithoutOperatorInput = {
 
 export type PackingRecordCreateManyOperatorInputEnvelope = {
   data: Prisma.PackingRecordCreateManyOperatorInput | Prisma.PackingRecordCreateManyOperatorInput[]
+  skipDuplicates?: boolean
+}
+
+export type PackingRecordCreateWithoutVoidedByInput = {
+  id?: string
+  quantity: number
+  createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
+  order: Prisma.OrderCreateNestedOneWithoutPackingRecordsInput
+  orderItem: Prisma.OrderItemCreateNestedOneWithoutPackingRecordsInput
+  operator: Prisma.AdminUserCreateNestedOneWithoutPackingRecordsInput
+}
+
+export type PackingRecordUncheckedCreateWithoutVoidedByInput = {
+  id?: string
+  orderId: string
+  orderItemId: string
+  quantity: number
+  operatorId: string
+  createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
+}
+
+export type PackingRecordCreateOrConnectWithoutVoidedByInput = {
+  where: Prisma.PackingRecordWhereUniqueInput
+  create: Prisma.XOR<Prisma.PackingRecordCreateWithoutVoidedByInput, Prisma.PackingRecordUncheckedCreateWithoutVoidedByInput>
+}
+
+export type PackingRecordCreateManyVoidedByInputEnvelope = {
+  data: Prisma.PackingRecordCreateManyVoidedByInput | Prisma.PackingRecordCreateManyVoidedByInput[]
   skipDuplicates?: boolean
 }
 
@@ -565,14 +713,36 @@ export type PackingRecordScalarWhereInput = {
   quantity?: Prisma.IntFilter<"PackingRecord"> | number
   operatorId?: Prisma.UuidFilter<"PackingRecord"> | string
   createdAt?: Prisma.DateTimeFilter<"PackingRecord"> | Date | string
+  voidedAt?: Prisma.DateTimeNullableFilter<"PackingRecord"> | Date | string | null
+  voidedById?: Prisma.UuidNullableFilter<"PackingRecord"> | string | null
+  voidReason?: Prisma.StringNullableFilter<"PackingRecord"> | string | null
+}
+
+export type PackingRecordUpsertWithWhereUniqueWithoutVoidedByInput = {
+  where: Prisma.PackingRecordWhereUniqueInput
+  update: Prisma.XOR<Prisma.PackingRecordUpdateWithoutVoidedByInput, Prisma.PackingRecordUncheckedUpdateWithoutVoidedByInput>
+  create: Prisma.XOR<Prisma.PackingRecordCreateWithoutVoidedByInput, Prisma.PackingRecordUncheckedCreateWithoutVoidedByInput>
+}
+
+export type PackingRecordUpdateWithWhereUniqueWithoutVoidedByInput = {
+  where: Prisma.PackingRecordWhereUniqueInput
+  data: Prisma.XOR<Prisma.PackingRecordUpdateWithoutVoidedByInput, Prisma.PackingRecordUncheckedUpdateWithoutVoidedByInput>
+}
+
+export type PackingRecordUpdateManyWithWhereWithoutVoidedByInput = {
+  where: Prisma.PackingRecordScalarWhereInput
+  data: Prisma.XOR<Prisma.PackingRecordUpdateManyMutationInput, Prisma.PackingRecordUncheckedUpdateManyWithoutVoidedByInput>
 }
 
 export type PackingRecordCreateWithoutOrderInput = {
   id?: string
   quantity: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
   orderItem: Prisma.OrderItemCreateNestedOneWithoutPackingRecordsInput
   operator: Prisma.AdminUserCreateNestedOneWithoutPackingRecordsInput
+  voidedBy?: Prisma.AdminUserCreateNestedOneWithoutPackingVoidedInput
 }
 
 export type PackingRecordUncheckedCreateWithoutOrderInput = {
@@ -581,6 +751,9 @@ export type PackingRecordUncheckedCreateWithoutOrderInput = {
   quantity: number
   operatorId: string
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
 }
 
 export type PackingRecordCreateOrConnectWithoutOrderInput = {
@@ -613,8 +786,11 @@ export type PackingRecordCreateWithoutOrderItemInput = {
   id?: string
   quantity: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
   order: Prisma.OrderCreateNestedOneWithoutPackingRecordsInput
   operator: Prisma.AdminUserCreateNestedOneWithoutPackingRecordsInput
+  voidedBy?: Prisma.AdminUserCreateNestedOneWithoutPackingVoidedInput
 }
 
 export type PackingRecordUncheckedCreateWithoutOrderItemInput = {
@@ -623,6 +799,9 @@ export type PackingRecordUncheckedCreateWithoutOrderItemInput = {
   quantity: number
   operatorId: string
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
 }
 
 export type PackingRecordCreateOrConnectWithoutOrderItemInput = {
@@ -657,14 +836,31 @@ export type PackingRecordCreateManyOperatorInput = {
   orderItemId: string
   quantity: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
+}
+
+export type PackingRecordCreateManyVoidedByInput = {
+  id?: string
+  orderId: string
+  orderItemId: string
+  quantity: number
+  operatorId: string
+  createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
 }
 
 export type PackingRecordUpdateWithoutOperatorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   order?: Prisma.OrderUpdateOneRequiredWithoutPackingRecordsNestedInput
   orderItem?: Prisma.OrderItemUpdateOneRequiredWithoutPackingRecordsNestedInput
+  voidedBy?: Prisma.AdminUserUpdateOneWithoutPackingVoidedNestedInput
 }
 
 export type PackingRecordUncheckedUpdateWithoutOperatorInput = {
@@ -673,6 +869,9 @@ export type PackingRecordUncheckedUpdateWithoutOperatorInput = {
   orderItemId?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PackingRecordUncheckedUpdateManyWithoutOperatorInput = {
@@ -681,6 +880,42 @@ export type PackingRecordUncheckedUpdateManyWithoutOperatorInput = {
   orderItemId?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type PackingRecordUpdateWithoutVoidedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  order?: Prisma.OrderUpdateOneRequiredWithoutPackingRecordsNestedInput
+  orderItem?: Prisma.OrderItemUpdateOneRequiredWithoutPackingRecordsNestedInput
+  operator?: Prisma.AdminUserUpdateOneRequiredWithoutPackingRecordsNestedInput
+}
+
+export type PackingRecordUncheckedUpdateWithoutVoidedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderItemId?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  operatorId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type PackingRecordUncheckedUpdateManyWithoutVoidedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderItemId?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  operatorId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PackingRecordCreateManyOrderInput = {
@@ -689,14 +924,20 @@ export type PackingRecordCreateManyOrderInput = {
   quantity: number
   operatorId: string
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
 }
 
 export type PackingRecordUpdateWithoutOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderItem?: Prisma.OrderItemUpdateOneRequiredWithoutPackingRecordsNestedInput
   operator?: Prisma.AdminUserUpdateOneRequiredWithoutPackingRecordsNestedInput
+  voidedBy?: Prisma.AdminUserUpdateOneWithoutPackingVoidedNestedInput
 }
 
 export type PackingRecordUncheckedUpdateWithoutOrderInput = {
@@ -705,6 +946,9 @@ export type PackingRecordUncheckedUpdateWithoutOrderInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   operatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PackingRecordUncheckedUpdateManyWithoutOrderInput = {
@@ -713,6 +957,9 @@ export type PackingRecordUncheckedUpdateManyWithoutOrderInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   operatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PackingRecordCreateManyOrderItemInput = {
@@ -721,14 +968,20 @@ export type PackingRecordCreateManyOrderItemInput = {
   quantity: number
   operatorId: string
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
 }
 
 export type PackingRecordUpdateWithoutOrderItemInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   order?: Prisma.OrderUpdateOneRequiredWithoutPackingRecordsNestedInput
   operator?: Prisma.AdminUserUpdateOneRequiredWithoutPackingRecordsNestedInput
+  voidedBy?: Prisma.AdminUserUpdateOneWithoutPackingVoidedNestedInput
 }
 
 export type PackingRecordUncheckedUpdateWithoutOrderItemInput = {
@@ -737,6 +990,9 @@ export type PackingRecordUncheckedUpdateWithoutOrderItemInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   operatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PackingRecordUncheckedUpdateManyWithoutOrderItemInput = {
@@ -745,6 +1001,9 @@ export type PackingRecordUncheckedUpdateManyWithoutOrderItemInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   operatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -756,9 +1015,13 @@ export type PackingRecordSelect<ExtArgs extends runtime.Types.Extensions.Interna
   quantity?: boolean
   operatorId?: boolean
   createdAt?: boolean
+  voidedAt?: boolean
+  voidedById?: boolean
+  voidReason?: boolean
   order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
   orderItem?: boolean | Prisma.OrderItemDefaultArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.PackingRecord$voidedByArgs<ExtArgs>
 }, ExtArgs["result"]["packingRecord"]>
 
 export type PackingRecordSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -768,9 +1031,13 @@ export type PackingRecordSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   quantity?: boolean
   operatorId?: boolean
   createdAt?: boolean
+  voidedAt?: boolean
+  voidedById?: boolean
+  voidReason?: boolean
   order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
   orderItem?: boolean | Prisma.OrderItemDefaultArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.PackingRecord$voidedByArgs<ExtArgs>
 }, ExtArgs["result"]["packingRecord"]>
 
 export type PackingRecordSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -780,9 +1047,13 @@ export type PackingRecordSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   quantity?: boolean
   operatorId?: boolean
   createdAt?: boolean
+  voidedAt?: boolean
+  voidedById?: boolean
+  voidReason?: boolean
   order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
   orderItem?: boolean | Prisma.OrderItemDefaultArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.PackingRecord$voidedByArgs<ExtArgs>
 }, ExtArgs["result"]["packingRecord"]>
 
 export type PackingRecordSelectScalar = {
@@ -792,23 +1063,29 @@ export type PackingRecordSelectScalar = {
   quantity?: boolean
   operatorId?: boolean
   createdAt?: boolean
+  voidedAt?: boolean
+  voidedById?: boolean
+  voidReason?: boolean
 }
 
-export type PackingRecordOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderId" | "orderItemId" | "quantity" | "operatorId" | "createdAt", ExtArgs["result"]["packingRecord"]>
+export type PackingRecordOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderId" | "orderItemId" | "quantity" | "operatorId" | "createdAt" | "voidedAt" | "voidedById" | "voidReason", ExtArgs["result"]["packingRecord"]>
 export type PackingRecordInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
   orderItem?: boolean | Prisma.OrderItemDefaultArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.PackingRecord$voidedByArgs<ExtArgs>
 }
 export type PackingRecordIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
   orderItem?: boolean | Prisma.OrderItemDefaultArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.PackingRecord$voidedByArgs<ExtArgs>
 }
 export type PackingRecordIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
   orderItem?: boolean | Prisma.OrderItemDefaultArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.PackingRecord$voidedByArgs<ExtArgs>
 }
 
 export type $PackingRecordPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -817,6 +1094,7 @@ export type $PackingRecordPayload<ExtArgs extends runtime.Types.Extensions.Inter
     order: Prisma.$OrderPayload<ExtArgs>
     orderItem: Prisma.$OrderItemPayload<ExtArgs>
     operator: Prisma.$AdminUserPayload<ExtArgs>
+    voidedBy: Prisma.$AdminUserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -825,6 +1103,12 @@ export type $PackingRecordPayload<ExtArgs extends runtime.Types.Extensions.Inter
     quantity: number
     operatorId: string
     createdAt: Date
+    /**
+     * * R12F：作废标记；作废行不参与数量计算。
+     */
+    voidedAt: Date | null
+    voidedById: string | null
+    voidReason: string | null
   }, ExtArgs["result"]["packingRecord"]>
   composites: {}
 }
@@ -1222,6 +1506,7 @@ export interface Prisma__PackingRecordClient<T, Null = never, ExtArgs extends ru
   order<T extends Prisma.OrderDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrderDefaultArgs<ExtArgs>>): Prisma.Prisma__OrderClient<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   orderItem<T extends Prisma.OrderItemDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrderItemDefaultArgs<ExtArgs>>): Prisma.Prisma__OrderItemClient<runtime.Types.Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   operator<T extends Prisma.AdminUserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUserDefaultArgs<ExtArgs>>): Prisma.Prisma__AdminUserClient<runtime.Types.Result.GetResult<Prisma.$AdminUserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  voidedBy<T extends Prisma.PackingRecord$voidedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PackingRecord$voidedByArgs<ExtArgs>>): Prisma.Prisma__AdminUserClient<runtime.Types.Result.GetResult<Prisma.$AdminUserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1257,6 +1542,9 @@ export interface PackingRecordFieldRefs {
   readonly quantity: Prisma.FieldRef<"PackingRecord", 'Int'>
   readonly operatorId: Prisma.FieldRef<"PackingRecord", 'String'>
   readonly createdAt: Prisma.FieldRef<"PackingRecord", 'DateTime'>
+  readonly voidedAt: Prisma.FieldRef<"PackingRecord", 'DateTime'>
+  readonly voidedById: Prisma.FieldRef<"PackingRecord", 'String'>
+  readonly voidReason: Prisma.FieldRef<"PackingRecord", 'String'>
 }
     
 
@@ -1655,6 +1943,25 @@ export type PackingRecordDeleteManyArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many PackingRecords to delete.
    */
   limit?: number
+}
+
+/**
+ * PackingRecord.voidedBy
+ */
+export type PackingRecord$voidedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AdminUser
+   */
+  select?: Prisma.AdminUserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AdminUser
+   */
+  omit?: Prisma.AdminUserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdminUserInclude<ExtArgs> | null
+  where?: Prisma.AdminUserWhereInput
 }
 
 /**

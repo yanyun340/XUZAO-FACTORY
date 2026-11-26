@@ -1,7 +1,7 @@
 # 订单状态与数量规则
 
-版本：0.3.0｜实现：`backend/src/domain/flow.ts`、`backend/src/routes/flow.ts`
-更新时间：2026-11-04
+版本：0.4.0｜实现：`backend/src/domain/flow.ts`、`backend/src/domain/status.ts`、`backend/src/routes/flow.ts`、`backend/src/routes/record-undo.ts`
+更新时间：2026-11-26
 
 本文是订单主链的唯一权威口径。前端只渲染 `allowedActions`，任何提交都会在后端重新校验；文档、接口和测试不一致时以本表与代码为准，并同步修正文档。
 
@@ -43,12 +43,28 @@ PENDING_PURCHASE ──采购下单──▶ PURCHASING ──生产下发──
 
 限制说明：
 
-- 没有“取消订单/退回上一步”状态。M 允许明确拒绝，本项目选择不实现取消；错误动作被状态守卫拒绝，而不是静默回退。
+- 没有“取消订单/退回上一步”的用户入口。M 允许明确拒绝，本项目选择不实现取消；错误动作被状态守卫拒绝。
+- **唯一的状态反向来源是 R12F 记录撤销**，且只允许三条边（见 1.1），不是通用状态投影。
 - 生产、包装、发货是“一单一条主记录”的口径；质检在 R09F 下允许多轮（分批首检 + 返工复检），每轮独立成行，`round=1` 为首检、`>1` 为复检，复检必须带 `parentQcRecordId`。
+
+### 1.1 R12F 撤销后的状态修复
+
+实现：`backend/src/domain/status.ts` `deriveRepairedStatus`。只有三条反向边：
+
+| 从 | 到 | 条件 |
+| --- | --- | --- |
+| `COMPLETED` | `SHIPPING` | `shippedQty < orderQty`，同时清空 `completedAt` |
+| `QC_DONE` | `PENDING_QC` | 不再结算：`producedQty = 0`，或 `released + scrapped < produced`，或仍有未决策记录 |
+| `PENDING_QC` | `IN_PRODUCTION` | `producedQty = 0` 且无非作废质检记录且没有 `WAITING_QC` 异常 |
+
+其余状态一律保持不变：`PACKING` 在 `packedQty` 归零后仍是 `PACKING`，`SHIPPING` 在 `shippedQty` 归零后仍是 `SHIPPING`；这些情况下数量闸门会自己挡住后续动作。
+
+因此撤销守卫必须保证「撤销后还能继续」：已下发包装不许撤 QC、已触发发货不许撤包装（见 3.3），否则会出现「状态卡在前一步、动作为空」的死锁。
 
 ## 2. 数量口径
 
 所有数量都从有效业务记录求和，不使用可被前端改写的汇总字段。
+**R12F：`voidedAt` 非空的记录不算有效记录**；作废的 `qc_decisions` 视同「未决策」（既不放行、也不报废、也不阻塞新一轮录入）。
 
 | 字段 | 计算 | 含义 |
 | --- | --- | --- |
@@ -139,6 +155,22 @@ PENDING_PURCHASE ──采购下单──▶ PURCHASING ──生产下发──
 
 `WAITING_QC` 不能通过 `PATCH /exceptions/:id` 手填（`EXCEPTION_REVIEW_REQUIRED`），必须走 `POST /exceptions/:id/review`，保证凭证一定来自真实质检记录。
 
+## 3.3 撤销与修正的闸门（R12F）
+
+`POST /{arrivals|feedbacks|qc-records|packing-records|shipment-records}/:id/undo`（窗口内）与 `/correct`（管理员，必填原因）。
+
+| 记录 | 角色 | 时间窗 | 下游依赖（不满足即 409） |
+| --- | --- | --- | --- |
+| 到货 | 原操作者或 ADMIN | 10 分钟；修正不限时 | 已有生产任务 `UNDO_HAS_PRODUCTION`；采购项已有电镀单（含 `PENDING`）`UNDO_HAS_PLATING` |
+| 生产反馈 | 原操作者或 ADMIN | 同上 | 该任务已有非作废质检记录 `UNDO_HAS_QC`；有 `WAITING_QC` 异常 `UNDO_EXCEPTION_REVIEWING` |
+| 质检 | 原操作者或 ADMIN | 同上 | 有非作废子复检记录 `UNDO_HAS_CHILD_QC`；已下发包装（`PACKING/SHIPPING/COMPLETED`）或 `packedQty > 0` `UNDO_HAS_PACKING`；被 `WAITING_QC`/`RESOLVED` 异常引用 `UNDO_EXCEPTION_REFERENCED` |
+| 包装 | 原操作者或 ADMIN | 同上 | 已触发发货（`SHIPPING/COMPLETED`）或 `shippedQty > 0` `UNDO_HAS_SHIPMENT` |
+| 发货 | 原操作者或 ADMIN | 同上 | 无下游；撤销后按 1.1 回退状态 |
+
+- 撤销质检记录时，其决策在同一事务内一起作废（`qc_decisions.voidedAt`）。
+- 被 `OPEN`/`IN_PROGRESS` 异常引用的质检记录可撤销，同一事务内把异常的 `qcRecordId` 置空；`CLOSED` 异常保留引用（历史闭环）。
+- 重复撤销 409 `RECORD_ALREADY_VOIDED`；幂等键重放返回首次结果，不重复扣量。
+
 ## 4. 提交时的校验顺序
 
 以生产下发为例，后端按以下顺序失败即返回，避免出现半成品状态：
@@ -152,6 +184,8 @@ PENDING_PURCHASE ──采购下单──▶ PURCHASING ──生产下发──
 7. 事务写入业务记录 + 时间线 + 通知 + 审计 + 幂等结果。
 
 事务失败会整体回滚，因此不会出现“状态已改但记录没写”的情况。
+
+撤销/修正的校验顺序：认证（401）→ 幂等键（400/409）→ 记录存在（404）→ 已作废（409）→ 身份与窗口（403/409 `UNDO_WINDOW_EXPIRED`）→ 下游依赖（409）→ 事务内作废 + 状态修复 + 事件 + 审计 + 幂等结果。
 
 采购还有一条供应商集合校验（R02F）：配件配置了供应商后，所选供应商必须属于该集合，否则返回 422 `SUPPLIER_NOT_IN_PART_SET`；没配置集合时仍可选任意有效供应商。
 
@@ -177,6 +211,7 @@ marginPercent  = sales = 0 ? 0 : profit / sales × 100
 | 数量公式、利润、允许动作 | `backend/tests/domain.test.ts` |
 | 完整主链、状态守卫、到货/包装/发货上限、幂等重放 | `backend/tests/flow.test.ts` |
 | 分批首检、返工复检、报废结算、只放行合格量 | `backend/tests/flow.test.ts`（R09F 三例） |
+| 五类记录撤销/修正、窗口、依赖、状态回退 | `backend/tests/undo.test.ts`；`domain.test.ts` 的 R12F 组 |
 | 异常下发复核、凭证校验、留痕豁免、幂等重放 | `backend/tests/collab.test.ts`（R22F×R09F 四例） |
 | 库存扣减不为负 | `backend/tests/inventory.test.ts` |
 | 权限与脱敏 | `backend/tests/auth.test.ts`、`flow.test.ts` 中的角色断言 |

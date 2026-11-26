@@ -1,6 +1,6 @@
 # 运行与运维手册
 
-版本：0.3.0｜更新：2026-11-23
+版本：0.4.0｜更新：2026-11-26
 适用：本地开发、验收演示、干净环境启动、备份恢复与回退演练
 
 ## 1. 前置条件
@@ -91,7 +91,7 @@ npm run start -w backend
 ## 5. 测试
 
 ```bash
-npm test             # backend Vitest，15 个文件 / 131 个用例
+npm test             # backend Vitest，16 个文件 / 166 个用例
 ```
 
 - 测试库来自 `TEST_DATABASE_URL`，`config.ts` 强制库名包含 `test`；未配置、指向开发库或库名不含 `test` 都会直接失败。

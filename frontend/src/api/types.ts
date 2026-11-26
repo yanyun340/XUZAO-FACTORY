@@ -188,11 +188,29 @@ export interface PlatingSummary {
   orders: PlatingOrderFlow[];
 }
 
-export interface ArrivalEntry {
+/** R12F：撤销/修正资格由服务端计算，前端只按这些字段渲染。 */
+export interface UndoMeta {
+  canUndo: boolean;
+  canCorrect: boolean;
+  /** 窗口截止时刻；仅作展示与审计，倒计时用 remainingMs。 */
+  undoableUntil: string | null;
+  /** 服务端口径的剩余毫秒；前端本地递减，避免客户端时钟偏移。 */
+  remainingMs: number | null;
+}
+
+/** R12F：作废标记。作废行仍在列表里，但不参与数量计算。 */
+export interface VoidMeta {
+  voidedAt: string | null;
+  voidReason: string | null;
+  voidedByName: string | null;
+}
+
+export interface ArrivalEntry extends VoidMeta {
   id: string;
   quantity: number;
   operatorName: string;
   createdAt: string;
+  undo: UndoMeta;
 }
 
 export interface PurchaseItemFlow {
@@ -233,7 +251,8 @@ export interface ProductionFlow {
     quantity: number;
     operatorName: string;
     createdAt: string;
-  } | null;
+    undo: UndoMeta;
+  } & VoidMeta | null;
 }
 
 export interface QcDecisionFlow {
@@ -244,7 +263,7 @@ export interface QcDecisionFlow {
   createdAt: string;
 }
 
-export interface QcRecordFlow {
+export interface QcRecordFlow extends VoidMeta {
   id: string;
   round: number;
   parentQcRecordId: string | null;
@@ -253,10 +272,11 @@ export interface QcRecordFlow {
   unqualifiedQty: number;
   operatorName: string;
   createdAt: string;
+  undo: UndoMeta;
   decision: QcDecisionFlow | null;
 }
 
-export interface QcFlow {
+export interface QcFlow extends VoidMeta {
   id: string;
   inspectedQty: number;
   qualifiedQty: number;
@@ -265,6 +285,7 @@ export interface QcFlow {
   parentQcRecordId: string | null;
   operatorName: string;
   createdAt: string;
+  undo: UndoMeta;
   decision: QcDecisionFlow | null;
   /** R09F：首检与各轮复检的完整记录，原记录不被覆盖。 */
   records: QcRecordFlow[];
@@ -272,11 +293,12 @@ export interface QcFlow {
   pendingReinspection: { parentQcRecordId: string; quantity: number } | null;
 }
 
-export interface RecordFlow {
+export interface RecordFlow extends VoidMeta {
   id: string;
   quantity: number;
   operatorName: string;
   createdAt: string;
+  undo: UndoMeta;
 }
 
 export interface ProfitFlow {

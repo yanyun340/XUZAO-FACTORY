@@ -29,6 +29,13 @@
 - [x] 答辩材料 `docs/demo-script.md`：演示顺序、失败场景、常见问答
 - [x] 交付前自检：测试 51/51、类型检查与构建通过、恢复报告、包内排除项、文档链接与状态一致性
 
+## 0.4.0 已完成（有验证）
+
+- [x] R12F 五类记录撤销/修正：10 分钟窗口、管理员留痕修正、软作废、三条反向边、下游依赖守卫
+- [x] 新增 `tests/undo.test.ts`（19 条）与 `domain.test.ts` R12F 组（16 条）；全量 16 文件 / 166 用例通过
+- [x] 前端「录入记录」台账、倒计时、修正弹窗、390px 布局；`npm run build -w frontend` 通过
+- [x] 文档同步：api-contract、state-and-quantity、data-dictionary、permissions、feature-status、traceability、PRD、ADR-0005、CHANGELOG、tests/README
+
 ## 已完成（有验证）
 
 ### 环境与身份
@@ -81,10 +88,7 @@
 | 项 | 原因 | 文档位置 |
 | --- | --- | --- |
 | 多产品并行 | F 未选做 | `docs/feature-status.md` |
-| 电镀全链路 | M 明确不支持 | 同上 |
-| 返工/报废、部分合格 | F 未选做 | 同上 |
-| 10 分钟撤销 | F 未选做 | 同上 |
-| Excel 导入 | M 允许不提供 | 同上 |
+| 订单级取消/退回 | 未选做；错误动作由状态守卫拒绝 | 同上 |
 | 通知业务分类 | F 只做部分 | 同上 |
 | 异常处置流程 | F 未选做 | 同上 |
 | 审计历史版本对比/导出 | F 只做部分 | 同上 |

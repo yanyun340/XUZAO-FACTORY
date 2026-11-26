@@ -285,7 +285,10 @@ export const ArrivalRecordScalarFieldEnum = {
   purchaseItemId: 'purchaseItemId',
   quantity: 'quantity',
   operatorId: 'operatorId',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  voidedAt: 'voidedAt',
+  voidedById: 'voidedById',
+  voidReason: 'voidReason'
 } as const
 
 export type ArrivalRecordScalarFieldEnum = (typeof ArrivalRecordScalarFieldEnum)[keyof typeof ArrivalRecordScalarFieldEnum]
@@ -335,7 +338,10 @@ export const ProductionFeedbackScalarFieldEnum = {
   productionOrderId: 'productionOrderId',
   quantity: 'quantity',
   operatorId: 'operatorId',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  voidedAt: 'voidedAt',
+  voidedById: 'voidedById',
+  voidReason: 'voidReason'
 } as const
 
 export type ProductionFeedbackScalarFieldEnum = (typeof ProductionFeedbackScalarFieldEnum)[keyof typeof ProductionFeedbackScalarFieldEnum]
@@ -350,7 +356,10 @@ export const QCRecordScalarFieldEnum = {
   round: 'round',
   parentQcRecordId: 'parentQcRecordId',
   operatorId: 'operatorId',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  voidedAt: 'voidedAt',
+  voidedById: 'voidedById',
+  voidReason: 'voidReason'
 } as const
 
 export type QCRecordScalarFieldEnum = (typeof QCRecordScalarFieldEnum)[keyof typeof QCRecordScalarFieldEnum]
@@ -363,7 +372,9 @@ export const QCDecisionScalarFieldEnum = {
   releasedQty: 'releasedQty',
   scrapQty: 'scrapQty',
   decidedById: 'decidedById',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  voidedAt: 'voidedAt',
+  voidReason: 'voidReason'
 } as const
 
 export type QCDecisionScalarFieldEnum = (typeof QCDecisionScalarFieldEnum)[keyof typeof QCDecisionScalarFieldEnum]
@@ -375,7 +386,10 @@ export const PackingRecordScalarFieldEnum = {
   orderItemId: 'orderItemId',
   quantity: 'quantity',
   operatorId: 'operatorId',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  voidedAt: 'voidedAt',
+  voidedById: 'voidedById',
+  voidReason: 'voidReason'
 } as const
 
 export type PackingRecordScalarFieldEnum = (typeof PackingRecordScalarFieldEnum)[keyof typeof PackingRecordScalarFieldEnum]
@@ -387,7 +401,10 @@ export const ShipmentRecordScalarFieldEnum = {
   orderItemId: 'orderItemId',
   quantity: 'quantity',
   operatorId: 'operatorId',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  voidedAt: 'voidedAt',
+  voidedById: 'voidedById',
+  voidReason: 'voidReason'
 } as const
 
 export type ShipmentRecordScalarFieldEnum = (typeof ShipmentRecordScalarFieldEnum)[keyof typeof ShipmentRecordScalarFieldEnum]

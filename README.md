@@ -2,7 +2,7 @@
 
 一单到底的工厂业务协同管理系统：从接单、采购、到货、生产、质检、包装到发货，把一条订单的完整链路放进同一个可追溯的系统里。
 
-版本：`0.3.0`｜更新：2026-11-23｜源码：[github.com/yanyun340/XUZAO-FACTORY](https://github.com/yanyun340/XUZAO-FACTORY)（`main` 分支）
+版本：`0.4.0`｜更新：2026-11-26｜源码：[github.com/yanyun340/XUZAO-FACTORY](https://github.com/yanyun340/XUZAO-FACTORY)（`main` 分支）
 适用：启明之星第三轮考核交付 ｜ 开发者：本人独立完成
 
 ## 1. 用途与功能状态
@@ -15,7 +15,7 @@
 
 当前范围与限制以 [docs/feature-status.md](docs/feature-status.md) 为准：M 必做项逐条列出状态，选做的 F 项写明边界，未做项不隐藏。
 
-0.3.0 已完成的 F：R01F、R02F、R06F、R08F、R17F、R18F、R20F、R21F、R22F、R23F、R25F、R26F、R27F。R03F/R05F/R10F/R11F/R13F/R15F/R16F/R19F/R24F 只完成一部分，状态表里明确写“部分”，不冒充完整。
+0.4.0 已完成的 F：R01F、R02F、R06F、R08F、R12F、R17F、R18F、R20F、R21F、R22F、R23F、R25F、R26F、R27F。R03F/R05F/R10F/R11F/R13F/R15F/R16F/R19F/R24F 只完成一部分，状态表里明确写“部分”，不冒充完整。
 
 ## 2. 环境要求
 

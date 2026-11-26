@@ -40,6 +40,9 @@ export type ProductionFeedbackMinAggregateOutputType = {
   quantity: number | null
   operatorId: string | null
   createdAt: Date | null
+  voidedAt: Date | null
+  voidedById: string | null
+  voidReason: string | null
 }
 
 export type ProductionFeedbackMaxAggregateOutputType = {
@@ -48,6 +51,9 @@ export type ProductionFeedbackMaxAggregateOutputType = {
   quantity: number | null
   operatorId: string | null
   createdAt: Date | null
+  voidedAt: Date | null
+  voidedById: string | null
+  voidReason: string | null
 }
 
 export type ProductionFeedbackCountAggregateOutputType = {
@@ -56,6 +62,9 @@ export type ProductionFeedbackCountAggregateOutputType = {
   quantity: number
   operatorId: number
   createdAt: number
+  voidedAt: number
+  voidedById: number
+  voidReason: number
   _all: number
 }
 
@@ -74,6 +83,9 @@ export type ProductionFeedbackMinAggregateInputType = {
   quantity?: true
   operatorId?: true
   createdAt?: true
+  voidedAt?: true
+  voidedById?: true
+  voidReason?: true
 }
 
 export type ProductionFeedbackMaxAggregateInputType = {
@@ -82,6 +94,9 @@ export type ProductionFeedbackMaxAggregateInputType = {
   quantity?: true
   operatorId?: true
   createdAt?: true
+  voidedAt?: true
+  voidedById?: true
+  voidReason?: true
 }
 
 export type ProductionFeedbackCountAggregateInputType = {
@@ -90,6 +105,9 @@ export type ProductionFeedbackCountAggregateInputType = {
   quantity?: true
   operatorId?: true
   createdAt?: true
+  voidedAt?: true
+  voidedById?: true
+  voidReason?: true
   _all?: true
 }
 
@@ -185,6 +203,9 @@ export type ProductionFeedbackGroupByOutputType = {
   quantity: number
   operatorId: string
   createdAt: Date
+  voidedAt: Date | null
+  voidedById: string | null
+  voidReason: string | null
   _count: ProductionFeedbackCountAggregateOutputType | null
   _avg: ProductionFeedbackAvgAggregateOutputType | null
   _sum: ProductionFeedbackSumAggregateOutputType | null
@@ -216,8 +237,12 @@ export type ProductionFeedbackWhereInput = {
   quantity?: Prisma.IntFilter<"ProductionFeedback"> | number
   operatorId?: Prisma.UuidFilter<"ProductionFeedback"> | string
   createdAt?: Prisma.DateTimeFilter<"ProductionFeedback"> | Date | string
+  voidedAt?: Prisma.DateTimeNullableFilter<"ProductionFeedback"> | Date | string | null
+  voidedById?: Prisma.UuidNullableFilter<"ProductionFeedback"> | string | null
+  voidReason?: Prisma.StringNullableFilter<"ProductionFeedback"> | string | null
   productionOrder?: Prisma.XOR<Prisma.ProductionOrderScalarRelationFilter, Prisma.ProductionOrderWhereInput>
   operator?: Prisma.XOR<Prisma.AdminUserScalarRelationFilter, Prisma.AdminUserWhereInput>
+  voidedBy?: Prisma.XOR<Prisma.AdminUserNullableScalarRelationFilter, Prisma.AdminUserWhereInput> | null
 }
 
 export type ProductionFeedbackOrderByWithRelationInput = {
@@ -226,8 +251,12 @@ export type ProductionFeedbackOrderByWithRelationInput = {
   quantity?: Prisma.SortOrder
   operatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidReason?: Prisma.SortOrderInput | Prisma.SortOrder
   productionOrder?: Prisma.ProductionOrderOrderByWithRelationInput
   operator?: Prisma.AdminUserOrderByWithRelationInput
+  voidedBy?: Prisma.AdminUserOrderByWithRelationInput
 }
 
 export type ProductionFeedbackWhereUniqueInput = Prisma.AtLeast<{
@@ -239,8 +268,12 @@ export type ProductionFeedbackWhereUniqueInput = Prisma.AtLeast<{
   quantity?: Prisma.IntFilter<"ProductionFeedback"> | number
   operatorId?: Prisma.UuidFilter<"ProductionFeedback"> | string
   createdAt?: Prisma.DateTimeFilter<"ProductionFeedback"> | Date | string
+  voidedAt?: Prisma.DateTimeNullableFilter<"ProductionFeedback"> | Date | string | null
+  voidedById?: Prisma.UuidNullableFilter<"ProductionFeedback"> | string | null
+  voidReason?: Prisma.StringNullableFilter<"ProductionFeedback"> | string | null
   productionOrder?: Prisma.XOR<Prisma.ProductionOrderScalarRelationFilter, Prisma.ProductionOrderWhereInput>
   operator?: Prisma.XOR<Prisma.AdminUserScalarRelationFilter, Prisma.AdminUserWhereInput>
+  voidedBy?: Prisma.XOR<Prisma.AdminUserNullableScalarRelationFilter, Prisma.AdminUserWhereInput> | null
 }, "id">
 
 export type ProductionFeedbackOrderByWithAggregationInput = {
@@ -249,6 +282,9 @@ export type ProductionFeedbackOrderByWithAggregationInput = {
   quantity?: Prisma.SortOrder
   operatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidReason?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ProductionFeedbackCountOrderByAggregateInput
   _avg?: Prisma.ProductionFeedbackAvgOrderByAggregateInput
   _max?: Prisma.ProductionFeedbackMaxOrderByAggregateInput
@@ -265,14 +301,20 @@ export type ProductionFeedbackScalarWhereWithAggregatesInput = {
   quantity?: Prisma.IntWithAggregatesFilter<"ProductionFeedback"> | number
   operatorId?: Prisma.UuidWithAggregatesFilter<"ProductionFeedback"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ProductionFeedback"> | Date | string
+  voidedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ProductionFeedback"> | Date | string | null
+  voidedById?: Prisma.UuidNullableWithAggregatesFilter<"ProductionFeedback"> | string | null
+  voidReason?: Prisma.StringNullableWithAggregatesFilter<"ProductionFeedback"> | string | null
 }
 
 export type ProductionFeedbackCreateInput = {
   id?: string
   quantity: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
   productionOrder: Prisma.ProductionOrderCreateNestedOneWithoutFeedbacksInput
   operator: Prisma.AdminUserCreateNestedOneWithoutFeedbacksInput
+  voidedBy?: Prisma.AdminUserCreateNestedOneWithoutFeedbacksVoidedInput
 }
 
 export type ProductionFeedbackUncheckedCreateInput = {
@@ -281,14 +323,20 @@ export type ProductionFeedbackUncheckedCreateInput = {
   quantity: number
   operatorId: string
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
 }
 
 export type ProductionFeedbackUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   productionOrder?: Prisma.ProductionOrderUpdateOneRequiredWithoutFeedbacksNestedInput
   operator?: Prisma.AdminUserUpdateOneRequiredWithoutFeedbacksNestedInput
+  voidedBy?: Prisma.AdminUserUpdateOneWithoutFeedbacksVoidedNestedInput
 }
 
 export type ProductionFeedbackUncheckedUpdateInput = {
@@ -297,6 +345,9 @@ export type ProductionFeedbackUncheckedUpdateInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   operatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ProductionFeedbackCreateManyInput = {
@@ -305,12 +356,17 @@ export type ProductionFeedbackCreateManyInput = {
   quantity: number
   operatorId: string
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
 }
 
 export type ProductionFeedbackUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ProductionFeedbackUncheckedUpdateManyInput = {
@@ -319,6 +375,9 @@ export type ProductionFeedbackUncheckedUpdateManyInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   operatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ProductionFeedbackListRelationFilter = {
@@ -337,6 +396,9 @@ export type ProductionFeedbackCountOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   operatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrder
+  voidedById?: Prisma.SortOrder
+  voidReason?: Prisma.SortOrder
 }
 
 export type ProductionFeedbackAvgOrderByAggregateInput = {
@@ -349,6 +411,9 @@ export type ProductionFeedbackMaxOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   operatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrder
+  voidedById?: Prisma.SortOrder
+  voidReason?: Prisma.SortOrder
 }
 
 export type ProductionFeedbackMinOrderByAggregateInput = {
@@ -357,6 +422,9 @@ export type ProductionFeedbackMinOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   operatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrder
+  voidedById?: Prisma.SortOrder
+  voidReason?: Prisma.SortOrder
 }
 
 export type ProductionFeedbackSumOrderByAggregateInput = {
@@ -370,10 +438,24 @@ export type ProductionFeedbackCreateNestedManyWithoutOperatorInput = {
   connect?: Prisma.ProductionFeedbackWhereUniqueInput | Prisma.ProductionFeedbackWhereUniqueInput[]
 }
 
+export type ProductionFeedbackCreateNestedManyWithoutVoidedByInput = {
+  create?: Prisma.XOR<Prisma.ProductionFeedbackCreateWithoutVoidedByInput, Prisma.ProductionFeedbackUncheckedCreateWithoutVoidedByInput> | Prisma.ProductionFeedbackCreateWithoutVoidedByInput[] | Prisma.ProductionFeedbackUncheckedCreateWithoutVoidedByInput[]
+  connectOrCreate?: Prisma.ProductionFeedbackCreateOrConnectWithoutVoidedByInput | Prisma.ProductionFeedbackCreateOrConnectWithoutVoidedByInput[]
+  createMany?: Prisma.ProductionFeedbackCreateManyVoidedByInputEnvelope
+  connect?: Prisma.ProductionFeedbackWhereUniqueInput | Prisma.ProductionFeedbackWhereUniqueInput[]
+}
+
 export type ProductionFeedbackUncheckedCreateNestedManyWithoutOperatorInput = {
   create?: Prisma.XOR<Prisma.ProductionFeedbackCreateWithoutOperatorInput, Prisma.ProductionFeedbackUncheckedCreateWithoutOperatorInput> | Prisma.ProductionFeedbackCreateWithoutOperatorInput[] | Prisma.ProductionFeedbackUncheckedCreateWithoutOperatorInput[]
   connectOrCreate?: Prisma.ProductionFeedbackCreateOrConnectWithoutOperatorInput | Prisma.ProductionFeedbackCreateOrConnectWithoutOperatorInput[]
   createMany?: Prisma.ProductionFeedbackCreateManyOperatorInputEnvelope
+  connect?: Prisma.ProductionFeedbackWhereUniqueInput | Prisma.ProductionFeedbackWhereUniqueInput[]
+}
+
+export type ProductionFeedbackUncheckedCreateNestedManyWithoutVoidedByInput = {
+  create?: Prisma.XOR<Prisma.ProductionFeedbackCreateWithoutVoidedByInput, Prisma.ProductionFeedbackUncheckedCreateWithoutVoidedByInput> | Prisma.ProductionFeedbackCreateWithoutVoidedByInput[] | Prisma.ProductionFeedbackUncheckedCreateWithoutVoidedByInput[]
+  connectOrCreate?: Prisma.ProductionFeedbackCreateOrConnectWithoutVoidedByInput | Prisma.ProductionFeedbackCreateOrConnectWithoutVoidedByInput[]
+  createMany?: Prisma.ProductionFeedbackCreateManyVoidedByInputEnvelope
   connect?: Prisma.ProductionFeedbackWhereUniqueInput | Prisma.ProductionFeedbackWhereUniqueInput[]
 }
 
@@ -391,6 +473,20 @@ export type ProductionFeedbackUpdateManyWithoutOperatorNestedInput = {
   deleteMany?: Prisma.ProductionFeedbackScalarWhereInput | Prisma.ProductionFeedbackScalarWhereInput[]
 }
 
+export type ProductionFeedbackUpdateManyWithoutVoidedByNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductionFeedbackCreateWithoutVoidedByInput, Prisma.ProductionFeedbackUncheckedCreateWithoutVoidedByInput> | Prisma.ProductionFeedbackCreateWithoutVoidedByInput[] | Prisma.ProductionFeedbackUncheckedCreateWithoutVoidedByInput[]
+  connectOrCreate?: Prisma.ProductionFeedbackCreateOrConnectWithoutVoidedByInput | Prisma.ProductionFeedbackCreateOrConnectWithoutVoidedByInput[]
+  upsert?: Prisma.ProductionFeedbackUpsertWithWhereUniqueWithoutVoidedByInput | Prisma.ProductionFeedbackUpsertWithWhereUniqueWithoutVoidedByInput[]
+  createMany?: Prisma.ProductionFeedbackCreateManyVoidedByInputEnvelope
+  set?: Prisma.ProductionFeedbackWhereUniqueInput | Prisma.ProductionFeedbackWhereUniqueInput[]
+  disconnect?: Prisma.ProductionFeedbackWhereUniqueInput | Prisma.ProductionFeedbackWhereUniqueInput[]
+  delete?: Prisma.ProductionFeedbackWhereUniqueInput | Prisma.ProductionFeedbackWhereUniqueInput[]
+  connect?: Prisma.ProductionFeedbackWhereUniqueInput | Prisma.ProductionFeedbackWhereUniqueInput[]
+  update?: Prisma.ProductionFeedbackUpdateWithWhereUniqueWithoutVoidedByInput | Prisma.ProductionFeedbackUpdateWithWhereUniqueWithoutVoidedByInput[]
+  updateMany?: Prisma.ProductionFeedbackUpdateManyWithWhereWithoutVoidedByInput | Prisma.ProductionFeedbackUpdateManyWithWhereWithoutVoidedByInput[]
+  deleteMany?: Prisma.ProductionFeedbackScalarWhereInput | Prisma.ProductionFeedbackScalarWhereInput[]
+}
+
 export type ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput = {
   create?: Prisma.XOR<Prisma.ProductionFeedbackCreateWithoutOperatorInput, Prisma.ProductionFeedbackUncheckedCreateWithoutOperatorInput> | Prisma.ProductionFeedbackCreateWithoutOperatorInput[] | Prisma.ProductionFeedbackUncheckedCreateWithoutOperatorInput[]
   connectOrCreate?: Prisma.ProductionFeedbackCreateOrConnectWithoutOperatorInput | Prisma.ProductionFeedbackCreateOrConnectWithoutOperatorInput[]
@@ -402,6 +498,20 @@ export type ProductionFeedbackUncheckedUpdateManyWithoutOperatorNestedInput = {
   connect?: Prisma.ProductionFeedbackWhereUniqueInput | Prisma.ProductionFeedbackWhereUniqueInput[]
   update?: Prisma.ProductionFeedbackUpdateWithWhereUniqueWithoutOperatorInput | Prisma.ProductionFeedbackUpdateWithWhereUniqueWithoutOperatorInput[]
   updateMany?: Prisma.ProductionFeedbackUpdateManyWithWhereWithoutOperatorInput | Prisma.ProductionFeedbackUpdateManyWithWhereWithoutOperatorInput[]
+  deleteMany?: Prisma.ProductionFeedbackScalarWhereInput | Prisma.ProductionFeedbackScalarWhereInput[]
+}
+
+export type ProductionFeedbackUncheckedUpdateManyWithoutVoidedByNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductionFeedbackCreateWithoutVoidedByInput, Prisma.ProductionFeedbackUncheckedCreateWithoutVoidedByInput> | Prisma.ProductionFeedbackCreateWithoutVoidedByInput[] | Prisma.ProductionFeedbackUncheckedCreateWithoutVoidedByInput[]
+  connectOrCreate?: Prisma.ProductionFeedbackCreateOrConnectWithoutVoidedByInput | Prisma.ProductionFeedbackCreateOrConnectWithoutVoidedByInput[]
+  upsert?: Prisma.ProductionFeedbackUpsertWithWhereUniqueWithoutVoidedByInput | Prisma.ProductionFeedbackUpsertWithWhereUniqueWithoutVoidedByInput[]
+  createMany?: Prisma.ProductionFeedbackCreateManyVoidedByInputEnvelope
+  set?: Prisma.ProductionFeedbackWhereUniqueInput | Prisma.ProductionFeedbackWhereUniqueInput[]
+  disconnect?: Prisma.ProductionFeedbackWhereUniqueInput | Prisma.ProductionFeedbackWhereUniqueInput[]
+  delete?: Prisma.ProductionFeedbackWhereUniqueInput | Prisma.ProductionFeedbackWhereUniqueInput[]
+  connect?: Prisma.ProductionFeedbackWhereUniqueInput | Prisma.ProductionFeedbackWhereUniqueInput[]
+  update?: Prisma.ProductionFeedbackUpdateWithWhereUniqueWithoutVoidedByInput | Prisma.ProductionFeedbackUpdateWithWhereUniqueWithoutVoidedByInput[]
+  updateMany?: Prisma.ProductionFeedbackUpdateManyWithWhereWithoutVoidedByInput | Prisma.ProductionFeedbackUpdateManyWithWhereWithoutVoidedByInput[]
   deleteMany?: Prisma.ProductionFeedbackScalarWhereInput | Prisma.ProductionFeedbackScalarWhereInput[]
 }
 
@@ -451,7 +561,10 @@ export type ProductionFeedbackCreateWithoutOperatorInput = {
   id?: string
   quantity: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
   productionOrder: Prisma.ProductionOrderCreateNestedOneWithoutFeedbacksInput
+  voidedBy?: Prisma.AdminUserCreateNestedOneWithoutFeedbacksVoidedInput
 }
 
 export type ProductionFeedbackUncheckedCreateWithoutOperatorInput = {
@@ -459,6 +572,9 @@ export type ProductionFeedbackUncheckedCreateWithoutOperatorInput = {
   productionOrderId: string
   quantity: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
 }
 
 export type ProductionFeedbackCreateOrConnectWithoutOperatorInput = {
@@ -468,6 +584,36 @@ export type ProductionFeedbackCreateOrConnectWithoutOperatorInput = {
 
 export type ProductionFeedbackCreateManyOperatorInputEnvelope = {
   data: Prisma.ProductionFeedbackCreateManyOperatorInput | Prisma.ProductionFeedbackCreateManyOperatorInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProductionFeedbackCreateWithoutVoidedByInput = {
+  id?: string
+  quantity: number
+  createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
+  productionOrder: Prisma.ProductionOrderCreateNestedOneWithoutFeedbacksInput
+  operator: Prisma.AdminUserCreateNestedOneWithoutFeedbacksInput
+}
+
+export type ProductionFeedbackUncheckedCreateWithoutVoidedByInput = {
+  id?: string
+  productionOrderId: string
+  quantity: number
+  operatorId: string
+  createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
+}
+
+export type ProductionFeedbackCreateOrConnectWithoutVoidedByInput = {
+  where: Prisma.ProductionFeedbackWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductionFeedbackCreateWithoutVoidedByInput, Prisma.ProductionFeedbackUncheckedCreateWithoutVoidedByInput>
+}
+
+export type ProductionFeedbackCreateManyVoidedByInputEnvelope = {
+  data: Prisma.ProductionFeedbackCreateManyVoidedByInput | Prisma.ProductionFeedbackCreateManyVoidedByInput[]
   skipDuplicates?: boolean
 }
 
@@ -496,13 +642,35 @@ export type ProductionFeedbackScalarWhereInput = {
   quantity?: Prisma.IntFilter<"ProductionFeedback"> | number
   operatorId?: Prisma.UuidFilter<"ProductionFeedback"> | string
   createdAt?: Prisma.DateTimeFilter<"ProductionFeedback"> | Date | string
+  voidedAt?: Prisma.DateTimeNullableFilter<"ProductionFeedback"> | Date | string | null
+  voidedById?: Prisma.UuidNullableFilter<"ProductionFeedback"> | string | null
+  voidReason?: Prisma.StringNullableFilter<"ProductionFeedback"> | string | null
+}
+
+export type ProductionFeedbackUpsertWithWhereUniqueWithoutVoidedByInput = {
+  where: Prisma.ProductionFeedbackWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProductionFeedbackUpdateWithoutVoidedByInput, Prisma.ProductionFeedbackUncheckedUpdateWithoutVoidedByInput>
+  create: Prisma.XOR<Prisma.ProductionFeedbackCreateWithoutVoidedByInput, Prisma.ProductionFeedbackUncheckedCreateWithoutVoidedByInput>
+}
+
+export type ProductionFeedbackUpdateWithWhereUniqueWithoutVoidedByInput = {
+  where: Prisma.ProductionFeedbackWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProductionFeedbackUpdateWithoutVoidedByInput, Prisma.ProductionFeedbackUncheckedUpdateWithoutVoidedByInput>
+}
+
+export type ProductionFeedbackUpdateManyWithWhereWithoutVoidedByInput = {
+  where: Prisma.ProductionFeedbackScalarWhereInput
+  data: Prisma.XOR<Prisma.ProductionFeedbackUpdateManyMutationInput, Prisma.ProductionFeedbackUncheckedUpdateManyWithoutVoidedByInput>
 }
 
 export type ProductionFeedbackCreateWithoutProductionOrderInput = {
   id?: string
   quantity: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
   operator: Prisma.AdminUserCreateNestedOneWithoutFeedbacksInput
+  voidedBy?: Prisma.AdminUserCreateNestedOneWithoutFeedbacksVoidedInput
 }
 
 export type ProductionFeedbackUncheckedCreateWithoutProductionOrderInput = {
@@ -510,6 +678,9 @@ export type ProductionFeedbackUncheckedCreateWithoutProductionOrderInput = {
   quantity: number
   operatorId: string
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
 }
 
 export type ProductionFeedbackCreateOrConnectWithoutProductionOrderInput = {
@@ -543,13 +714,29 @@ export type ProductionFeedbackCreateManyOperatorInput = {
   productionOrderId: string
   quantity: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
+}
+
+export type ProductionFeedbackCreateManyVoidedByInput = {
+  id?: string
+  productionOrderId: string
+  quantity: number
+  operatorId: string
+  createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
 }
 
 export type ProductionFeedbackUpdateWithoutOperatorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   productionOrder?: Prisma.ProductionOrderUpdateOneRequiredWithoutFeedbacksNestedInput
+  voidedBy?: Prisma.AdminUserUpdateOneWithoutFeedbacksVoidedNestedInput
 }
 
 export type ProductionFeedbackUncheckedUpdateWithoutOperatorInput = {
@@ -557,6 +744,9 @@ export type ProductionFeedbackUncheckedUpdateWithoutOperatorInput = {
   productionOrderId?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ProductionFeedbackUncheckedUpdateManyWithoutOperatorInput = {
@@ -564,6 +754,39 @@ export type ProductionFeedbackUncheckedUpdateManyWithoutOperatorInput = {
   productionOrderId?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type ProductionFeedbackUpdateWithoutVoidedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productionOrder?: Prisma.ProductionOrderUpdateOneRequiredWithoutFeedbacksNestedInput
+  operator?: Prisma.AdminUserUpdateOneRequiredWithoutFeedbacksNestedInput
+}
+
+export type ProductionFeedbackUncheckedUpdateWithoutVoidedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  productionOrderId?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  operatorId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type ProductionFeedbackUncheckedUpdateManyWithoutVoidedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  productionOrderId?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  operatorId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ProductionFeedbackCreateManyProductionOrderInput = {
@@ -571,13 +794,19 @@ export type ProductionFeedbackCreateManyProductionOrderInput = {
   quantity: number
   operatorId: string
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
 }
 
 export type ProductionFeedbackUpdateWithoutProductionOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   operator?: Prisma.AdminUserUpdateOneRequiredWithoutFeedbacksNestedInput
+  voidedBy?: Prisma.AdminUserUpdateOneWithoutFeedbacksVoidedNestedInput
 }
 
 export type ProductionFeedbackUncheckedUpdateWithoutProductionOrderInput = {
@@ -585,6 +814,9 @@ export type ProductionFeedbackUncheckedUpdateWithoutProductionOrderInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   operatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ProductionFeedbackUncheckedUpdateManyWithoutProductionOrderInput = {
@@ -592,6 +824,9 @@ export type ProductionFeedbackUncheckedUpdateManyWithoutProductionOrderInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   operatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -602,8 +837,12 @@ export type ProductionFeedbackSelect<ExtArgs extends runtime.Types.Extensions.In
   quantity?: boolean
   operatorId?: boolean
   createdAt?: boolean
+  voidedAt?: boolean
+  voidedById?: boolean
+  voidReason?: boolean
   productionOrder?: boolean | Prisma.ProductionOrderDefaultArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.ProductionFeedback$voidedByArgs<ExtArgs>
 }, ExtArgs["result"]["productionFeedback"]>
 
 export type ProductionFeedbackSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -612,8 +851,12 @@ export type ProductionFeedbackSelectCreateManyAndReturn<ExtArgs extends runtime.
   quantity?: boolean
   operatorId?: boolean
   createdAt?: boolean
+  voidedAt?: boolean
+  voidedById?: boolean
+  voidReason?: boolean
   productionOrder?: boolean | Prisma.ProductionOrderDefaultArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.ProductionFeedback$voidedByArgs<ExtArgs>
 }, ExtArgs["result"]["productionFeedback"]>
 
 export type ProductionFeedbackSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -622,8 +865,12 @@ export type ProductionFeedbackSelectUpdateManyAndReturn<ExtArgs extends runtime.
   quantity?: boolean
   operatorId?: boolean
   createdAt?: boolean
+  voidedAt?: boolean
+  voidedById?: boolean
+  voidReason?: boolean
   productionOrder?: boolean | Prisma.ProductionOrderDefaultArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.ProductionFeedback$voidedByArgs<ExtArgs>
 }, ExtArgs["result"]["productionFeedback"]>
 
 export type ProductionFeedbackSelectScalar = {
@@ -632,20 +879,26 @@ export type ProductionFeedbackSelectScalar = {
   quantity?: boolean
   operatorId?: boolean
   createdAt?: boolean
+  voidedAt?: boolean
+  voidedById?: boolean
+  voidReason?: boolean
 }
 
-export type ProductionFeedbackOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productionOrderId" | "quantity" | "operatorId" | "createdAt", ExtArgs["result"]["productionFeedback"]>
+export type ProductionFeedbackOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productionOrderId" | "quantity" | "operatorId" | "createdAt" | "voidedAt" | "voidedById" | "voidReason", ExtArgs["result"]["productionFeedback"]>
 export type ProductionFeedbackInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   productionOrder?: boolean | Prisma.ProductionOrderDefaultArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.ProductionFeedback$voidedByArgs<ExtArgs>
 }
 export type ProductionFeedbackIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   productionOrder?: boolean | Prisma.ProductionOrderDefaultArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.ProductionFeedback$voidedByArgs<ExtArgs>
 }
 export type ProductionFeedbackIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   productionOrder?: boolean | Prisma.ProductionOrderDefaultArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.ProductionFeedback$voidedByArgs<ExtArgs>
 }
 
 export type $ProductionFeedbackPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -653,6 +906,7 @@ export type $ProductionFeedbackPayload<ExtArgs extends runtime.Types.Extensions.
   objects: {
     productionOrder: Prisma.$ProductionOrderPayload<ExtArgs>
     operator: Prisma.$AdminUserPayload<ExtArgs>
+    voidedBy: Prisma.$AdminUserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -660,6 +914,12 @@ export type $ProductionFeedbackPayload<ExtArgs extends runtime.Types.Extensions.
     quantity: number
     operatorId: string
     createdAt: Date
+    /**
+     * * R12F：作废标记；作废行不参与数量计算与「是否已反馈」判断。
+     */
+    voidedAt: Date | null
+    voidedById: string | null
+    voidReason: string | null
   }, ExtArgs["result"]["productionFeedback"]>
   composites: {}
 }
@@ -1056,6 +1316,7 @@ export interface Prisma__ProductionFeedbackClient<T, Null = never, ExtArgs exten
   readonly [Symbol.toStringTag]: "PrismaPromise"
   productionOrder<T extends Prisma.ProductionOrderDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductionOrderDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductionOrderClient<runtime.Types.Result.GetResult<Prisma.$ProductionOrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   operator<T extends Prisma.AdminUserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUserDefaultArgs<ExtArgs>>): Prisma.Prisma__AdminUserClient<runtime.Types.Result.GetResult<Prisma.$AdminUserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  voidedBy<T extends Prisma.ProductionFeedback$voidedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductionFeedback$voidedByArgs<ExtArgs>>): Prisma.Prisma__AdminUserClient<runtime.Types.Result.GetResult<Prisma.$AdminUserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1090,6 +1351,9 @@ export interface ProductionFeedbackFieldRefs {
   readonly quantity: Prisma.FieldRef<"ProductionFeedback", 'Int'>
   readonly operatorId: Prisma.FieldRef<"ProductionFeedback", 'String'>
   readonly createdAt: Prisma.FieldRef<"ProductionFeedback", 'DateTime'>
+  readonly voidedAt: Prisma.FieldRef<"ProductionFeedback", 'DateTime'>
+  readonly voidedById: Prisma.FieldRef<"ProductionFeedback", 'String'>
+  readonly voidReason: Prisma.FieldRef<"ProductionFeedback", 'String'>
 }
     
 
@@ -1488,6 +1752,25 @@ export type ProductionFeedbackDeleteManyArgs<ExtArgs extends runtime.Types.Exten
    * Limit how many ProductionFeedbacks to delete.
    */
   limit?: number
+}
+
+/**
+ * ProductionFeedback.voidedBy
+ */
+export type ProductionFeedback$voidedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AdminUser
+   */
+  select?: Prisma.AdminUserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AdminUser
+   */
+  omit?: Prisma.AdminUserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdminUserInclude<ExtArgs> | null
+  where?: Prisma.AdminUserWhereInput
 }
 
 /**

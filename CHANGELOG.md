@@ -2,6 +2,47 @@
 
 遵循 Keep a Changelog 的写法；版本号从 0.1.0 起，日期为本地日期（Asia/Shanghai）。
 
+## [0.4.0] - 2026-11-26
+
+R12F 撤销修正。
+
+### 新增
+
+- **五类记录撤销**：到货、生产反馈、质检、包装、发货可在 10 分钟内由原操作者或管理员撤销；`POST /{arrivals|feedbacks|qc-records|packing-records|shipment-records}/:id/undo`。
+- **超时留痕修正**：管理员超过窗口后走 `/correct`，必须填 2–200 字原因；事件与审计动作与普通撤销分开（`*_CORRECTED` / `*.correct`）。
+- **软作废**：五类记录与 `qc_decisions` 增加 `voidedAt`/`voidedById`/`voidReason`；作废行保留在订单详情并标记原因与作废人，但不参与任何数量、利润与看板计算。
+- **质检级联**：撤销质检记录时同一事务作废其决策；作废决策视同未决策。
+- **状态修复**：只允许三条反向边——`COMPLETED→SHIPPING`（清 `completedAt`）、`QC_DONE→PENDING_QC`、`PENDING_QC→IN_PRODUCTION`；`PACKING`/`SHIPPING` 不因数量归零回退。
+- **下游依赖守卫**：有生产/电镀依赖的到货、有质检的反馈、已下发包装或已包装的质检、已触发发货或已发货的包装，均拒绝并提示按依赖逆序撤销；异常凭证引用同样拒绝。
+- **界面**：订单详情新增「录入记录」台账，按发生顺序列出五类记录，窗口内显示倒计时与「撤销」，管理员超时显示「修正」（弹窗填原因），作废行灰显并展示原因；390px 下自动改为三行堆叠。
+- **事件与审计**：`ARRIVAL_UNDONE/CORRECTED`、`PRODUCTION_FEEDBACK_UNDONE/CORRECTED`、`QC_RECORD_UNDONE/CORRECTED`、`PACKING_UNDONE/CORRECTED`、`SHIPMENT_UNDONE/CORRECTED`；审计资源新增 `production_feedback` 反查订单。
+
+### 数据库迁移
+
+```text
+20261125160849_record_void
+  arrival_records / production_feedbacks / qc_records / packing_records / shipment_records
+    voidedAt, voidedById (FK admin_users, ON DELETE SET NULL), voidReason
+  qc_decisions
+    voidedAt, voidReason
+  六表各一条 voidedAt 索引
+```
+
+### 测试
+
+- 新增 `tests/undo.test.ts` 19 条：五类撤销、窗口 9:59/10:01、他人 403、管理员修正、重复撤销 409、同键重放、下游依赖（生产/电镀/质检/包装/发货）、死锁回归（已下发包装/已触发发货）、撤销后可重做、看板与利润同步下降。
+- `domain.test.ts` 新增 R12F 组 16 条：作废记录不计数量/利润、作废决策视同未决策、允许动作重新出现、`deriveRepairedStatus` 三条反向边与级联。
+- 全量 16 文件 / 166 用例通过；`npm run typecheck -w backend`、`npm run build -w frontend` 通过。
+- 浏览器实测：窗口内撤销、超时修正、作废行展示、390px 布局。
+
+### 限制
+
+- 不支持订单级取消/退回；撤销是记录级回退。
+- 不支持多产品并行撤销（与主链单产品口径一致）。
+- DTO 的 `canUndo` 只表达身份 + 窗口资格，下游依赖仍由服务端守卫兜底。
+
+---
+
 ## [0.3.2] - 2026-11-25
 
 质检返工复检与异常下发复核。

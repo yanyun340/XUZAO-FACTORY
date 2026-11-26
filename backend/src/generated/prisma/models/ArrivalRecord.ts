@@ -40,6 +40,9 @@ export type ArrivalRecordMinAggregateOutputType = {
   quantity: number | null
   operatorId: string | null
   createdAt: Date | null
+  voidedAt: Date | null
+  voidedById: string | null
+  voidReason: string | null
 }
 
 export type ArrivalRecordMaxAggregateOutputType = {
@@ -48,6 +51,9 @@ export type ArrivalRecordMaxAggregateOutputType = {
   quantity: number | null
   operatorId: string | null
   createdAt: Date | null
+  voidedAt: Date | null
+  voidedById: string | null
+  voidReason: string | null
 }
 
 export type ArrivalRecordCountAggregateOutputType = {
@@ -56,6 +62,9 @@ export type ArrivalRecordCountAggregateOutputType = {
   quantity: number
   operatorId: number
   createdAt: number
+  voidedAt: number
+  voidedById: number
+  voidReason: number
   _all: number
 }
 
@@ -74,6 +83,9 @@ export type ArrivalRecordMinAggregateInputType = {
   quantity?: true
   operatorId?: true
   createdAt?: true
+  voidedAt?: true
+  voidedById?: true
+  voidReason?: true
 }
 
 export type ArrivalRecordMaxAggregateInputType = {
@@ -82,6 +94,9 @@ export type ArrivalRecordMaxAggregateInputType = {
   quantity?: true
   operatorId?: true
   createdAt?: true
+  voidedAt?: true
+  voidedById?: true
+  voidReason?: true
 }
 
 export type ArrivalRecordCountAggregateInputType = {
@@ -90,6 +105,9 @@ export type ArrivalRecordCountAggregateInputType = {
   quantity?: true
   operatorId?: true
   createdAt?: true
+  voidedAt?: true
+  voidedById?: true
+  voidReason?: true
   _all?: true
 }
 
@@ -185,6 +203,9 @@ export type ArrivalRecordGroupByOutputType = {
   quantity: number
   operatorId: string
   createdAt: Date
+  voidedAt: Date | null
+  voidedById: string | null
+  voidReason: string | null
   _count: ArrivalRecordCountAggregateOutputType | null
   _avg: ArrivalRecordAvgAggregateOutputType | null
   _sum: ArrivalRecordSumAggregateOutputType | null
@@ -216,8 +237,12 @@ export type ArrivalRecordWhereInput = {
   quantity?: Prisma.IntFilter<"ArrivalRecord"> | number
   operatorId?: Prisma.UuidFilter<"ArrivalRecord"> | string
   createdAt?: Prisma.DateTimeFilter<"ArrivalRecord"> | Date | string
+  voidedAt?: Prisma.DateTimeNullableFilter<"ArrivalRecord"> | Date | string | null
+  voidedById?: Prisma.UuidNullableFilter<"ArrivalRecord"> | string | null
+  voidReason?: Prisma.StringNullableFilter<"ArrivalRecord"> | string | null
   purchaseItem?: Prisma.XOR<Prisma.PurchaseItemScalarRelationFilter, Prisma.PurchaseItemWhereInput>
   operator?: Prisma.XOR<Prisma.AdminUserScalarRelationFilter, Prisma.AdminUserWhereInput>
+  voidedBy?: Prisma.XOR<Prisma.AdminUserNullableScalarRelationFilter, Prisma.AdminUserWhereInput> | null
 }
 
 export type ArrivalRecordOrderByWithRelationInput = {
@@ -226,8 +251,12 @@ export type ArrivalRecordOrderByWithRelationInput = {
   quantity?: Prisma.SortOrder
   operatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidReason?: Prisma.SortOrderInput | Prisma.SortOrder
   purchaseItem?: Prisma.PurchaseItemOrderByWithRelationInput
   operator?: Prisma.AdminUserOrderByWithRelationInput
+  voidedBy?: Prisma.AdminUserOrderByWithRelationInput
 }
 
 export type ArrivalRecordWhereUniqueInput = Prisma.AtLeast<{
@@ -239,8 +268,12 @@ export type ArrivalRecordWhereUniqueInput = Prisma.AtLeast<{
   quantity?: Prisma.IntFilter<"ArrivalRecord"> | number
   operatorId?: Prisma.UuidFilter<"ArrivalRecord"> | string
   createdAt?: Prisma.DateTimeFilter<"ArrivalRecord"> | Date | string
+  voidedAt?: Prisma.DateTimeNullableFilter<"ArrivalRecord"> | Date | string | null
+  voidedById?: Prisma.UuidNullableFilter<"ArrivalRecord"> | string | null
+  voidReason?: Prisma.StringNullableFilter<"ArrivalRecord"> | string | null
   purchaseItem?: Prisma.XOR<Prisma.PurchaseItemScalarRelationFilter, Prisma.PurchaseItemWhereInput>
   operator?: Prisma.XOR<Prisma.AdminUserScalarRelationFilter, Prisma.AdminUserWhereInput>
+  voidedBy?: Prisma.XOR<Prisma.AdminUserNullableScalarRelationFilter, Prisma.AdminUserWhereInput> | null
 }, "id">
 
 export type ArrivalRecordOrderByWithAggregationInput = {
@@ -249,6 +282,9 @@ export type ArrivalRecordOrderByWithAggregationInput = {
   quantity?: Prisma.SortOrder
   operatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidReason?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ArrivalRecordCountOrderByAggregateInput
   _avg?: Prisma.ArrivalRecordAvgOrderByAggregateInput
   _max?: Prisma.ArrivalRecordMaxOrderByAggregateInput
@@ -265,14 +301,20 @@ export type ArrivalRecordScalarWhereWithAggregatesInput = {
   quantity?: Prisma.IntWithAggregatesFilter<"ArrivalRecord"> | number
   operatorId?: Prisma.UuidWithAggregatesFilter<"ArrivalRecord"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ArrivalRecord"> | Date | string
+  voidedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ArrivalRecord"> | Date | string | null
+  voidedById?: Prisma.UuidNullableWithAggregatesFilter<"ArrivalRecord"> | string | null
+  voidReason?: Prisma.StringNullableWithAggregatesFilter<"ArrivalRecord"> | string | null
 }
 
 export type ArrivalRecordCreateInput = {
   id?: string
   quantity: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
   purchaseItem: Prisma.PurchaseItemCreateNestedOneWithoutArrivalsInput
   operator: Prisma.AdminUserCreateNestedOneWithoutArrivalsInput
+  voidedBy?: Prisma.AdminUserCreateNestedOneWithoutArrivalsVoidedInput
 }
 
 export type ArrivalRecordUncheckedCreateInput = {
@@ -281,14 +323,20 @@ export type ArrivalRecordUncheckedCreateInput = {
   quantity: number
   operatorId: string
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
 }
 
 export type ArrivalRecordUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   purchaseItem?: Prisma.PurchaseItemUpdateOneRequiredWithoutArrivalsNestedInput
   operator?: Prisma.AdminUserUpdateOneRequiredWithoutArrivalsNestedInput
+  voidedBy?: Prisma.AdminUserUpdateOneWithoutArrivalsVoidedNestedInput
 }
 
 export type ArrivalRecordUncheckedUpdateInput = {
@@ -297,6 +345,9 @@ export type ArrivalRecordUncheckedUpdateInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   operatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ArrivalRecordCreateManyInput = {
@@ -305,12 +356,17 @@ export type ArrivalRecordCreateManyInput = {
   quantity: number
   operatorId: string
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
 }
 
 export type ArrivalRecordUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ArrivalRecordUncheckedUpdateManyInput = {
@@ -319,6 +375,9 @@ export type ArrivalRecordUncheckedUpdateManyInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   operatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ArrivalRecordListRelationFilter = {
@@ -337,6 +396,9 @@ export type ArrivalRecordCountOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   operatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrder
+  voidedById?: Prisma.SortOrder
+  voidReason?: Prisma.SortOrder
 }
 
 export type ArrivalRecordAvgOrderByAggregateInput = {
@@ -349,6 +411,9 @@ export type ArrivalRecordMaxOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   operatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrder
+  voidedById?: Prisma.SortOrder
+  voidReason?: Prisma.SortOrder
 }
 
 export type ArrivalRecordMinOrderByAggregateInput = {
@@ -357,6 +422,9 @@ export type ArrivalRecordMinOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   operatorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrder
+  voidedById?: Prisma.SortOrder
+  voidReason?: Prisma.SortOrder
 }
 
 export type ArrivalRecordSumOrderByAggregateInput = {
@@ -370,10 +438,24 @@ export type ArrivalRecordCreateNestedManyWithoutOperatorInput = {
   connect?: Prisma.ArrivalRecordWhereUniqueInput | Prisma.ArrivalRecordWhereUniqueInput[]
 }
 
+export type ArrivalRecordCreateNestedManyWithoutVoidedByInput = {
+  create?: Prisma.XOR<Prisma.ArrivalRecordCreateWithoutVoidedByInput, Prisma.ArrivalRecordUncheckedCreateWithoutVoidedByInput> | Prisma.ArrivalRecordCreateWithoutVoidedByInput[] | Prisma.ArrivalRecordUncheckedCreateWithoutVoidedByInput[]
+  connectOrCreate?: Prisma.ArrivalRecordCreateOrConnectWithoutVoidedByInput | Prisma.ArrivalRecordCreateOrConnectWithoutVoidedByInput[]
+  createMany?: Prisma.ArrivalRecordCreateManyVoidedByInputEnvelope
+  connect?: Prisma.ArrivalRecordWhereUniqueInput | Prisma.ArrivalRecordWhereUniqueInput[]
+}
+
 export type ArrivalRecordUncheckedCreateNestedManyWithoutOperatorInput = {
   create?: Prisma.XOR<Prisma.ArrivalRecordCreateWithoutOperatorInput, Prisma.ArrivalRecordUncheckedCreateWithoutOperatorInput> | Prisma.ArrivalRecordCreateWithoutOperatorInput[] | Prisma.ArrivalRecordUncheckedCreateWithoutOperatorInput[]
   connectOrCreate?: Prisma.ArrivalRecordCreateOrConnectWithoutOperatorInput | Prisma.ArrivalRecordCreateOrConnectWithoutOperatorInput[]
   createMany?: Prisma.ArrivalRecordCreateManyOperatorInputEnvelope
+  connect?: Prisma.ArrivalRecordWhereUniqueInput | Prisma.ArrivalRecordWhereUniqueInput[]
+}
+
+export type ArrivalRecordUncheckedCreateNestedManyWithoutVoidedByInput = {
+  create?: Prisma.XOR<Prisma.ArrivalRecordCreateWithoutVoidedByInput, Prisma.ArrivalRecordUncheckedCreateWithoutVoidedByInput> | Prisma.ArrivalRecordCreateWithoutVoidedByInput[] | Prisma.ArrivalRecordUncheckedCreateWithoutVoidedByInput[]
+  connectOrCreate?: Prisma.ArrivalRecordCreateOrConnectWithoutVoidedByInput | Prisma.ArrivalRecordCreateOrConnectWithoutVoidedByInput[]
+  createMany?: Prisma.ArrivalRecordCreateManyVoidedByInputEnvelope
   connect?: Prisma.ArrivalRecordWhereUniqueInput | Prisma.ArrivalRecordWhereUniqueInput[]
 }
 
@@ -391,6 +473,20 @@ export type ArrivalRecordUpdateManyWithoutOperatorNestedInput = {
   deleteMany?: Prisma.ArrivalRecordScalarWhereInput | Prisma.ArrivalRecordScalarWhereInput[]
 }
 
+export type ArrivalRecordUpdateManyWithoutVoidedByNestedInput = {
+  create?: Prisma.XOR<Prisma.ArrivalRecordCreateWithoutVoidedByInput, Prisma.ArrivalRecordUncheckedCreateWithoutVoidedByInput> | Prisma.ArrivalRecordCreateWithoutVoidedByInput[] | Prisma.ArrivalRecordUncheckedCreateWithoutVoidedByInput[]
+  connectOrCreate?: Prisma.ArrivalRecordCreateOrConnectWithoutVoidedByInput | Prisma.ArrivalRecordCreateOrConnectWithoutVoidedByInput[]
+  upsert?: Prisma.ArrivalRecordUpsertWithWhereUniqueWithoutVoidedByInput | Prisma.ArrivalRecordUpsertWithWhereUniqueWithoutVoidedByInput[]
+  createMany?: Prisma.ArrivalRecordCreateManyVoidedByInputEnvelope
+  set?: Prisma.ArrivalRecordWhereUniqueInput | Prisma.ArrivalRecordWhereUniqueInput[]
+  disconnect?: Prisma.ArrivalRecordWhereUniqueInput | Prisma.ArrivalRecordWhereUniqueInput[]
+  delete?: Prisma.ArrivalRecordWhereUniqueInput | Prisma.ArrivalRecordWhereUniqueInput[]
+  connect?: Prisma.ArrivalRecordWhereUniqueInput | Prisma.ArrivalRecordWhereUniqueInput[]
+  update?: Prisma.ArrivalRecordUpdateWithWhereUniqueWithoutVoidedByInput | Prisma.ArrivalRecordUpdateWithWhereUniqueWithoutVoidedByInput[]
+  updateMany?: Prisma.ArrivalRecordUpdateManyWithWhereWithoutVoidedByInput | Prisma.ArrivalRecordUpdateManyWithWhereWithoutVoidedByInput[]
+  deleteMany?: Prisma.ArrivalRecordScalarWhereInput | Prisma.ArrivalRecordScalarWhereInput[]
+}
+
 export type ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput = {
   create?: Prisma.XOR<Prisma.ArrivalRecordCreateWithoutOperatorInput, Prisma.ArrivalRecordUncheckedCreateWithoutOperatorInput> | Prisma.ArrivalRecordCreateWithoutOperatorInput[] | Prisma.ArrivalRecordUncheckedCreateWithoutOperatorInput[]
   connectOrCreate?: Prisma.ArrivalRecordCreateOrConnectWithoutOperatorInput | Prisma.ArrivalRecordCreateOrConnectWithoutOperatorInput[]
@@ -402,6 +498,20 @@ export type ArrivalRecordUncheckedUpdateManyWithoutOperatorNestedInput = {
   connect?: Prisma.ArrivalRecordWhereUniqueInput | Prisma.ArrivalRecordWhereUniqueInput[]
   update?: Prisma.ArrivalRecordUpdateWithWhereUniqueWithoutOperatorInput | Prisma.ArrivalRecordUpdateWithWhereUniqueWithoutOperatorInput[]
   updateMany?: Prisma.ArrivalRecordUpdateManyWithWhereWithoutOperatorInput | Prisma.ArrivalRecordUpdateManyWithWhereWithoutOperatorInput[]
+  deleteMany?: Prisma.ArrivalRecordScalarWhereInput | Prisma.ArrivalRecordScalarWhereInput[]
+}
+
+export type ArrivalRecordUncheckedUpdateManyWithoutVoidedByNestedInput = {
+  create?: Prisma.XOR<Prisma.ArrivalRecordCreateWithoutVoidedByInput, Prisma.ArrivalRecordUncheckedCreateWithoutVoidedByInput> | Prisma.ArrivalRecordCreateWithoutVoidedByInput[] | Prisma.ArrivalRecordUncheckedCreateWithoutVoidedByInput[]
+  connectOrCreate?: Prisma.ArrivalRecordCreateOrConnectWithoutVoidedByInput | Prisma.ArrivalRecordCreateOrConnectWithoutVoidedByInput[]
+  upsert?: Prisma.ArrivalRecordUpsertWithWhereUniqueWithoutVoidedByInput | Prisma.ArrivalRecordUpsertWithWhereUniqueWithoutVoidedByInput[]
+  createMany?: Prisma.ArrivalRecordCreateManyVoidedByInputEnvelope
+  set?: Prisma.ArrivalRecordWhereUniqueInput | Prisma.ArrivalRecordWhereUniqueInput[]
+  disconnect?: Prisma.ArrivalRecordWhereUniqueInput | Prisma.ArrivalRecordWhereUniqueInput[]
+  delete?: Prisma.ArrivalRecordWhereUniqueInput | Prisma.ArrivalRecordWhereUniqueInput[]
+  connect?: Prisma.ArrivalRecordWhereUniqueInput | Prisma.ArrivalRecordWhereUniqueInput[]
+  update?: Prisma.ArrivalRecordUpdateWithWhereUniqueWithoutVoidedByInput | Prisma.ArrivalRecordUpdateWithWhereUniqueWithoutVoidedByInput[]
+  updateMany?: Prisma.ArrivalRecordUpdateManyWithWhereWithoutVoidedByInput | Prisma.ArrivalRecordUpdateManyWithWhereWithoutVoidedByInput[]
   deleteMany?: Prisma.ArrivalRecordScalarWhereInput | Prisma.ArrivalRecordScalarWhereInput[]
 }
 
@@ -451,7 +561,10 @@ export type ArrivalRecordCreateWithoutOperatorInput = {
   id?: string
   quantity: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
   purchaseItem: Prisma.PurchaseItemCreateNestedOneWithoutArrivalsInput
+  voidedBy?: Prisma.AdminUserCreateNestedOneWithoutArrivalsVoidedInput
 }
 
 export type ArrivalRecordUncheckedCreateWithoutOperatorInput = {
@@ -459,6 +572,9 @@ export type ArrivalRecordUncheckedCreateWithoutOperatorInput = {
   purchaseItemId: string
   quantity: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
 }
 
 export type ArrivalRecordCreateOrConnectWithoutOperatorInput = {
@@ -468,6 +584,36 @@ export type ArrivalRecordCreateOrConnectWithoutOperatorInput = {
 
 export type ArrivalRecordCreateManyOperatorInputEnvelope = {
   data: Prisma.ArrivalRecordCreateManyOperatorInput | Prisma.ArrivalRecordCreateManyOperatorInput[]
+  skipDuplicates?: boolean
+}
+
+export type ArrivalRecordCreateWithoutVoidedByInput = {
+  id?: string
+  quantity: number
+  createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
+  purchaseItem: Prisma.PurchaseItemCreateNestedOneWithoutArrivalsInput
+  operator: Prisma.AdminUserCreateNestedOneWithoutArrivalsInput
+}
+
+export type ArrivalRecordUncheckedCreateWithoutVoidedByInput = {
+  id?: string
+  purchaseItemId: string
+  quantity: number
+  operatorId: string
+  createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
+}
+
+export type ArrivalRecordCreateOrConnectWithoutVoidedByInput = {
+  where: Prisma.ArrivalRecordWhereUniqueInput
+  create: Prisma.XOR<Prisma.ArrivalRecordCreateWithoutVoidedByInput, Prisma.ArrivalRecordUncheckedCreateWithoutVoidedByInput>
+}
+
+export type ArrivalRecordCreateManyVoidedByInputEnvelope = {
+  data: Prisma.ArrivalRecordCreateManyVoidedByInput | Prisma.ArrivalRecordCreateManyVoidedByInput[]
   skipDuplicates?: boolean
 }
 
@@ -496,13 +642,35 @@ export type ArrivalRecordScalarWhereInput = {
   quantity?: Prisma.IntFilter<"ArrivalRecord"> | number
   operatorId?: Prisma.UuidFilter<"ArrivalRecord"> | string
   createdAt?: Prisma.DateTimeFilter<"ArrivalRecord"> | Date | string
+  voidedAt?: Prisma.DateTimeNullableFilter<"ArrivalRecord"> | Date | string | null
+  voidedById?: Prisma.UuidNullableFilter<"ArrivalRecord"> | string | null
+  voidReason?: Prisma.StringNullableFilter<"ArrivalRecord"> | string | null
+}
+
+export type ArrivalRecordUpsertWithWhereUniqueWithoutVoidedByInput = {
+  where: Prisma.ArrivalRecordWhereUniqueInput
+  update: Prisma.XOR<Prisma.ArrivalRecordUpdateWithoutVoidedByInput, Prisma.ArrivalRecordUncheckedUpdateWithoutVoidedByInput>
+  create: Prisma.XOR<Prisma.ArrivalRecordCreateWithoutVoidedByInput, Prisma.ArrivalRecordUncheckedCreateWithoutVoidedByInput>
+}
+
+export type ArrivalRecordUpdateWithWhereUniqueWithoutVoidedByInput = {
+  where: Prisma.ArrivalRecordWhereUniqueInput
+  data: Prisma.XOR<Prisma.ArrivalRecordUpdateWithoutVoidedByInput, Prisma.ArrivalRecordUncheckedUpdateWithoutVoidedByInput>
+}
+
+export type ArrivalRecordUpdateManyWithWhereWithoutVoidedByInput = {
+  where: Prisma.ArrivalRecordScalarWhereInput
+  data: Prisma.XOR<Prisma.ArrivalRecordUpdateManyMutationInput, Prisma.ArrivalRecordUncheckedUpdateManyWithoutVoidedByInput>
 }
 
 export type ArrivalRecordCreateWithoutPurchaseItemInput = {
   id?: string
   quantity: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
   operator: Prisma.AdminUserCreateNestedOneWithoutArrivalsInput
+  voidedBy?: Prisma.AdminUserCreateNestedOneWithoutArrivalsVoidedInput
 }
 
 export type ArrivalRecordUncheckedCreateWithoutPurchaseItemInput = {
@@ -510,6 +678,9 @@ export type ArrivalRecordUncheckedCreateWithoutPurchaseItemInput = {
   quantity: number
   operatorId: string
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
 }
 
 export type ArrivalRecordCreateOrConnectWithoutPurchaseItemInput = {
@@ -543,13 +714,29 @@ export type ArrivalRecordCreateManyOperatorInput = {
   purchaseItemId: string
   quantity: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
+}
+
+export type ArrivalRecordCreateManyVoidedByInput = {
+  id?: string
+  purchaseItemId: string
+  quantity: number
+  operatorId: string
+  createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
 }
 
 export type ArrivalRecordUpdateWithoutOperatorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   purchaseItem?: Prisma.PurchaseItemUpdateOneRequiredWithoutArrivalsNestedInput
+  voidedBy?: Prisma.AdminUserUpdateOneWithoutArrivalsVoidedNestedInput
 }
 
 export type ArrivalRecordUncheckedUpdateWithoutOperatorInput = {
@@ -557,6 +744,9 @@ export type ArrivalRecordUncheckedUpdateWithoutOperatorInput = {
   purchaseItemId?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ArrivalRecordUncheckedUpdateManyWithoutOperatorInput = {
@@ -564,6 +754,39 @@ export type ArrivalRecordUncheckedUpdateManyWithoutOperatorInput = {
   purchaseItemId?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type ArrivalRecordUpdateWithoutVoidedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  purchaseItem?: Prisma.PurchaseItemUpdateOneRequiredWithoutArrivalsNestedInput
+  operator?: Prisma.AdminUserUpdateOneRequiredWithoutArrivalsNestedInput
+}
+
+export type ArrivalRecordUncheckedUpdateWithoutVoidedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  purchaseItemId?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  operatorId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type ArrivalRecordUncheckedUpdateManyWithoutVoidedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  purchaseItemId?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  operatorId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ArrivalRecordCreateManyPurchaseItemInput = {
@@ -571,13 +794,19 @@ export type ArrivalRecordCreateManyPurchaseItemInput = {
   quantity: number
   operatorId: string
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
 }
 
 export type ArrivalRecordUpdateWithoutPurchaseItemInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   operator?: Prisma.AdminUserUpdateOneRequiredWithoutArrivalsNestedInput
+  voidedBy?: Prisma.AdminUserUpdateOneWithoutArrivalsVoidedNestedInput
 }
 
 export type ArrivalRecordUncheckedUpdateWithoutPurchaseItemInput = {
@@ -585,6 +814,9 @@ export type ArrivalRecordUncheckedUpdateWithoutPurchaseItemInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   operatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ArrivalRecordUncheckedUpdateManyWithoutPurchaseItemInput = {
@@ -592,6 +824,9 @@ export type ArrivalRecordUncheckedUpdateManyWithoutPurchaseItemInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   operatorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -602,8 +837,12 @@ export type ArrivalRecordSelect<ExtArgs extends runtime.Types.Extensions.Interna
   quantity?: boolean
   operatorId?: boolean
   createdAt?: boolean
+  voidedAt?: boolean
+  voidedById?: boolean
+  voidReason?: boolean
   purchaseItem?: boolean | Prisma.PurchaseItemDefaultArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.ArrivalRecord$voidedByArgs<ExtArgs>
 }, ExtArgs["result"]["arrivalRecord"]>
 
 export type ArrivalRecordSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -612,8 +851,12 @@ export type ArrivalRecordSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   quantity?: boolean
   operatorId?: boolean
   createdAt?: boolean
+  voidedAt?: boolean
+  voidedById?: boolean
+  voidReason?: boolean
   purchaseItem?: boolean | Prisma.PurchaseItemDefaultArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.ArrivalRecord$voidedByArgs<ExtArgs>
 }, ExtArgs["result"]["arrivalRecord"]>
 
 export type ArrivalRecordSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -622,8 +865,12 @@ export type ArrivalRecordSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   quantity?: boolean
   operatorId?: boolean
   createdAt?: boolean
+  voidedAt?: boolean
+  voidedById?: boolean
+  voidReason?: boolean
   purchaseItem?: boolean | Prisma.PurchaseItemDefaultArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.ArrivalRecord$voidedByArgs<ExtArgs>
 }, ExtArgs["result"]["arrivalRecord"]>
 
 export type ArrivalRecordSelectScalar = {
@@ -632,20 +879,26 @@ export type ArrivalRecordSelectScalar = {
   quantity?: boolean
   operatorId?: boolean
   createdAt?: boolean
+  voidedAt?: boolean
+  voidedById?: boolean
+  voidReason?: boolean
 }
 
-export type ArrivalRecordOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "purchaseItemId" | "quantity" | "operatorId" | "createdAt", ExtArgs["result"]["arrivalRecord"]>
+export type ArrivalRecordOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "purchaseItemId" | "quantity" | "operatorId" | "createdAt" | "voidedAt" | "voidedById" | "voidReason", ExtArgs["result"]["arrivalRecord"]>
 export type ArrivalRecordInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   purchaseItem?: boolean | Prisma.PurchaseItemDefaultArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.ArrivalRecord$voidedByArgs<ExtArgs>
 }
 export type ArrivalRecordIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   purchaseItem?: boolean | Prisma.PurchaseItemDefaultArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.ArrivalRecord$voidedByArgs<ExtArgs>
 }
 export type ArrivalRecordIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   purchaseItem?: boolean | Prisma.PurchaseItemDefaultArgs<ExtArgs>
   operator?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.ArrivalRecord$voidedByArgs<ExtArgs>
 }
 
 export type $ArrivalRecordPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -653,6 +906,7 @@ export type $ArrivalRecordPayload<ExtArgs extends runtime.Types.Extensions.Inter
   objects: {
     purchaseItem: Prisma.$PurchaseItemPayload<ExtArgs>
     operator: Prisma.$AdminUserPayload<ExtArgs>
+    voidedBy: Prisma.$AdminUserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -660,6 +914,12 @@ export type $ArrivalRecordPayload<ExtArgs extends runtime.Types.Extensions.Inter
     quantity: number
     operatorId: string
     createdAt: Date
+    /**
+     * * R12F：撤销/修正只置作废标记，不删行；作废行不参与任何数量计算。
+     */
+    voidedAt: Date | null
+    voidedById: string | null
+    voidReason: string | null
   }, ExtArgs["result"]["arrivalRecord"]>
   composites: {}
 }
@@ -1056,6 +1316,7 @@ export interface Prisma__ArrivalRecordClient<T, Null = never, ExtArgs extends ru
   readonly [Symbol.toStringTag]: "PrismaPromise"
   purchaseItem<T extends Prisma.PurchaseItemDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PurchaseItemDefaultArgs<ExtArgs>>): Prisma.Prisma__PurchaseItemClient<runtime.Types.Result.GetResult<Prisma.$PurchaseItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   operator<T extends Prisma.AdminUserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUserDefaultArgs<ExtArgs>>): Prisma.Prisma__AdminUserClient<runtime.Types.Result.GetResult<Prisma.$AdminUserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  voidedBy<T extends Prisma.ArrivalRecord$voidedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ArrivalRecord$voidedByArgs<ExtArgs>>): Prisma.Prisma__AdminUserClient<runtime.Types.Result.GetResult<Prisma.$AdminUserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1090,6 +1351,9 @@ export interface ArrivalRecordFieldRefs {
   readonly quantity: Prisma.FieldRef<"ArrivalRecord", 'Int'>
   readonly operatorId: Prisma.FieldRef<"ArrivalRecord", 'String'>
   readonly createdAt: Prisma.FieldRef<"ArrivalRecord", 'DateTime'>
+  readonly voidedAt: Prisma.FieldRef<"ArrivalRecord", 'DateTime'>
+  readonly voidedById: Prisma.FieldRef<"ArrivalRecord", 'String'>
+  readonly voidReason: Prisma.FieldRef<"ArrivalRecord", 'String'>
 }
     
 
@@ -1488,6 +1752,25 @@ export type ArrivalRecordDeleteManyArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many ArrivalRecords to delete.
    */
   limit?: number
+}
+
+/**
+ * ArrivalRecord.voidedBy
+ */
+export type ArrivalRecord$voidedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AdminUser
+   */
+  select?: Prisma.AdminUserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AdminUser
+   */
+  omit?: Prisma.AdminUserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdminUserInclude<ExtArgs> | null
+  where?: Prisma.AdminUserWhereInput
 }
 
 /**

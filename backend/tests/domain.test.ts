@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { Prisma } from '../src/generated/prisma/client.ts';
 import { computeAllowedActions, computeProfit, computeQuantities } from '../src/domain/flow.ts';
 import { computeStages, toTaskItem } from '../src/domain/orders.ts';
+import { clearsCompletedAt, deriveRepairedStatus } from '../src/domain/status.ts';
 import type { OrderFlowRow, OrderListRow } from '../src/domain/flow.ts';
 
 const D = (value: string) => new Prisma.Decimal(value);
@@ -319,5 +320,173 @@ describe('待办队列', () => {
   it('无可执行动作的订单不进待办', () => {
     const order = makeOrder({ status: 'PENDING_PURCHASE', hasPurchase: false, hasProduction: false });
     expect(task(order, 'QC')).toBeNull();
+  });
+});
+
+/* ---------- R12F：作废记录的数量与状态口径 ---------- */
+
+const VOIDED = new Date('2026-11-01T01:00:00.000Z');
+
+function withArrivalVoided(): OrderFlowRow {
+  const order = makeOrder();
+  const item = order.purchaseOrders[0]!.items[0]!;
+  (item.arrivals as unknown) = [
+    { quantity: 40, voidedAt: VOIDED },
+    { quantity: 60, voidedAt: null },
+  ];
+  return order;
+}
+
+describe('R12F 作废记录不参与数量计算', () => {
+  it('作废到货不计入 arrivedQty', () => {
+    expect(computeQuantities(withArrivalVoided()).arrivedQty).toBe(60);
+  });
+
+  it('作废反馈不计入 producedQty，也不计入生产成本', () => {
+    const order = makeOrder({ producedQty: 100 });
+    (order.productions[0]!.feedbacks as unknown) = [
+      { quantity: 100, voidedAt: VOIDED },
+      { quantity: 30, voidedAt: null },
+    ];
+    expect(computeQuantities(order).producedQty).toBe(30);
+    // 生产成本只按 30 件算：30 × 2.00
+    expect(computeProfit(order).productionCost).toBe('60.00');
+  });
+
+  it('作废质检记录不计入首检/合格量', () => {
+    const order = makeOrder({ hasQc: true, hasDecision: true, releasedQty: 100 });
+    (order.productions[0]!.qcRecords as unknown) = [
+      {
+        id: 'qc-void',
+        inspectedQty: 100,
+        qualifiedQty: 100,
+        unqualifiedQty: 0,
+        round: 1,
+        parentQcRecordId: null,
+        voidedAt: VOIDED,
+        decision: { decision: 'PASS', releasedQty: 100, scrapQty: 0, voidedAt: VOIDED },
+      },
+    ];
+    const q = computeQuantities(order);
+    expect(q.inspectedQty).toBe(0);
+    expect(q.releasedQty).toBe(0);
+    // 记录本身作废，不该被当成「已录入待决策」
+    expect(q.undecidedQty).toBe(0);
+  });
+
+  it('作废决策视同未决策：放行量归零并重新计入 undecidedQty', () => {
+    const order = makeOrder({ hasQc: true, hasDecision: true, releasedQty: 100 });
+    (order.productions[0]!.qcRecords[0]!.decision as unknown) = {
+      decision: 'PASS',
+      releasedQty: 100,
+      scrapQty: 0,
+      voidedAt: VOIDED,
+    };
+    const q = computeQuantities(order);
+    expect(q.releasedQty).toBe(0);
+    expect(q.undecidedQty).toBe(100);
+  });
+
+  it('作废的返工决策不再计入待复检量', () => {
+    const order = makeOrder({ hasQc: true, hasDecision: true });
+    (order.productions[0]!.qcRecords as unknown) = [
+      {
+        id: 'qc-parent',
+        inspectedQty: 100,
+        qualifiedQty: 90,
+        unqualifiedQty: 10,
+        round: 1,
+        parentQcRecordId: null,
+        voidedAt: null,
+        decision: { decision: 'REWORK', releasedQty: 90, scrapQty: 0, voidedAt: VOIDED },
+      },
+    ];
+    expect(computeQuantities(order).reworkPendingQty).toBe(0);
+  });
+
+  it('作废包装与发货不计入 packedQty / shippedQty', () => {
+    const order = makeOrder({ packedQty: 50, shippedQty: 20 });
+    (order.packingRecords as unknown) = [{ quantity: 50, voidedAt: VOIDED }];
+    (order.shipments as unknown) = [{ quantity: 20, voidedAt: null }];
+    const q = computeQuantities(order);
+    expect(q.packedQty).toBe(0);
+    expect(q.shippedQty).toBe(20);
+  });
+
+  it('唯一反馈被作废后，生产角色重新拿到 production-feedback', () => {
+    const order = makeOrder({ status: 'IN_PRODUCTION', producedQty: 100 });
+    (order.productions[0]!.feedbacks as unknown) = [{ quantity: 100, voidedAt: VOIDED }];
+    const actions = computeAllowedActions(order, computeQuantities(order), 'PRODUCTION', 'u1', 'dept-prod');
+    expect(actions).toContain('production-feedback');
+  });
+
+  it('作废的 round=1 记录不再阻止送达质检', () => {
+    const order = makeOrder({ status: 'IN_PRODUCTION', hasQc: true, hasDecision: true });
+    (order.productions[0]!.qcRecords as unknown) = [
+      {
+        id: 'qc-void',
+        inspectedQty: 100,
+        qualifiedQty: 100,
+        unqualifiedQty: 0,
+        round: 1,
+        parentQcRecordId: null,
+        voidedAt: VOIDED,
+        decision: null,
+      },
+    ];
+    const actions = computeAllowedActions(order, computeQuantities(order), 'ADMIN', 'u1', null);
+    expect(actions).toContain('dispatch-qc');
+  });
+});
+
+describe('R12F 状态回退（deriveRepairedStatus）', () => {
+  const facts = { hasActiveQcRecord: false, hasWaitingQcException: false };
+
+  it('发货量不足订单量时 COMPLETED 退回 SHIPPING', () => {
+    const q = computeQuantities(makeOrder({ orderQty: 100, shippedQty: 40 }));
+    expect(deriveRepairedStatus('COMPLETED', q, facts)).toBe('SHIPPING');
+    expect(clearsCompletedAt('COMPLETED', 'SHIPPING')).toBe(true);
+  });
+
+  it('发货量仍足额时保持 COMPLETED', () => {
+    const q = computeQuantities(makeOrder({ orderQty: 100, shippedQty: 100 }));
+    expect(deriveRepairedStatus('COMPLETED', q, facts)).toBe('COMPLETED');
+    expect(clearsCompletedAt('COMPLETED', 'COMPLETED')).toBe(false);
+  });
+
+  it('质检不再结算时 QC_DONE 退回 PENDING_QC', () => {
+    const q = computeQuantities(makeOrder({ producedQty: 100, hasQc: true, hasDecision: true, releasedQty: 40 }));
+    expect(deriveRepairedStatus('QC_DONE', q, facts)).toBe('PENDING_QC');
+  });
+
+  it('质检仍结算齐全时保持 QC_DONE', () => {
+    const q = computeQuantities(makeOrder({ producedQty: 100, hasQc: true, hasDecision: true, releasedQty: 100 }));
+    expect(deriveRepairedStatus('QC_DONE', q, facts)).toBe('QC_DONE');
+  });
+
+  it('无产量、无质检、无待复核异常时 PENDING_QC 退回 IN_PRODUCTION', () => {
+    const q = computeQuantities(makeOrder({ producedQty: 0, hasQc: false }));
+    expect(deriveRepairedStatus('PENDING_QC', q, facts)).toBe('IN_PRODUCTION');
+  });
+
+  it('有产量时保持 PENDING_QC；有待复核异常时也不退回', () => {
+    const withProduced = computeQuantities(makeOrder({ producedQty: 100, hasQc: false }));
+    expect(deriveRepairedStatus('PENDING_QC', withProduced, facts)).toBe('PENDING_QC');
+
+    const empty = computeQuantities(makeOrder({ producedQty: 0, hasQc: false }));
+    expect(
+      deriveRepairedStatus('PENDING_QC', empty, { ...facts, hasWaitingQcException: true }),
+    ).toBe('PENDING_QC');
+  });
+
+  it('PACKING / SHIPPING 的数量归零后保持原状态（不造新反向边）', () => {
+    const zero = computeQuantities(makeOrder({ packedQty: 0, shippedQty: 0 }));
+    expect(deriveRepairedStatus('PACKING', zero, facts)).toBe('PACKING');
+    expect(deriveRepairedStatus('SHIPPING', zero, facts)).toBe('SHIPPING');
+  });
+
+  it('级联：QC_DONE 一路退到 IN_PRODUCTION', () => {
+    const q = computeQuantities(makeOrder({ producedQty: 0, hasQc: false, releasedQty: 0 }));
+    expect(deriveRepairedStatus('QC_DONE', q, facts)).toBe('IN_PRODUCTION');
   });
 });

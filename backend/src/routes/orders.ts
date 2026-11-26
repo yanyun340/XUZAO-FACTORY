@@ -8,6 +8,7 @@ import { Errors } from '../errors.ts';
 import { OrderStatus } from '../generated/prisma/enums.ts';
 import { ok } from '../http/respond.ts';
 import { writeAudit } from '../lib/audit.ts';
+import { now } from '../lib/clock.ts';
 import { replayHeaders, runIdempotent } from '../lib/idempotency.ts';
 import { ensureProductInventories } from '../lib/inventory.ts';
 import { nextSequence } from '../lib/sequence.ts';
@@ -120,6 +121,8 @@ export async function orderRoutes(app: FastifyInstance): Promise<void> {
         auth.user.id,
         auth.user.departmentId,
         auth.user.department?.unitPriceVisible ?? false,
+        // R12F：与撤销守卫共用同一时钟。
+        now(),
       ),
     );
   });
@@ -213,6 +216,8 @@ export async function orderRoutes(app: FastifyInstance): Promise<void> {
               auth.user.id,
               auth.user.departmentId,
               auth.user.department?.unitPriceVisible ?? false,
+              // R12F：与撤销守卫共用同一时钟。
+              now(),
             ),
             resourceId: order.id,
           };

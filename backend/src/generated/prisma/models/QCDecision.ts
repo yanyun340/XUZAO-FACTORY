@@ -44,6 +44,8 @@ export type QCDecisionMinAggregateOutputType = {
   scrapQty: number | null
   decidedById: string | null
   createdAt: Date | null
+  voidedAt: Date | null
+  voidReason: string | null
 }
 
 export type QCDecisionMaxAggregateOutputType = {
@@ -54,6 +56,8 @@ export type QCDecisionMaxAggregateOutputType = {
   scrapQty: number | null
   decidedById: string | null
   createdAt: Date | null
+  voidedAt: Date | null
+  voidReason: string | null
 }
 
 export type QCDecisionCountAggregateOutputType = {
@@ -64,6 +68,8 @@ export type QCDecisionCountAggregateOutputType = {
   scrapQty: number
   decidedById: number
   createdAt: number
+  voidedAt: number
+  voidReason: number
   _all: number
 }
 
@@ -86,6 +92,8 @@ export type QCDecisionMinAggregateInputType = {
   scrapQty?: true
   decidedById?: true
   createdAt?: true
+  voidedAt?: true
+  voidReason?: true
 }
 
 export type QCDecisionMaxAggregateInputType = {
@@ -96,6 +104,8 @@ export type QCDecisionMaxAggregateInputType = {
   scrapQty?: true
   decidedById?: true
   createdAt?: true
+  voidedAt?: true
+  voidReason?: true
 }
 
 export type QCDecisionCountAggregateInputType = {
@@ -106,6 +116,8 @@ export type QCDecisionCountAggregateInputType = {
   scrapQty?: true
   decidedById?: true
   createdAt?: true
+  voidedAt?: true
+  voidReason?: true
   _all?: true
 }
 
@@ -203,6 +215,8 @@ export type QCDecisionGroupByOutputType = {
   scrapQty: number
   decidedById: string
   createdAt: Date
+  voidedAt: Date | null
+  voidReason: string | null
   _count: QCDecisionCountAggregateOutputType | null
   _avg: QCDecisionAvgAggregateOutputType | null
   _sum: QCDecisionSumAggregateOutputType | null
@@ -236,6 +250,8 @@ export type QCDecisionWhereInput = {
   scrapQty?: Prisma.IntFilter<"QCDecision"> | number
   decidedById?: Prisma.UuidFilter<"QCDecision"> | string
   createdAt?: Prisma.DateTimeFilter<"QCDecision"> | Date | string
+  voidedAt?: Prisma.DateTimeNullableFilter<"QCDecision"> | Date | string | null
+  voidReason?: Prisma.StringNullableFilter<"QCDecision"> | string | null
   qcRecord?: Prisma.XOR<Prisma.QCRecordScalarRelationFilter, Prisma.QCRecordWhereInput>
   decidedBy?: Prisma.XOR<Prisma.AdminUserScalarRelationFilter, Prisma.AdminUserWhereInput>
 }
@@ -248,6 +264,8 @@ export type QCDecisionOrderByWithRelationInput = {
   scrapQty?: Prisma.SortOrder
   decidedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidReason?: Prisma.SortOrderInput | Prisma.SortOrder
   qcRecord?: Prisma.QCRecordOrderByWithRelationInput
   decidedBy?: Prisma.AdminUserOrderByWithRelationInput
 }
@@ -263,6 +281,8 @@ export type QCDecisionWhereUniqueInput = Prisma.AtLeast<{
   scrapQty?: Prisma.IntFilter<"QCDecision"> | number
   decidedById?: Prisma.UuidFilter<"QCDecision"> | string
   createdAt?: Prisma.DateTimeFilter<"QCDecision"> | Date | string
+  voidedAt?: Prisma.DateTimeNullableFilter<"QCDecision"> | Date | string | null
+  voidReason?: Prisma.StringNullableFilter<"QCDecision"> | string | null
   qcRecord?: Prisma.XOR<Prisma.QCRecordScalarRelationFilter, Prisma.QCRecordWhereInput>
   decidedBy?: Prisma.XOR<Prisma.AdminUserScalarRelationFilter, Prisma.AdminUserWhereInput>
 }, "id" | "qcRecordId">
@@ -275,6 +295,8 @@ export type QCDecisionOrderByWithAggregationInput = {
   scrapQty?: Prisma.SortOrder
   decidedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidReason?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.QCDecisionCountOrderByAggregateInput
   _avg?: Prisma.QCDecisionAvgOrderByAggregateInput
   _max?: Prisma.QCDecisionMaxOrderByAggregateInput
@@ -293,6 +315,8 @@ export type QCDecisionScalarWhereWithAggregatesInput = {
   scrapQty?: Prisma.IntWithAggregatesFilter<"QCDecision"> | number
   decidedById?: Prisma.UuidWithAggregatesFilter<"QCDecision"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"QCDecision"> | Date | string
+  voidedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"QCDecision"> | Date | string | null
+  voidReason?: Prisma.StringNullableWithAggregatesFilter<"QCDecision"> | string | null
 }
 
 export type QCDecisionCreateInput = {
@@ -301,6 +325,8 @@ export type QCDecisionCreateInput = {
   releasedQty: number
   scrapQty?: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
   qcRecord: Prisma.QCRecordCreateNestedOneWithoutDecisionInput
   decidedBy: Prisma.AdminUserCreateNestedOneWithoutQcDecisionsInput
 }
@@ -313,6 +339,8 @@ export type QCDecisionUncheckedCreateInput = {
   scrapQty?: number
   decidedById: string
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
 }
 
 export type QCDecisionUpdateInput = {
@@ -321,6 +349,8 @@ export type QCDecisionUpdateInput = {
   releasedQty?: Prisma.IntFieldUpdateOperationsInput | number
   scrapQty?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qcRecord?: Prisma.QCRecordUpdateOneRequiredWithoutDecisionNestedInput
   decidedBy?: Prisma.AdminUserUpdateOneRequiredWithoutQcDecisionsNestedInput
 }
@@ -333,6 +363,8 @@ export type QCDecisionUncheckedUpdateInput = {
   scrapQty?: Prisma.IntFieldUpdateOperationsInput | number
   decidedById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type QCDecisionCreateManyInput = {
@@ -343,6 +375,8 @@ export type QCDecisionCreateManyInput = {
   scrapQty?: number
   decidedById: string
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
 }
 
 export type QCDecisionUpdateManyMutationInput = {
@@ -351,6 +385,8 @@ export type QCDecisionUpdateManyMutationInput = {
   releasedQty?: Prisma.IntFieldUpdateOperationsInput | number
   scrapQty?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type QCDecisionUncheckedUpdateManyInput = {
@@ -361,6 +397,8 @@ export type QCDecisionUncheckedUpdateManyInput = {
   scrapQty?: Prisma.IntFieldUpdateOperationsInput | number
   decidedById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type QCDecisionListRelationFilter = {
@@ -386,6 +424,8 @@ export type QCDecisionCountOrderByAggregateInput = {
   scrapQty?: Prisma.SortOrder
   decidedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrder
+  voidReason?: Prisma.SortOrder
 }
 
 export type QCDecisionAvgOrderByAggregateInput = {
@@ -401,6 +441,8 @@ export type QCDecisionMaxOrderByAggregateInput = {
   scrapQty?: Prisma.SortOrder
   decidedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrder
+  voidReason?: Prisma.SortOrder
 }
 
 export type QCDecisionMinOrderByAggregateInput = {
@@ -411,6 +453,8 @@ export type QCDecisionMinOrderByAggregateInput = {
   scrapQty?: Prisma.SortOrder
   decidedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrder
+  voidReason?: Prisma.SortOrder
 }
 
 export type QCDecisionSumOrderByAggregateInput = {
@@ -502,6 +546,8 @@ export type QCDecisionCreateWithoutDecidedByInput = {
   releasedQty: number
   scrapQty?: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
   qcRecord: Prisma.QCRecordCreateNestedOneWithoutDecisionInput
 }
 
@@ -512,6 +558,8 @@ export type QCDecisionUncheckedCreateWithoutDecidedByInput = {
   releasedQty: number
   scrapQty?: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
 }
 
 export type QCDecisionCreateOrConnectWithoutDecidedByInput = {
@@ -551,6 +599,8 @@ export type QCDecisionScalarWhereInput = {
   scrapQty?: Prisma.IntFilter<"QCDecision"> | number
   decidedById?: Prisma.UuidFilter<"QCDecision"> | string
   createdAt?: Prisma.DateTimeFilter<"QCDecision"> | Date | string
+  voidedAt?: Prisma.DateTimeNullableFilter<"QCDecision"> | Date | string | null
+  voidReason?: Prisma.StringNullableFilter<"QCDecision"> | string | null
 }
 
 export type QCDecisionCreateWithoutQcRecordInput = {
@@ -559,6 +609,8 @@ export type QCDecisionCreateWithoutQcRecordInput = {
   releasedQty: number
   scrapQty?: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
   decidedBy: Prisma.AdminUserCreateNestedOneWithoutQcDecisionsInput
 }
 
@@ -569,6 +621,8 @@ export type QCDecisionUncheckedCreateWithoutQcRecordInput = {
   scrapQty?: number
   decidedById: string
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
 }
 
 export type QCDecisionCreateOrConnectWithoutQcRecordInput = {
@@ -593,6 +647,8 @@ export type QCDecisionUpdateWithoutQcRecordInput = {
   releasedQty?: Prisma.IntFieldUpdateOperationsInput | number
   scrapQty?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedBy?: Prisma.AdminUserUpdateOneRequiredWithoutQcDecisionsNestedInput
 }
 
@@ -603,6 +659,8 @@ export type QCDecisionUncheckedUpdateWithoutQcRecordInput = {
   scrapQty?: Prisma.IntFieldUpdateOperationsInput | number
   decidedById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type QCDecisionCreateManyDecidedByInput = {
@@ -612,6 +670,8 @@ export type QCDecisionCreateManyDecidedByInput = {
   releasedQty: number
   scrapQty?: number
   createdAt?: Date | string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
 }
 
 export type QCDecisionUpdateWithoutDecidedByInput = {
@@ -620,6 +680,8 @@ export type QCDecisionUpdateWithoutDecidedByInput = {
   releasedQty?: Prisma.IntFieldUpdateOperationsInput | number
   scrapQty?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qcRecord?: Prisma.QCRecordUpdateOneRequiredWithoutDecisionNestedInput
 }
 
@@ -630,6 +692,8 @@ export type QCDecisionUncheckedUpdateWithoutDecidedByInput = {
   releasedQty?: Prisma.IntFieldUpdateOperationsInput | number
   scrapQty?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type QCDecisionUncheckedUpdateManyWithoutDecidedByInput = {
@@ -639,6 +703,8 @@ export type QCDecisionUncheckedUpdateManyWithoutDecidedByInput = {
   releasedQty?: Prisma.IntFieldUpdateOperationsInput | number
   scrapQty?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -651,6 +717,8 @@ export type QCDecisionSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   scrapQty?: boolean
   decidedById?: boolean
   createdAt?: boolean
+  voidedAt?: boolean
+  voidReason?: boolean
   qcRecord?: boolean | Prisma.QCRecordDefaultArgs<ExtArgs>
   decidedBy?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["qCDecision"]>
@@ -663,6 +731,8 @@ export type QCDecisionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   scrapQty?: boolean
   decidedById?: boolean
   createdAt?: boolean
+  voidedAt?: boolean
+  voidReason?: boolean
   qcRecord?: boolean | Prisma.QCRecordDefaultArgs<ExtArgs>
   decidedBy?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["qCDecision"]>
@@ -675,6 +745,8 @@ export type QCDecisionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   scrapQty?: boolean
   decidedById?: boolean
   createdAt?: boolean
+  voidedAt?: boolean
+  voidReason?: boolean
   qcRecord?: boolean | Prisma.QCRecordDefaultArgs<ExtArgs>
   decidedBy?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["qCDecision"]>
@@ -687,9 +759,11 @@ export type QCDecisionSelectScalar = {
   scrapQty?: boolean
   decidedById?: boolean
   createdAt?: boolean
+  voidedAt?: boolean
+  voidReason?: boolean
 }
 
-export type QCDecisionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "qcRecordId" | "decision" | "releasedQty" | "scrapQty" | "decidedById" | "createdAt", ExtArgs["result"]["qCDecision"]>
+export type QCDecisionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "qcRecordId" | "decision" | "releasedQty" | "scrapQty" | "decidedById" | "createdAt" | "voidedAt" | "voidReason", ExtArgs["result"]["qCDecision"]>
 export type QCDecisionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   qcRecord?: boolean | Prisma.QCRecordDefaultArgs<ExtArgs>
   decidedBy?: boolean | Prisma.AdminUserDefaultArgs<ExtArgs>
@@ -720,6 +794,11 @@ export type $QCDecisionPayload<ExtArgs extends runtime.Types.Extensions.Internal
     scrapQty: number
     decidedById: string
     createdAt: Date
+    /**
+     * * R12F：决策随质检记录一起作废；作废决策不参与放行/报废/结算计算。
+     */
+    voidedAt: Date | null
+    voidReason: string | null
   }, ExtArgs["result"]["qCDecision"]>
   composites: {}
 }
@@ -1152,6 +1231,8 @@ export interface QCDecisionFieldRefs {
   readonly scrapQty: Prisma.FieldRef<"QCDecision", 'Int'>
   readonly decidedById: Prisma.FieldRef<"QCDecision", 'String'>
   readonly createdAt: Prisma.FieldRef<"QCDecision", 'DateTime'>
+  readonly voidedAt: Prisma.FieldRef<"QCDecision", 'DateTime'>
+  readonly voidReason: Prisma.FieldRef<"QCDecision", 'String'>
 }
     
 

@@ -1,11 +1,15 @@
 import { Prisma } from '../generated/prisma/client.ts';
 import type { Order, OrderItem } from '../generated/prisma/client.ts';
 import type { OrderStatus, Role } from '../generated/prisma/enums.ts';
+import { UNDO_WINDOW_MS } from '../lib/clock.ts';
 import { toDateOnly } from '../lib/time.ts';
 import {
+  activeDecision,
   computeAllowedActions,
   computeProfit,
   computeQuantities,
+  isActive,
+  sumActive,
   type FlowQuantities,
   type OrderAction,
   type OrderFlowRow,
@@ -294,6 +298,7 @@ export function toOrderDetail(
   userId: string,
   departmentId: string | null,
   departmentPriceVisible = false,
+  currentTime: Date = new Date(),
 ) {
   const showMoney = canSeeMoney(role);
   const summary = toOrderSummary(order, role);
@@ -303,17 +308,57 @@ export function toOrderDetail(
   const purchase = order.purchaseOrders[0] ?? null;
   const production = order.productions.at(-1) ?? null;
   const qcRecords = production?.qcRecords ?? [];
-  const qc = qcRecords.at(-1) ?? null;
+  // R12F：作废记录留在 DTO 里给现场看「哪条被撤了」，但「最近一轮」只看有效记录。
+  const activeQcRecords = qcRecords.filter(isActive);
+  const qc = activeQcRecords.at(-1) ?? null;
   // R09F：下一轮复检只针对“已判返工但尚未复检”的数量。
-  const pendingReinspection = qcRecords
-    .filter((record) => record.decision?.decision === 'REWORK')
+  const pendingReinspection = activeQcRecords
+    .filter((record) => activeDecision(record)?.decision === 'REWORK')
     .map((record) => {
-      const reinspected = qcRecords
+      const reinspected = activeQcRecords
         .filter((child) => child.parentQcRecordId === record.id)
         .reduce((sum, child) => sum + child.inspectedQty, 0);
       return { parentQcRecordId: record.id, quantity: Math.max(0, record.unqualifiedQty - reinspected) };
     })
     .find((row) => row.quantity > 0) ?? null;
+
+  /**
+   * R12F：撤销/修正资格由服务端算，前端只渲染。
+   * 窗口内：原操作者或管理员；超时后：仅管理员（修正）。
+   *
+   * remainingMs 是服务端口径的剩余毫秒，前端据此本地递减，
+   * 不再用客户端时钟去减绝对时间（客户端时钟偏移会把倒计时带偏）。
+   */
+  const reversible = (record: { operatorId: string; createdAt: Date; voidedAt: Date | null }) => {
+    if (record.voidedAt) {
+      return { canUndo: false, canCorrect: false, undoableUntil: null, remainingMs: null };
+    }
+    const isAdmin = role === 'ADMIN';
+    // 上限就是窗口本身：记录时间在未来（时钟漂移）时最多显示 10 分钟，不会跑出 8 小时倒计时。
+    const remainingMs = Math.min(
+      record.createdAt.getTime() + UNDO_WINDOW_MS - currentTime.getTime(),
+      UNDO_WINDOW_MS,
+    );
+    const withinWindow = remainingMs >= 0;
+    const canUndo = withinWindow && (isAdmin || record.operatorId === userId);
+    return {
+      canUndo,
+      canCorrect: isAdmin,
+      undoableUntil: withinWindow
+        ? new Date(record.createdAt.getTime() + UNDO_WINDOW_MS).toISOString()
+        : null,
+      remainingMs: canUndo ? remainingMs : null,
+    };
+  };
+  const voidFields = (record: {
+    voidedAt: Date | null;
+    voidReason: string | null;
+    voidedBy?: { displayName: string } | null;
+  }) => ({
+    voidedAt: record.voidedAt?.toISOString() ?? null,
+    voidReason: record.voidReason,
+    voidedByName: record.voidedBy?.displayName ?? null,
+  });
 
   return {
     ...summary,
@@ -345,12 +390,15 @@ export function toOrderDetail(
               platingReceivedQty: item.platingOrders
                 .filter((row) => row.status === 'RECEIVED')
                 .reduce((sum, row) => sum + row.quantity, 0),
-              arrivedQty: item.arrivals.reduce((sum, arrival) => sum + arrival.quantity, 0),
+              // R12F：作废到货不计入到货量，但仍逐行返回，前端灰显并标原因。
+              arrivedQty: sumActive(item.arrivals),
               arrivals: item.arrivals.map((arrival) => ({
                 id: arrival.id,
                 quantity: arrival.quantity,
                 operatorName: arrival.operator.displayName,
                 createdAt: arrival.createdAt.toISOString(),
+                ...voidFields(arrival),
+                undo: reversible(arrival),
               })),
             })),
           }
@@ -386,7 +434,7 @@ export function toOrderDetail(
               employeeName: production.employee?.name ?? null,
               processName: production.processName,
               quantity: production.quantity,
-              completedQty: production.feedbacks.reduce((sum, f) => sum + f.quantity, 0),
+              completedQty: sumActive(production.feedbacks),
               unitPrice: showMoney ? production.unitPrice.toFixed(2) : null,
               unitPriceVisible: production.unitPriceVisible,
               // R08F：任务级开关，或“本部门 + 部门开关”同时成立时，现场人员才看得到工艺价。
@@ -398,12 +446,15 @@ export function toOrderDetail(
                   : null,
               dueDate: production.dueDate ? toDateOnly(production.dueDate) : null,
               createdAt: production.createdAt.toISOString(),
+              // R12F：带上作废标记，前端才能把撤销掉的反馈标出来。
               feedback: production.feedbacks.at(-1)
                 ? {
                     id: production.feedbacks.at(-1)!.id,
                     quantity: production.feedbacks.at(-1)!.quantity,
                     operatorName: production.feedbacks.at(-1)!.operator.displayName,
                     createdAt: production.feedbacks.at(-1)!.createdAt.toISOString(),
+                    ...voidFields(production.feedbacks.at(-1)!),
+                    undo: reversible(production.feedbacks.at(-1)!),
                   }
                 : null,
             }
@@ -418,34 +469,41 @@ export function toOrderDetail(
             parentQcRecordId: qc.parentQcRecordId,
             operatorName: qc.operator.displayName,
             createdAt: qc.createdAt.toISOString(),
-            decision: qc.decision
+            ...voidFields(qc),
+            undo: reversible(qc),
+            decision: activeDecision(qc)
               ? {
-                  decision: qc.decision.decision,
-                  releasedQty: qc.decision.releasedQty,
-                  scrapQty: qc.decision.scrapQty,
-                  decidedByName: qc.decision.decidedBy.displayName,
-                  createdAt: qc.decision.createdAt.toISOString(),
+                  decision: activeDecision(qc)!.decision,
+                  releasedQty: activeDecision(qc)!.releasedQty,
+                  scrapQty: activeDecision(qc)!.scrapQty,
+                  decidedByName: qc.decision!.decidedBy.displayName,
+                  createdAt: qc.decision!.createdAt.toISOString(),
                 }
               : null,
-            records: qcRecords.map((record) => ({
-              id: record.id,
-              round: record.round,
-              parentQcRecordId: record.parentQcRecordId,
-              inspectedQty: record.inspectedQty,
-              qualifiedQty: record.qualifiedQty,
-              unqualifiedQty: record.unqualifiedQty,
-              operatorName: record.operator.displayName,
-              createdAt: record.createdAt.toISOString(),
-              decision: record.decision
-                ? {
-                    decision: record.decision.decision,
-                    releasedQty: record.decision.releasedQty,
-                    scrapQty: record.decision.scrapQty,
-                    decidedByName: record.decision.decidedBy.displayName,
-                    createdAt: record.decision.createdAt.toISOString(),
-                  }
-                : null,
-            })),
+            records: qcRecords.map((record) => {
+              const decision = activeDecision(record);
+              return {
+                id: record.id,
+                round: record.round,
+                parentQcRecordId: record.parentQcRecordId,
+                inspectedQty: record.inspectedQty,
+                qualifiedQty: record.qualifiedQty,
+                unqualifiedQty: record.unqualifiedQty,
+                operatorName: record.operator.displayName,
+                createdAt: record.createdAt.toISOString(),
+                ...voidFields(record),
+                undo: reversible(record),
+                decision: decision
+                  ? {
+                      decision: decision.decision,
+                      releasedQty: decision.releasedQty,
+                      scrapQty: decision.scrapQty,
+                      decidedByName: record.decision!.decidedBy.displayName,
+                      createdAt: record.decision!.createdAt.toISOString(),
+                    }
+                  : null,
+              };
+            }),
             pendingReinspection,
           }
         : null,
@@ -456,6 +514,8 @@ export function toOrderDetail(
           quantity: record.quantity,
           operatorName: record.operator.displayName,
           createdAt: record.createdAt.toISOString(),
+          ...voidFields(record),
+          undo: reversible(record),
         })),
       },
       shipping: {
@@ -465,6 +525,8 @@ export function toOrderDetail(
           quantity: record.quantity,
           operatorName: record.operator.displayName,
           createdAt: record.createdAt.toISOString(),
+          ...voidFields(record),
+          undo: reversible(record),
         })),
       },
       profit: showMoney ? computeProfit(order) : null,

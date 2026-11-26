@@ -1,7 +1,7 @@
 # API 契约
 
-版本：0.3.0｜Base URL：`/api/v1`
-更新时间：2026-11-04
+版本：0.4.0｜Base URL：`/api/v1`
+更新时间：2026-11-26
 实现：`backend/src/routes/*.ts`；前端封装：`frontend/src/api/client.ts`
 
 ## 1. 通用规则
@@ -43,7 +43,7 @@
 - 作用域：`(actorId, operation, key)`，有效期 24 小时。
 - 同键不同请求体：409 `IDEMPOTENCY_KEY_REUSED`；首次仍在处理：409 `REQUEST_IN_PROGRESS`。
 - 已完成的请求重放：返回首次响应，HTTP 200，并带 `Idempotent-Replayed: true`。
-- 适用接口：`POST /orders`、全部订单流转接口、全部库存写接口（配件调整、成品建档、成品调整）以及生产单价开关。
+- 适用接口：`POST /orders`、全部订单流转接口、五类记录的撤销/修正接口（`POST /arrivals|feedbacks|qc-records|packing-records|shipment-records/:id/undo|correct`）、全部库存写接口（配件调整、成品建档、成品调整）以及生产单价开关。
 - 库存写接口的请求哈希包含资源 ID：同一个键打到另一条库存行会被判为“同键异体”并返回 409。
 
 ### 1.4 分页与时间
@@ -74,6 +74,9 @@
 | 409 | `QC_DECISION_PENDING` / `QC_ALL_INSPECTED` / `QC_PARENT_NOT_REWORK` / `QC_REWORK_COMPLETE` | 上一轮未决策 / 首检已满 / 父记录非返工 / 返工已复检完 |
 | 409 | `EXCEPTION_REVIEW_REQUIRED` / `EXCEPTION_REVIEW_IN_PROGRESS` / `EXCEPTION_QC_PENDING_DECISION` | 手填 `WAITING_QC` / 同任务已有复核 / 质检未决策 |
 | 409 | `EXCEPTION_QC_REQUIRED` / `EXCEPTION_QC_NOT_PASSED` | 质量异常无凭证 / 关联质检未 PASS |
+| 409 | `RECORD_ALREADY_VOIDED` / `UNDO_WINDOW_EXPIRED` | 记录已作废 / 超过 10 分钟撤销窗口（`details.undoableUntil`） |
+| 409 | `UNDO_HAS_PRODUCTION` / `UNDO_HAS_PLATING` / `UNDO_HAS_QC` / `UNDO_HAS_CHILD_QC` / `UNDO_HAS_PACKING` / `UNDO_HAS_SHIPMENT` | R12F 下游依赖未解除，必须按依赖逆序撤销 |
+| 409 | `UNDO_EXCEPTION_REVIEWING` / `UNDO_EXCEPTION_REFERENCED` | 被待复核异常引用 / 是已解决异常的凭证 |
 | 422 | `QC_PASS_WITH_UNQUALIFIED` / `QC_NO_UNQUALIFIED` / `QC_EXCEEDS_REWORK` | PASS 带不合格 / 无不合格却返工报废 / 复检超返工量 |
 | 422 | `EXCEPTION_NO_PRODUCTION` / `EXCEPTION_NO_PRODUCED_QTY` / `EXCEPTION_NO_QC_BASIS` / `EXCEPTION_QC_NOT_AVAILABLE` | 复核前置条件不满足 |
 | 422 | 业务码，如 `ARRIVAL_EXCEEDS_REMAINING`、`QC_QTY_MISMATCH`、`PACKING_EXCEEDS_REMAINING`、`SHIPMENT_EXCEEDS_LIMIT` | 业务规则拒绝 |
@@ -165,6 +168,28 @@
 
 所有流转接口返回最新订单详情；新建类动作初始返回 201，重放返回 200。
 
+### 4.3 撤销与修正（R12F）
+
+五类录入记录支持在 **10 分钟窗口内撤销**；超时后仅管理员可「留痕修正」（必填原因）。两者都只置作废标记，不删行。
+
+| 方法/路径 | 角色 | 请求体 | 成功 | 关键拒绝码 |
+| --- | --- | --- | --- | --- |
+| `POST /arrivals/:id/undo` | 原操作者或 ADMIN | 空对象 | 200 最新订单详情 | `UNDO_WINDOW_EXPIRED`、`RECORD_ALREADY_VOIDED`、`UNDO_HAS_PRODUCTION`、`UNDO_HAS_PLATING` |
+| `POST /feedbacks/:id/undo` | 原操作者或 ADMIN | 空对象 | 同上 | `UNDO_HAS_QC`、`UNDO_EXCEPTION_REVIEWING` |
+| `POST /qc-records/:id/undo` | 原操作者或 ADMIN | 空对象 | 同上；决策同事务作废 | `UNDO_HAS_CHILD_QC`、`UNDO_HAS_PACKING`、`UNDO_EXCEPTION_REFERENCED` |
+| `POST /packing-records/:id/undo` | 原操作者或 ADMIN | 空对象 | 同上 | `UNDO_HAS_SHIPMENT` |
+| `POST /shipment-records/:id/undo` | 原操作者或 ADMIN | 空对象 | 同上；`COMPLETED` 退回 `SHIPPING` | — |
+| `POST /arrivals|feedbacks|qc-records|packing-records|shipment-records/:id/correct` | ADMIN | `{reason}` 2–200 字 | 200 最新订单详情 | 400 `VALIDATION_ERROR` |
+
+口径：
+
+- 必须带 `Idempotency-Key`；重放返回首次响应，HTTP 200，带 `Idempotent-Replayed: true`。
+- 「原操作者」按记录的 `operatorId` 判定；其他人 403 `FORBIDDEN`。管理员不受窗口与操作者限制。
+- 作废行仍在订单详情的 `arrivals` / `qc.records` / `packing.records` / `shipping.records` 里返回，但**不参与任何数量计算**。
+- 订单状态只允许三条反向边：`COMPLETED→SHIPPING`（清 `completedAt`）、`QC_DONE→PENDING_QC`、`PENDING_QC→IN_PRODUCTION`；`PACKING`/`SHIPPING` 不因数量归零而回退。
+- 每条记录附带 `voidedAt/voidReason/voidedByName` 与 `undo{canUndo,canCorrect,undoableUntil,remainingMs}`。`canUndo` 只表达「身份 + 窗口」资格，**不代表下游依赖一定通过**；最终以服务端守卫为准，前端按返回的错误码提示。
+- 事件类型：`ARRIVAL_UNDONE`/`CORRECTED`、`PRODUCTION_FEEDBACK_UNDONE`/`CORRECTED`、`QC_RECORD_UNDONE`/`CORRECTED`、`PACKING_UNDONE`/`CORRECTED`、`SHIPMENT_UNDONE`/`CORRECTED`。
+
 ## 5. 库存
 
 | 方法/路径 | 角色 | 请求 | 成功 | 说明 |
@@ -232,6 +257,7 @@
 | --- | --- | --- |
 | 认证/用户 | `LoginPage`、`UsersPage`、`AuthContext` | `backend/tests/auth.test.ts` |
 | 订单主链 | `NewOrderPage`、`OrderDetailPage`、`FlowPanel` | `backend/tests/flow.test.ts`、`domain.test.ts` |
+| 撤销/修正（R12F） | `OrderDetailPage`、`RecordsPanel` | `backend/tests/undo.test.ts`、`domain.test.ts` |
 | 基础数据 | `BaseDataPage` | `backend/tests/basedata.test.ts` |
 | 库存 | `InventoryPage` | `backend/tests/inventory.test.ts` |
 | 通知/提醒 | `NotificationsPage`、`AppShell` | `backend/tests/jobs.test.ts` |

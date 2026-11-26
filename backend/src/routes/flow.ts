@@ -3,12 +3,18 @@ import { z } from 'zod';
 import { authenticate, authContext, requireAdmin, requireRoles } from '../auth/guards.ts';
 import { prisma } from '../db.ts';
 import { flowInclude } from '../domain/flow.ts';
-import { computeQuantities } from '../domain/flow.ts';
+import {
+  activeDecision,
+  computeQuantities,
+  isActive,
+  sumActive,
+} from '../domain/flow.ts';
 import { toOrderDetail } from '../domain/orders.ts';
 import { Errors } from '../errors.ts';
 import type { Prisma } from '../generated/prisma/client.ts';
 import { ok } from '../http/respond.ts';
 import { writeAudit } from '../lib/audit.ts';
+import { now } from '../lib/clock.ts';
 import { recordEvent } from '../lib/events.ts';
 import { replayHeaders, runIdempotent } from '../lib/idempotency.ts';
 import { isDateOnly, parseDateOnly } from '../lib/time.ts';
@@ -75,7 +81,7 @@ const shipmentSchema = z.object({ quantity: positiveInt });
 
 const emptyBody = z.object({}).passthrough().optional();
 
-async function loadOrder(tx: Tx, orderId: string) {
+export async function loadOrder(tx: Tx, orderId: string) {
   const order = await tx.order.findUnique({
     where: { id: orderId },
     include: flowInclude,
@@ -84,7 +90,11 @@ async function loadOrder(tx: Tx, orderId: string) {
   return order;
 }
 
-async function finish(tx: Tx, orderId: string, role: Parameters<typeof toOrderDetail>[1], userId: string, departmentId: string | null, status = 200) {
+/**
+ * 统一的「返回最新订单详情」出口。
+ * R12F 的撤销路由也复用它，避免两套 finish 各自漂移。
+ */
+export async function finish(tx: Tx, orderId: string, role: Parameters<typeof toOrderDetail>[1], userId: string, departmentId: string | null, status = 200) {
   const fresh = await loadOrder(tx, orderId);
   // R08F：只对生产角色多查一次部门开关，其他角色不需要。
   const department =
@@ -102,6 +112,8 @@ async function finish(tx: Tx, orderId: string, role: Parameters<typeof toOrderDe
       userId,
       departmentId,
       department?.unitPriceVisible ?? false,
+      // R12F：与撤销守卫共用同一时钟，测试注入后 DTO 的 canUndo 才与真实守卫一致。
+      now(),
     ),
     resourceId: orderId,
   };
@@ -233,7 +245,8 @@ export async function flowRoutes(app: FastifyInstance): Promise<void> {
         const item = purchase.items[0];
         if (!item) throw Errors.business('采购单没有明细', 'PURCHASE_EMPTY');
 
-        const arrived = item.arrivals.reduce((sum, arrival) => sum + arrival.quantity, 0);
+        // R12F：作废的到货不占剩余量，撤销后才能重新登记。
+        const arrived = sumActive(item.arrivals);
         const remaining = item.quantity - arrived;
         if (body.quantity > remaining) {
           throw Errors.business(`本次到货 ${body.quantity} 超过采购剩余 ${remaining}`, 'ARRIVAL_EXCEEDS_REMAINING', {
@@ -290,7 +303,8 @@ export async function flowRoutes(app: FastifyInstance): Promise<void> {
       include: { arrivals: true, platingOrders: true },
     });
     if (!item) throw Errors.notFound('采购项不存在', 'PURCHASE_ITEM_NOT_FOUND');
-    const arrived = item.arrivals.reduce((sum, arrival) => sum + arrival.quantity, 0);
+    // R12F：作废到货不计入可电镀余量。
+    const arrived = sumActive(item.arrivals);
     const others = item.platingOrders
       .filter((row) => row.id !== plating.id)
       .reduce((sum, row) => sum + row.quantity, 0);
@@ -332,7 +346,8 @@ export async function flowRoutes(app: FastifyInstance): Promise<void> {
             throw Errors.business('只能选择类型为电镀厂商的供应商', 'PLATING_SUPPLIER_REQUIRED');
           }
 
-          const arrived = purchaseItem.arrivals.reduce((sum, row) => sum + row.quantity, 0);
+          // R12F：作废到货不占电镀余量。
+          const arrived = sumActive(purchaseItem.arrivals);
           const already = purchaseItem.platingOrders.reduce((sum, row) => sum + row.quantity, 0);
           const remaining = Math.max(0, arrived - already);
           if (body.quantity > remaining) {
@@ -734,7 +749,8 @@ export async function flowRoutes(app: FastifyInstance): Promise<void> {
         if (auth.user.departmentId === null || production.departmentId !== auth.user.departmentId) {
           throw Errors.forbidden('该生产任务不属于你的部门');
         }
-        if (production.feedbacks.length > 0) {
+        // R12F：作废的反馈不阻止重新反馈。
+        if (production.feedbacks.some(isActive)) {
           throw Errors.conflict('FEEDBACK_ALREADY_RECORDED', '该生产任务已反馈，M 版本一次任务一次反馈');
         }
         if (body.quantity > production.quantity) {
@@ -799,10 +815,11 @@ export async function flowRoutes(app: FastifyInstance): Promise<void> {
 
         const production = order.productions.at(-1);
         if (!production) throw Errors.business('还没有生产任务', 'PRODUCTION_REQUIRED');
-        if (production.qcRecords.length > 0) {
+        // R12F：作废的质检记录不算「已下发」。
+        if (production.qcRecords.some(isActive)) {
           throw Errors.conflict('QC_ALREADY_DISPATCHED', '该生产任务已下发质检');
         }
-        const produced = production.feedbacks.reduce((sum, f) => sum + f.quantity, 0);
+        const produced = sumActive(production.feedbacks);
         if (produced <= 0) throw Errors.business('生产尚未反馈完成数量，不能下发质检', 'NO_PRODUCED_QTY');
 
         await tx.order.update({ where: { id: order.id }, data: { status: 'PENDING_QC' } });
@@ -867,25 +884,27 @@ export async function flowRoutes(app: FastifyInstance): Promise<void> {
         }
 
         // 上一轮结果未决策前不能开始下一轮，否则返工/报废数量会被重复计算。
-        if (production.qcRecords.some((record) => !record.decision)) {
+        // R12F：作废记录视同不存在，不阻塞新一轮录入。
+        if (production.qcRecords.some((record) => isActive(record) && !activeDecision(record))) {
           throw Errors.conflict('QC_DECISION_PENDING', '上一轮质检尚未决策，不能录入新一轮');
         }
 
-        const produced = production.feedbacks.reduce((sum, f) => sum + f.quantity, 0);
+        const produced = sumActive(production.feedbacks);
         let round = 1;
         let parentQcRecordId: string | null = null;
 
         if (body.parentQcRecordId) {
           // R09F 复检：只针对父记录判返工后、尚未复检的数量。
           const parent = production.qcRecords.find((record) => record.id === body.parentQcRecordId);
-          if (!parent) {
+          if (!parent || !isActive(parent)) {
             throw Errors.notFound('原质检记录不存在或不属于该生产任务', 'QC_PARENT_NOT_FOUND');
           }
-          if (parent.decision?.decision !== 'REWORK') {
+          if (activeDecision(parent)?.decision !== 'REWORK') {
             throw Errors.conflict('QC_PARENT_NOT_REWORK', '原质检记录不是返工决策，不能作为复检依据');
           }
+          // R12F：作废的复检记录不再占用待复检量。
           const reinspected = production.qcRecords
-            .filter((record) => record.parentQcRecordId === parent.id)
+            .filter((record) => isActive(record) && record.parentQcRecordId === parent.id)
             .reduce((sum, record) => sum + record.inspectedQty, 0);
           const remaining = parent.unqualifiedQty - reinspected;
           if (remaining <= 0) {
@@ -901,9 +920,9 @@ export async function flowRoutes(app: FastifyInstance): Promise<void> {
           round = parent.round + 1;
           parentQcRecordId = parent.id;
         } else {
-          // 首检可分多批，但累计不能超过已生产数量。
+          // 首检可分多批，但累计不能超过已生产数量。R12F：作废记录不占首检额度。
           const initialInspected = production.qcRecords
-            .filter((record) => record.round === 1)
+            .filter((record) => isActive(record) && record.round === 1)
             .reduce((sum, record) => sum + record.inspectedQty, 0);
           const remaining = produced - initialInspected;
           if (remaining <= 0) {
@@ -1043,19 +1062,20 @@ export async function flowRoutes(app: FastifyInstance): Promise<void> {
           where: { productionOrderId: record.productionOrderId },
           include: { decision: true },
         });
-        const releasedTotal = records.reduce(
-          (sum, row) => sum + (row.decision?.releasedQty ?? 0),
+        // R12F：作废记录与作废决策都不参与结算判断。
+        const activeRecords = records.filter(isActive);
+        const releasedTotal = activeRecords.reduce(
+          (sum, row) => sum + (activeDecision(row)?.releasedQty ?? 0),
           0,
         );
-        const scrappedTotal = records.reduce(
-          (sum, row) => sum + (row.decision?.scrapQty ?? 0),
+        const scrappedTotal = activeRecords.reduce(
+          (sum, row) => sum + (activeDecision(row)?.scrapQty ?? 0),
           0,
         );
-        const produced = record.productionOrder.feedbacks.reduce(
-          (sum, feedback) => sum + feedback.quantity,
-          0,
-        );
-        const settled = releasedTotal + scrappedTotal >= produced && !records.some((row) => !row.decision);
+        const produced = sumActive(record.productionOrder.feedbacks);
+        const settled =
+          releasedTotal + scrappedTotal >= produced &&
+          !activeRecords.some((row) => !activeDecision(row));
         if (settled) {
           await tx.order.update({ where: { id: order.id }, data: { status: 'QC_DONE' } });
         }

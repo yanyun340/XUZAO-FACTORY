@@ -1,7 +1,7 @@
 # 序造 XuZao 文档索引
 
-当前版本：`0.3.0`（第三轮考核交付版本）
-更新时间：2026-11-04
+当前版本：`0.4.0`
+更新时间：2026-11-26
 适用代码：本仓库当前提交（`main` 分支，未打 tag）
 
 先读根目录 [README.md](../README.md) 启动项目，再按下面的分工查阅。文档只描述**已实现并有验证记录**的行为；未做或部分完成的项集中写在 [feature-status.md](feature-status.md)，不在这里写成承诺。
@@ -25,8 +25,8 @@
 
 | 证据 | 位置 | 说明 |
 | --- | --- | --- |
-| 自动化测试代码 | `backend/tests/` | 15 个 Vitest 文件，真实隔离库 `xuzao_test` |
-| 最近一次执行结果 | `tests/reports/2026-11-25-qc-reinspection.md` | 131 个用例全部通过，命令与耗时均已记录 |
+| 自动化测试代码 | `backend/tests/` | 16 个 Vitest 文件，真实隔离库 `xuzao_test` |
+| 最近一次执行结果 | `tests/reports/2026-11-26-record-undo.md` | 166 个用例全部通过，命令与耗时均已记录 |
 | 部署与回退演练 | `tests/reports/2026-11-14-deploy-rollback.md` | `/ready` 三项检查；0.1.0 代码运行在 0.2.0 结构上的回退演练 |
 | 备份恢复演练 | `tests/reports/2026-11-04-backup-restore.md` | 恢复到新库 `xuzao_restore_verify_20261104b` 与隔离附件目录，28 张表 + 2 个附件核对一致 |
 | 手工冒烟脚本 | `scripts/smoke-*.mjs` | 开发期使用，不作为自动化验收证据；说明见 `tests/README.md` |

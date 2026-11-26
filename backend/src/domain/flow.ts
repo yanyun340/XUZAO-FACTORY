@@ -25,7 +25,10 @@ export const flowInclude = {
         include: {
           arrivals: {
             orderBy: { createdAt: 'asc' },
-            include: { operator: { select: { displayName: true } } },
+            include: {
+              operator: { select: { displayName: true } },
+              voidedBy: { select: { displayName: true } },
+            },
           },
           platingOrders: { orderBy: { createdAt: 'asc' } },
         },
@@ -39,12 +42,16 @@ export const flowInclude = {
       employee: { select: { name: true } },
       feedbacks: {
         orderBy: { createdAt: 'asc' },
-        include: { operator: { select: { displayName: true } } },
+        include: {
+          operator: { select: { displayName: true } },
+          voidedBy: { select: { displayName: true } },
+        },
       },
       qcRecords: {
         orderBy: { createdAt: 'asc' },
         include: {
           operator: { select: { displayName: true } },
+          voidedBy: { select: { displayName: true } },
           decision: { include: { decidedBy: { select: { displayName: true } } } },
         },
       },
@@ -52,11 +59,17 @@ export const flowInclude = {
   },
   packingRecords: {
     orderBy: { createdAt: 'asc' },
-    include: { operator: { select: { displayName: true } } },
+    include: {
+      operator: { select: { displayName: true } },
+      voidedBy: { select: { displayName: true } },
+    },
   },
   shipments: {
     orderBy: { createdAt: 'asc' },
-    include: { operator: { select: { displayName: true } } },
+    include: {
+      operator: { select: { displayName: true } },
+      voidedBy: { select: { displayName: true } },
+    },
   },
 } satisfies Prisma.OrderInclude;
 
@@ -88,12 +101,12 @@ export type QuantitySource = {
     items: ReadonlyArray<{
       quantity: number;
       platingRequired?: boolean;
-      arrivals: ReadonlyArray<{ quantity: number }>;
+      arrivals: ReadonlyArray<{ quantity: number; voidedAt?: Date | null }>;
       platingOrders?: ReadonlyArray<{ quantity: number; status: string }>;
     }>;
   }>;
   productions: ReadonlyArray<{
-    feedbacks: ReadonlyArray<{ quantity: number }>;
+    feedbacks: ReadonlyArray<{ quantity: number; voidedAt?: Date | null }>;
     qcRecords: ReadonlyArray<{
       id: string;
       inspectedQty: number;
@@ -101,12 +114,42 @@ export type QuantitySource = {
       unqualifiedQty: number;
       round: number;
       parentQcRecordId: string | null;
-      decision: { decision: string; releasedQty: number; scrapQty: number } | null;
+      voidedAt?: Date | null;
+      decision: {
+        decision: string;
+        releasedQty: number;
+        scrapQty: number;
+        voidedAt?: Date | null;
+      } | null;
     }>;
   }>;
-  packingRecords: ReadonlyArray<{ quantity: number }>;
-  shipments: ReadonlyArray<{ quantity: number }>;
+  packingRecords: ReadonlyArray<{ quantity: number; voidedAt?: Date | null }>;
+  shipments: ReadonlyArray<{ quantity: number; voidedAt?: Date | null }>;
 };
+
+/** R12F：作废记录不参与任何数量计算。 */
+export function isActive(row: { voidedAt?: Date | null }): boolean {
+  return !row.voidedAt;
+}
+
+/** R12F：过滤作废行后求和。routes 里的裸 reduce 都应改用它。 */
+export function sumActive(rows: ReadonlyArray<{ quantity: number; voidedAt?: Date | null }>): number {
+  return rows.reduce((total, row) => (isActive(row) ? total + row.quantity : total), 0);
+}
+
+/**
+ * R12F：有效决策。作废的决策行仍在表里，但语义上「没有决策」。
+ * 两种作废都要处理：记录被作废（随记录一起作废），以及决策自己被作废。
+ */
+export function activeDecision<
+  T extends { decision: unknown; voidedAt?: Date | null },
+>(record: T): T['decision'] | null {
+  if (record.voidedAt) return null;
+  const decision = record.decision as unknown as { voidedAt?: Date | null } | null;
+  if (!decision) return null;
+  if (decision.voidedAt) return null;
+  return decision as T['decision'];
+}
 
 /** 数量口径：全部来自有效业务记录求和，不依赖可被前端改写的汇总字段。 */
 export interface FlowQuantities {
@@ -144,39 +187,54 @@ export function computeQuantities(order: QuantitySource): FlowQuantities {
   );
   const arrivedQty = sum(
     order.purchaseOrders.flatMap((po) =>
-      po.items.flatMap((item) => item.arrivals.map((arrival) => arrival.quantity)),
+      po.items.flatMap((item) =>
+        item.arrivals.filter(isActive).map((arrival) => arrival.quantity),
+      ),
     ),
   );
   const production = order.productions.at(-1);
-  const producedQty = sum((production?.feedbacks ?? []).map((feedback) => feedback.quantity));
+  // R12F：作废的反馈不算「已生产」，撤销反馈后必须回到可重新反馈的状态。
+  const producedQty = sumActive(production?.feedbacks ?? []);
 
   const qcRecords = order.productions.flatMap((p) => p.qcRecords);
+  const activeQcRecords = qcRecords.filter(isActive);
   // R09F：首检可能分多批；复检记录单独成轮，不影响首检累计。
-  const inspectedQty = sum(qcRecords.filter((record) => record.round === 1).map((record) => record.inspectedQty));
-  const qualifiedQty = sum(qcRecords.map((record) => record.qualifiedQty));
+  const inspectedQty = sum(
+    activeQcRecords.filter((record) => record.round === 1).map((record) => record.inspectedQty),
+  );
+  const qualifiedQty = sum(activeQcRecords.map((record) => record.qualifiedQty));
+  // R12F：作废决策不释放、不报废、不算已决策。
+  // 保留 `?? 0`：部分 select 不带 scrapQty（历史数据与测试夹具），缺字段应算 0 而不是 NaN。
   const releasedQty = sum(
-    qcRecords.flatMap((record) => (record.decision ? [record.decision.releasedQty] : [])),
+    activeQcRecords.flatMap((record) => {
+      const decision = activeDecision(record);
+      return decision ? [decision.releasedQty] : [];
+    }),
   );
   const scrappedQty = sum(
-    qcRecords.flatMap((record) => (record.decision ? [record.decision.scrapQty] : [])),
+    activeQcRecords.flatMap((record) => {
+      const decision = activeDecision(record);
+      return decision ? [decision.scrapQty ?? 0] : [];
+    }),
   );
   const undecidedQty = sum(
-    qcRecords.filter((record) => !record.decision).map((record) => record.inspectedQty),
+    activeQcRecords.filter((record) => !activeDecision(record)).map((record) => record.inspectedQty),
   );
   // 每张返工决策的可复检量 = 不合格量 − 已复检量；累计到仍未复检的返工量。
   const reworkPendingQty = sum(
-    qcRecords.flatMap((record) => {
-      if (record.decision?.decision !== 'REWORK') return [0];
+    activeQcRecords.flatMap((record) => {
+      const decision = activeDecision(record);
+      if (decision?.decision !== 'REWORK') return [0];
       const reinspected = sum(
-        qcRecords
+        activeQcRecords
           .filter((child) => child.parentQcRecordId === record.id)
           .map((child) => child.inspectedQty),
       );
       return [Math.max(0, record.unqualifiedQty - reinspected)];
     }),
   );
-  const packedQty = sum(order.packingRecords.map((record) => record.quantity));
-  const shippedQty = sum(order.shipments.map((record) => record.quantity));
+  const packedQty = sumActive(order.packingRecords);
+  const shippedQty = sumActive(order.shipments);
 
   const purchaseItems = order.purchaseOrders.flatMap((po) => po.items);
   const platingRequiredQty = sum(
@@ -242,7 +300,8 @@ export function computeProfit(order: OrderFlowRow): ProfitSummary {
       new Prisma.Decimal(0),
     );
   const productionCost = order.productions.reduce((total, production) => {
-    const completed = production.feedbacks.reduce((qty, feedback) => qty + feedback.quantity, 0);
+    // R12F：作废的反馈不计入生产成本。
+    const completed = sumActive(production.feedbacks);
     return total.plus(production.unitPrice.times(completed));
   }, new Prisma.Decimal(0));
 
@@ -307,8 +366,11 @@ export function computeAllowedActions(
   const actions: OrderAction[] = [];
   const purchase = order.purchaseOrders[0] ?? null;
   const production = order.productions.at(-1) ?? null;
-  const feedback = production?.feedbacks.at(-1) ?? null;
-  const hasInitialQc = production?.qcRecords.some((record) => record.round === 1) ?? false;
+  // R12F：作废行仍在集合里，但不能再被当成「已反馈」「已首检」。
+  const activeFeedbacks = (production?.feedbacks ?? []).filter(isActive);
+  const feedback = activeFeedbacks.at(-1) ?? null;
+  const activeQcRecords = (production?.qcRecords ?? []).filter(isActive);
+  const hasInitialQc = activeQcRecords.some((record) => record.round === 1);
 
   if (role === 'ADMIN') {
     if (order.status === 'PENDING_PURCHASE' && !purchase) actions.push('create-purchase');

@@ -2,6 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { authenticate, authContext, requireAdmin } from '../auth/guards.ts';
 import { prisma } from '../db.ts';
+import { activeDecision, isActive } from '../domain/flow.ts';
 import { canSeeMoney, toOrderSummary } from '../domain/orders.ts';
 import { Errors } from '../errors.ts';
 import type { Prisma } from '../generated/prisma/client.ts';
@@ -203,7 +204,8 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
         select: { quantity: true, unitPrice: true },
       }),
       prisma.productionFeedback.findMany({
-        where: { productionOrder: { order: where } },
+        // R12F：作废反馈不计入看板产量与生产成本。
+        where: { productionOrder: { order: where }, voidedAt: null },
         select: { quantity: true, productionOrder: { select: { unitPrice: true } } },
       }),
       prisma.platingOrder.findMany({
@@ -224,12 +226,17 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
           departmentId: true,
           department: { select: { name: true } },
           quantity: true,
-          feedbacks: { select: { quantity: true } },
+          // R12F：生产看板只统计未作废的反馈。
+          feedbacks: { where: { voidedAt: null }, select: { quantity: true } },
         },
       }),
       prisma.partInventory.aggregate({ _sum: { quantity: true } }),
       prisma.productInventory.aggregate({ _sum: { quantity: true } }),
-      prisma.shipmentRecord.findMany({ where: { order: where }, select: { quantity: true } }),
+      prisma.shipmentRecord.findMany({
+        // R12F：作废发货不计入发货完成率。
+        where: { order: where, voidedAt: null },
+        select: { quantity: true },
+      }),
       prisma.adminUser.findMany({
         where: { active: true, role: 'ADMIN' },
         select: { id: true, displayName: true },
@@ -629,7 +636,8 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
                 where: { id: current.qcRecordId },
                 include: { decision: true },
               });
-              if (qc?.decision?.decision !== 'PASS') {
+              // R12F：作废的质检记录不能充当解决凭证。
+              if (!qc || !isActive(qc) || activeDecision(qc)?.decision !== 'PASS') {
                 throw Errors.conflict(
                   'EXCEPTION_QC_NOT_PASSED',
                   '关联质检尚未通过，不能标记解决',
@@ -773,8 +781,9 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
             );
           }
 
-          const records = production.qcRecords;
-          if (records.some((record) => !record.decision)) {
+          // R12F：作废记录与作废决策视同不存在。
+          const records = production.qcRecords.filter(isActive);
+          if (records.some((record) => !activeDecision(record))) {
             throw Errors.conflict(
               'EXCEPTION_QC_PENDING_DECISION',
               '已有质检结果等待管理员决策，不能重复下发复核',
@@ -817,7 +826,7 @@ export async function collabRoutes(app: FastifyInstance): Promise<void> {
           } else {
             // 已首检：只有存在未复检的返工量时才允许复核。
             const reworkPending = records.reduce((total, record) => {
-              if (record.decision?.decision !== 'REWORK') return total;
+              if (activeDecision(record)?.decision !== 'REWORK') return total;
               const reinspected = records
                 .filter((child) => child.parentQcRecordId === record.id)
                 .reduce((sum, child) => sum + child.inspectedQty, 0);

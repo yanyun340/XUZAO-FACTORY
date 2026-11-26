@@ -19,6 +19,7 @@ import { healthRoutes } from './routes/health.ts';
 import { importRoutes } from './routes/imports.ts';
 import { inventoryRoutes } from './routes/inventory.ts';
 import { orderRoutes } from './routes/orders.ts';
+import { recordUndoRoutes } from './routes/record-undo.ts';
 import { taskRoutes } from './routes/tasks.ts';
 import { userRoutes } from './routes/users.ts';
 
@@ -183,6 +184,7 @@ export function buildApp(): FastifyInstance {
   app.register(orderRoutes);
   app.register(taskRoutes);
   app.register(flowRoutes);
+  app.register(recordUndoRoutes);
   app.register(baseDataRoutes);
   app.register(collabRoutes);
   app.register(inventoryRoutes);

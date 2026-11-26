@@ -1,7 +1,7 @@
 # 数据字典与迁移
 
-版本：0.3.0｜对应：`backend/prisma/schema.prisma` 与迁移 `20261104112845_init`
-更新时间：2026-11-04
+版本：0.4.0｜对应：`backend/prisma/schema.prisma` 与最新迁移
+更新时间：2026-11-26
 
 ## 1. 全局约定
 
@@ -142,7 +142,7 @@ M 交付按“单产品”验收，但表结构允许一单多条明细；当前
 | --- | --- | --- |
 | `purchase_orders` | `orderId`、`supplierId`、`supplierName`（快照）、`createdById` | M 每单最多一张采购单 |
 | `purchase_items` | `purchaseOrderId`、`partId`、`partName`/`partSpec`（快照）、`quantity`、`unitPrice`、`platingRequired`（默认 false） | 每张采购单一条明细；`platingRequired=true` 时必须建电镀单并收货后才能生产 |
-| `arrival_records` | `purchaseItemId`、`quantity`、`operatorId`、`createdAt` | 累计到货不得超过采购数量；支持多次到货直至到齐 |
+| `arrival_records` | `purchaseItemId`、`quantity`、`operatorId`、`createdAt`、`voidedAt`/`voidedById`/`voidReason` | 累计到货不得超过采购数量；支持多次到货直至到齐；R12F 作废行不计入到货量 |
 
 ### `plating_orders` 电镀外协（R06F）
 
@@ -163,21 +163,21 @@ M 交付按“单产品”验收，但表结构允许一单多条明细；当前
 | 表 | 关键字段 | 说明 |
 | --- | --- | --- |
 | `production_orders` | `orderId`、`orderItemId`、`departmentId`、`employeeId?`、`processName`、`quantity`、`unitPrice`、`dueDate?`、`unitPriceVisible`、`createdById` | 部门必须是 PRODUCTION；员工必须同部门且启用 |
-| `production_feedbacks` | `productionOrderId`、`quantity`、`operatorId` | M 每任务一次反馈；数量不得超过任务量 |
+| `production_feedbacks` | `productionOrderId`、`quantity`、`operatorId`、`voidedAt`/`voidedById`/`voidReason` | M 每任务一次有效反馈；数量不得超过任务量；作废后不计入产量与生产成本 |
 
 ### `qc_records` / `qc_decisions`
 
 | 表 | 关键字段 | 说明 |
 | --- | --- | --- |
-| `qc_records` | `productionOrderId`、`inspectedQty`、`qualifiedQty`、`unqualifiedQty`、`round`、`parentQcRecordId`、`operatorId` | 合格 + 不合格必须等于检验量；`round=1` 为首检（可分批，累计 ≤ 生产量），`>1` 为返工复检且必须有父记录；原记录不被覆盖 |
-| `qc_decisions` | `qcRecordId`（UNIQUE）、`decision`、`releasedQty`、`scrapQty`、`decidedById` | `PASS` 要求不合格 = 0；`REWORK`/`SCRAP` 要求不合格 > 0；三种决策都设 `releasedQty = qualifiedQty`，`scrapQty` 仅 `SCRAP` 非 0；一条记录只有一条决策 |
+| `qc_records` | `productionOrderId`、`inspectedQty`、`qualifiedQty`、`unqualifiedQty`、`round`、`parentQcRecordId`、`operatorId`、`voidedAt`/`voidedById`/`voidReason` | 合格 + 不合格必须等于检验量；`round=1` 为首检（可分批，累计 ≤ 生产量），`>1` 为返工复检且必须有父记录；原记录不被覆盖；作废记录不计入数量，也不阻塞新一轮录入 |
+| `qc_decisions` | `qcRecordId`（UNIQUE）、`decision`、`releasedQty`、`scrapQty`、`decidedById`、`voidedAt`/`voidReason` | `PASS` 要求不合格 = 0；`REWORK`/`SCRAP` 要求不合格 > 0；三种决策都设 `releasedQty = qualifiedQty`，`scrapQty` 仅 `SCRAP` 非 0；一条记录只有一条决策；R12F 撤销记录时决策同事务作废，作废决策视同未决策 |
 
 ### `packing_records` / `shipment_records`
 
 | 表 | 关键字段 | 说明 |
 | --- | --- | --- |
-| `packing_records` | `orderId`、`orderItemId`、`quantity`、`operatorId` | 累计包装不得超过放行量 |
-| `shipment_records` | `orderId`、`orderItemId`、`quantity`、`operatorId` | 累计发货不得超过 `min(已包装−已发货, 订单量−已发货)` |
+| `packing_records` | `orderId`、`orderItemId`、`quantity`、`operatorId`、`voidedAt`/`voidedById`/`voidReason` | 累计包装不得超过放行量；作废后不计入已包装量 |
+| `shipment_records` | `orderId`、`orderItemId`、`quantity`、`operatorId`、`voidedAt`/`voidedById`/`voidReason` | 累计发货不得超过 `min(已包装−已发货, 订单量−已发货)`；作废后订单可能由 `COMPLETED` 退回 `SHIPPING` |
 
 ## 5. 库存
 
@@ -309,12 +309,13 @@ M 交付按“单产品”验收，但表结构允许一单多条明细；当前
 - 基础数据停用不级联；历史订单、采购引用的是快照字段，因此改名或停用不会破坏历史。
 - 会话随用户存在；用户停用不删除，只撤销会话。
 - 附件删除为软删除：超过 7 天后清理任务删除物理文件与元数据行，审计保留 `attachment.delete` 记录。
+- **业务记录不物理删除**：R12F 撤销/修正只置 `voidedAt`/`voidedById`/`voidReason`，行保留，时间线与审计同时留痕；所有数量聚合都过滤作废行。
 
 ## 8. 迁移与初始化
 
 | 项 | 说明 |
 | --- | --- |
-| 迁移文件 | `backend/prisma/migrations/20261104112845_init/migration.sql`，唯一初始迁移 |
+| 迁移文件 | 初始迁移 `20261104112845_init`；增量迁移见 `backend/prisma/migrations/`（最新为 `20261125160849_record_void`，为五类记录与 `qc_decisions` 加作废列） |
 | 测试库 | `prisma migrate deploy` 由 `backend/tests/global-setup.ts` 自动执行，然后清空业务表 |
 | 演示数据 | `backend/prisma/seed-demo.ts`，按唯一业务键 upsert，可重复执行；生产环境直接拒绝 |
 | 编号同步 | `syncCodeSequences` 在夹具/种子写入硬编码编码后抬高计数器，避免自动编号撞唯一键 |

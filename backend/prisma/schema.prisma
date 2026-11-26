@@ -102,15 +102,20 @@ model AdminUser {
   ordersOwned        Order[]              @relation("OrderOwner")
   purchasesCreated   PurchaseOrder[]      @relation("PurchaseCreatedBy")
   arrivals           ArrivalRecord[]      @relation("ArrivalOperator")
+  arrivalsVoided     ArrivalRecord[]      @relation("ArrivalVoider")
   platingCreated     PlatingOrder[]       @relation("PlatingCreatedBy")
   platingSent        PlatingOrder[]       @relation("PlatingSentBy")
   platingReceived    PlatingOrder[]       @relation("PlatingReceivedBy")
   productionsCreated ProductionOrder[]    @relation("ProductionCreatedBy")
   feedbacks          ProductionFeedback[] @relation("FeedbackOperator")
+  feedbacksVoided    ProductionFeedback[] @relation("FeedbackVoider")
   qcRecords          QCRecord[]           @relation("QCOperator")
+  qcRecordsVoided    QCRecord[]           @relation("QCVoider")
   qcDecisions        QCDecision[]         @relation("QCDecidedBy")
   packingRecords     PackingRecord[]      @relation("PackingOperator")
+  packingVoided      PackingRecord[]      @relation("PackingVoider")
   shipments          ShipmentRecord[]     @relation("ShipmentOperator")
+  shipmentsVoided    ShipmentRecord[]     @relation("ShipmentVoider")
   inventoryLogs      InventoryLog[]       @relation("InventoryOperator")
   attachments        Attachment[]
   notifications      Notification[]
@@ -380,8 +385,14 @@ model ArrivalRecord {
   operatorId     String       @db.Uuid
   operator       AdminUser    @relation("ArrivalOperator", fields: [operatorId], references: [id])
   createdAt      DateTime     @default(now())
+  /** R12F：撤销/修正只置作废标记，不删行；作废行不参与任何数量计算。 */
+  voidedAt       DateTime?
+  voidedById     String?      @db.Uuid
+  voidedBy       AdminUser?   @relation("ArrivalVoider", fields: [voidedById], references: [id])
+  voidReason     String?
 
   @@index([purchaseItemId])
+  @@index([voidedAt])
   @@map("arrival_records")
 }
 
@@ -450,8 +461,14 @@ model ProductionFeedback {
   operatorId        String          @db.Uuid
   operator          AdminUser       @relation("FeedbackOperator", fields: [operatorId], references: [id])
   createdAt         DateTime        @default(now())
+  /** R12F：作废标记；作废行不参与数量计算与「是否已反馈」判断。 */
+  voidedAt          DateTime?
+  voidedById        String?         @db.Uuid
+  voidedBy          AdminUser?      @relation("FeedbackVoider", fields: [voidedById], references: [id])
+  voidReason        String?
 
   @@index([productionOrderId])
+  @@index([voidedAt])
   @@map("production_feedbacks")
 }
 
@@ -470,12 +487,18 @@ model QCRecord {
   operatorId        String          @db.Uuid
   operator          AdminUser       @relation("QCOperator", fields: [operatorId], references: [id])
   createdAt         DateTime        @default(now())
+  /** R12F：作废标记；撤销质检记录时其决策同事务一并作废。 */
+  voidedAt          DateTime?
+  voidedById        String?         @db.Uuid
+  voidedBy          AdminUser?      @relation("QCVoider", fields: [voidedById], references: [id])
+  voidReason        String?
 
   decision  QCDecision?
   exception TabletException?
 
   @@index([productionOrderId])
   @@index([parentQcRecordId])
+  @@index([voidedAt])
   @@map("qc_records")
 }
 
@@ -490,7 +513,11 @@ model QCDecision {
   decidedById String         @db.Uuid
   decidedBy   AdminUser      @relation("QCDecidedBy", fields: [decidedById], references: [id])
   createdAt   DateTime       @default(now())
+  /** R12F：决策随质检记录一起作废；作废决策不参与放行/报废/结算计算。 */
+  voidedAt    DateTime?
+  voidReason  String?
 
+  @@index([voidedAt])
   @@map("qc_decisions")
 }
 
@@ -504,8 +531,14 @@ model PackingRecord {
   operatorId  String    @db.Uuid
   operator    AdminUser @relation("PackingOperator", fields: [operatorId], references: [id])
   createdAt   DateTime  @default(now())
+  /** R12F：作废标记；作废行不参与数量计算。 */
+  voidedAt    DateTime?
+  voidedById  String?   @db.Uuid
+  voidedBy    AdminUser? @relation("PackingVoider", fields: [voidedById], references: [id])
+  voidReason  String?
 
   @@index([orderItemId])
+  @@index([voidedAt])
   @@map("packing_records")
 }
 
@@ -519,8 +552,14 @@ model ShipmentRecord {
   operatorId  String    @db.Uuid
   operator    AdminUser @relation("ShipmentOperator", fields: [operatorId], references: [id])
   createdAt   DateTime  @default(now())
+  /** R12F：作废标记；作废行不参与数量计算，撤销后订单可能回到 SHIPPING。 */
+  voidedAt    DateTime?
+  voidedById  String?   @db.Uuid
+  voidedBy    AdminUser? @relation("ShipmentVoider", fields: [voidedById], references: [id])
+  voidReason  String?
 
   @@index([orderItemId])
+  @@index([voidedAt])
   @@map("shipment_records")
 }
 

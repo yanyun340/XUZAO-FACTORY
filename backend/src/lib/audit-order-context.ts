@@ -90,6 +90,20 @@ export async function resolveAuditOrderContexts(
     }),
   );
 
+  // R12F：生产反馈撤销/修正的审计 resourceId 是反馈记录 id（既有 production.feedback
+  // 审计记的是生产任务 id），需要单独反查，否则审计页「订单」列显示 —。
+  const productionFeedbackBatches = chunks(ids('production_feedback')).map((batch) =>
+    prisma.productionFeedback.findMany({
+      where: { id: { in: batch } },
+      select: {
+        id: true,
+        productionOrder: {
+          select: { orderId: true, order: { select: { orderNo: true } } },
+        },
+      },
+    }),
+  );
+
   const qcDecisionBatches = chunks(ids('qc_decision')).map((batch) =>
     prisma.qCDecision.findMany({
       where: { id: { in: batch } },
@@ -146,6 +160,7 @@ export async function resolveAuditOrderContexts(
     purchaseRows,
     arrivalRows,
     productionRows,
+    productionFeedbackRows,
     qcRows,
     qcDecisionRows,
     packingRows,
@@ -158,6 +173,7 @@ export async function resolveAuditOrderContexts(
     Promise.all(purchaseBatches).then((batches) => batches.flat()),
     Promise.all(arrivalBatches).then((batches) => batches.flat()),
     Promise.all(productionBatches).then((batches) => batches.flat()),
+    Promise.all(productionFeedbackBatches).then((batches) => batches.flat()),
     Promise.all(qcBatches).then((batches) => batches.flat()),
     Promise.all(qcDecisionBatches).then((batches) => batches.flat()),
     Promise.all(packingBatches).then((batches) => batches.flat()),
@@ -182,6 +198,12 @@ export async function resolveAuditOrderContexts(
   }
   for (const row of productionRows) {
     contexts.set(key('production', row.id), { orderId: row.orderId, orderNo: row.order.orderNo });
+  }
+  for (const row of productionFeedbackRows) {
+    contexts.set(key('production_feedback', row.id), {
+      orderId: row.productionOrder.orderId,
+      orderNo: row.productionOrder.order.orderNo,
+    });
   }
   for (const row of qcRows) {
     contexts.set(key('qc', row.id), {

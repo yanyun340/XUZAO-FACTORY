@@ -7,6 +7,7 @@ import { AttachmentScopes } from '../components/AttachmentPanel';
 import { DataTable } from '../components/DataTable';
 import { FlowLedger, FlowPanel, PriceVisibilityControl } from '../components/FlowPanel';
 import { PlatingPanel } from '../components/PlatingPanel';
+import { RecordsPanel } from '../components/RecordsPanel';
 import { ReportException } from '../components/ReportException';
 import { ArrowLeft, CheckIcon } from '../components/Icons';
 import {
@@ -51,7 +52,8 @@ function nextStep(order: OrderDetail): { owner: string; text: string } {
       }
       return { owner: '管理员', text: '生产已反馈，下发质检' };
     case 'PENDING_QC': {
-      const openRecord = qc?.records.find((record) => !record.decision);
+      // R12F：作废记录不算「待决策」，否则会一直提示去做无人可做的决策。
+      const openRecord = qc?.records.find((record) => !record.voidedAt && !record.decision);
       if (openRecord) return { owner: '管理员', text: '对质检结果做放行、返工或报废决策' };
       if (quantities.reworkPendingQty > 0) {
         return { owner: '品控', text: `返工复检剩余 ${quantities.reworkPendingQty} 件` };
@@ -305,6 +307,7 @@ export function OrderDetailPage() {
           </section>
 
           <FlowLedger order={order} />
+          <RecordsPanel order={order} onUpdated={setOrder} />
           <PlatingPanel order={order} onUpdated={setOrder} />
         </div>
 

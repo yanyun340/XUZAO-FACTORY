@@ -1,7 +1,7 @@
 # 架构说明
 
-版本：0.3.0｜基线：Node 24 + TypeScript（ESM）+ Fastify 5 + Prisma 7 + PostgreSQL 18 + React 19 + Vite 6
-更新时间：2026-11-04
+版本：0.4.0｜基线：Node 24 + TypeScript（ESM）+ Fastify 5 + Prisma 7 + PostgreSQL 18 + React 19 + Vite 6
+更新时间：2026-11-26
 
 ## 1. 系统上下文
 
@@ -29,10 +29,11 @@
 | `backend/src/config.ts` | 环境变量校验；测试库硬性隔离 | `NODE_ENV=test` 时强制 `TEST_DATABASE_URL` 且库名含 `test` |
 | `backend/src/auth/` | scrypt 密码、会话签发/撤销、角色守卫 | `guards.ts`、`session.ts` |
 | `backend/src/routes/` | HTTP 适配、Zod 校验、事务编排 | 每个文件对应一个业务面 |
-| `backend/src/domain/` | 与 HTTP 无关的订单状态、数量、利润、允许动作计算 | `flow.ts`、`orders.ts` |
-| `backend/src/lib/` | 审计与差异、时间线/通知分类、幂等、库存原子更新、编号、xlsx 版式 | `idempotency.ts`、`inventory.ts`、`audit-diff.ts`、`export-workbook.ts`、`notification-categories.ts` |
+| `backend/src/domain/` | 与 HTTP 无关的订单状态、数量、利润、允许动作计算 | `flow.ts`、`orders.ts`、`status.ts`（撤销后的状态修复） |
+| `backend/src/lib/` | 审计与差异、时间线/通知分类、幂等、库存原子更新、编号、xlsx 版式、可注入时钟 | `idempotency.ts`、`inventory.ts`、`audit-diff.ts`、`export-workbook.ts`、`notification-categories.ts`、`clock.ts` |
 | `backend/src/jobs/` | 交期提醒、附件清理与调度 | `due-reminders.ts`、`attachment-cleanup.ts`、`scheduler.ts` |
 | `backend/src/routes/imports.ts` | Excel 预检 + 整批原子提交 | `POST /imports/:entity/preflight`、`/commit` |
+| `backend/src/routes/record-undo.ts` | R12F 五类记录撤销/修正；适配器表 + 循环注册 | `POST /{arrivals|feedbacks|qc-records|packing-records|shipment-records}/:id/undo`、`/correct` |
 | `backend/prisma/` | schema、迁移、合成演示种子 | `schema.prisma`、`seed-demo.ts` |
 | `backend/scripts/` | 逻辑备份/恢复（含附件）、冒烟脚本 | `backup.ts`、`restore.ts` |
 | `frontend/src/pages/` | 页面级功能：登录、看板、订单、库存、基础数据、通知、异常、审计、用户 | `App.tsx` 路由表 |
